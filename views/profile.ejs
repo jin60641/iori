@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<head>
+		<% include ./header %>
+		<script>
+		user = "<%= user %>".replace(/&#34;/g,'"');
+		if( user.length > 0 ){
+	    	user = JSON.parse(user)
+		}
+		</script>
+		<script src="/js/socketio.js"></script>
+		<script src="/js/iori.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/profile.css">
+		<link rel="stylesheet" type="text/css" href="/css/timeline.css">
+		<script src="/js/timeline.js"></script>
+		<script src="/js/profile.js"></script>
+		<% include ./footer %>
+	</head>
+	<body>
+	</body>
+</html>
