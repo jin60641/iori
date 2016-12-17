@@ -42,4 +42,5 @@ routes/settings.js
 # etc files
 files
 img
-
+font
+svg
