@@ -38,3 +38,8 @@ jspm_packages
 
 # setting
 routes/settings.js
+
+# etc files
+files
+img
+
