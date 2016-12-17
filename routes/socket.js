@@ -8,15 +8,22 @@ function socketjs( server ){
 }
 
 function socketCore( socket ){
-	global.store.get( cookie.parse( socket.request.headers.cookie )[ 'connect.sid' ].split('.')[0].substring(2) , function( err, session ){
-		if( session && session.passport && session.passport.user && session.passport.user.signUp == 1 ){
-			socket.user = session.passport.user;
-			console.log("socket connected (" + socket.user.name + ")");
-		} else {
-			console.log("socket connected (guest)");
-//			socket.disconnect();
-		}
-	});
+	var socket_ids = {};
+	if( socket.request.headers.cookie != undefined ){
+		global.store.get( cookie.parse( socket.request.headers.cookie )[ 'connect.sid' ].split('.')[0].substring(2) , function( err, session ){
+			if( session && session.passport && session.passport.user && session.passport.user.signUp == 1 ){
+				socket.user = session.passport.user;
+				socket_ids[socket.user.id] = socket.id;
+				console.log("socket connected (" + socket.user.name + ")");
+			} else {
+				console.log("socket connected (guest)");
+//				socket.disconnect();
+			}
+		});
+	} else {
+		console.log("socket connected (guest)");
+//		socket.disconnect();
+	}
 
 	socket.on( 'post_write', function(){
 		if( socket.user && socket.user.id ){
@@ -24,24 +31,23 @@ function socketCore( socket ){
 				if( err ){
 					throw err;
 				} else if( followers.length >= 1 ) {
-					var sockets = Object.keys(io.sockets.sockets);
 					for( var i = 0; i < followers.length; ++i ){
-						for( var j = 0; j < sockets.length; ++j ){
-							var to = io.sockets.sockets[sockets[j]];
-							if( to && to.user && to.user.id ){
-								if( followers[i].from_id == to.user.id ){
-									to.emit( 'post_new' );
-								}
-							}
+						var socket_id = socket_ids[followers[i].from_id];
+						if( socket_id != undefined ){
+							io.sockets.connected[socket_id].emit( 'post_new' );
 						}
 					}
 				}
 			});
 		}
 	});
+	
+	socket.on( 'disconnect', function(){
+		if( socket && socket.user && socket.user.id ){
+			delete socket_ids[socket.user.id];
+		}
+	});
 }
-
-
 
 module.exports = socketjs;
 

@@ -155,8 +155,7 @@ router.get('/:dir/:link([a-zA-Z0-9]*)', function( req, res ){
 	}
 });
 
-
-router.get('/:link([a-zA-Z0-9]*)', function( req, res ){
+router.get('/:link(*)', function( req, res ){
 	if( req.params['link'] == "favicon.ico" ){
 		res.end();
 	} else {

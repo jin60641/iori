@@ -29,13 +29,8 @@ if( session.length > 0 ){
 	if ( getCookie("facebook") == "true" ){
 		var returnTo = document.URL.split('/').slice(3).toString();
 		location.href = "/api/auth/facebook/" + returnTo;
-	} else if( ( getCookie("email") || getCookie("userid") ) && getCookie("password") ){
-		var params = "password=" + getCookie("password") + "&";
-		if( getCookie("email") ){
-			params += "email=" + getCookie("email");
-		} else {
-			params += "userid=" + getCookie("userid");
-		}
+	} else if( getCookie("userid") && getCookie("password") ){
+		var params = "password=" + getCookie("password") + "&userid=" + getCookie("userid");
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function(event){
 			if( xhr.readyState == 4 && xhr.status == 200 ){

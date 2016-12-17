@@ -19,6 +19,21 @@ var crypto = require('crypto');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+/*
+router.use( function( req, res, next ){
+	if( req.cookies && ( req.user == undefined || ( req.user && req.user.signUp != 1 ) ) ){
+		console.log(req.url);
+		next();
+		if( req.cookies['facebook'] == "true" ){
+//			res.redirect('/');
+		} else if( req.cookies['userid'] ){
+		}
+	} else {
+		next();
+	}
+});
+*/
+
 router.use(session(sessionMiddleware));
 router.use(passport.initialize()).use(passport.session());
 passport.serializeUser(function(user, done) {
@@ -281,5 +296,6 @@ router.post('/changepw', function( req, res ){
 		res.end("");
 	}
 });
+
 
 module.exports = router;

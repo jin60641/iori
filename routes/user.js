@@ -46,15 +46,15 @@ router.get('/@:user_id(*)/favorite', function( req, res ){
 router.get('/@:user_id(*)', function( req, res ){
 	var user_id = req.params['user_id'];
 	db.Users.findOne({ user_id : user_id }, function( err, user ){
-		var obj = {
-			id : user.id,
-			name : user.name,
-			user_id : user.user_id,
-			following : false
-		}
 		if( err ){
 			throw err;
 		} else if( user ){
+			var obj = {
+				id : user.id,
+				name : user.name,
+				user_id : user.user_id,
+				following : false
+			}
 			if( req.user && req.user.id ){
 				db.Follows.findOne({ to_id : user.id, from_id : req.user.id }, function( err2, following ){
 					if( err2 ){
