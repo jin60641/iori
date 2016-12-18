@@ -43,7 +43,6 @@ if( session.length > 0 ){
 				}
 			}
 		}
-		console.log(params);
 		xhr.open("POST", "/api/auth/local", false);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send(params);
@@ -118,7 +117,6 @@ function head_menu_show(boolean){
 	}
 }
 
-
 window.addEventListener('load',function(){
 	head = document.createElement("div");
 	document.body.insertBefore(head,document.body.firstChild);
@@ -136,8 +134,8 @@ window.addEventListener('load',function(){
 	}
 	head.appendChild(head_a);
 //  head.innerHTML += "<div id='notice' class='navi_menu' style='border-left:1px solid white;'></div>";
-	head.innerHTML+="<input type='text' name='query' onkeyup='return sendData_search(this.value);' placeholder='친구 찾기' onfocusout='search_result_none()' onfocus='document.getElementById(\"search_result\").style.display=\"block\";' id='search' onclick='head_menu_show(false);' onsubmit='return false;' autocomplete='off'>";
-	head.innerHTML+="<div id='search_result' onmouseover='search_result_view=1;' onmouseout='search_result_view=0';><div id='search_none'>표시할 검색 결과가 없습니다.</div></div>";
+	head.innerHTML+="<input type='text' name='query' onkeyup='return sendData_search(this.value);' placeholder='친구 찾기' onfocusout='searchResultNone()' onfocus='document.getElementById(\"search_result\").style.display=\"block\";' id='search' onclick='head_menu_show(false);' onsubmit='return false;' autocomplete='off'>";
+	head.innerHTML+="<div id='search_result' onmouseover='searchResultView=1;' onmouseout='searchResultView=0';><div id='search_none'>표시할 검색 결과가 없습니다.</div></div>";
 	head.innerHTML+="<img src='/img/logo_orange.png' id='head_logo' onclick='head_menu_show()'>";
 	window.addEventListener('click', function(){
 		head_menu.style.display = "none";
@@ -165,9 +163,7 @@ window.addEventListener('load',function(){
 			var xhr2 = new XMLHttpRequest();
 			xhr2.onreadystatechange = function (event){ if(xhr2.readyState == 4 && xhr2.status == 200){
 				var notices = JSON.parse( xhr2.responseText );
-				console.log(notices);
 				for( var i = 0; i < notices.length; ++i ){
-					console.log(notices[i]);
 					//notice_box.innerHTML =
 				}
 			}}
@@ -178,25 +174,9 @@ window.addEventListener('load',function(){
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+socket.on( 'notice_reply_new', function( data ){
+	makeToast(data.from.name + "님의 답글 : " + data.text);
+});
 
 
 </script>

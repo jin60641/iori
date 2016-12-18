@@ -11,9 +11,9 @@ function getBrowser(){
     }
 }
 
-var search_result_view=0;
-function search_result_none(){
-    if(search_result_view){
+var searchResultView=0;
+function searchResultNone(){
+    if(searchResultView){
         return 0;
     } else {
         document.getElementById("search_result").style.display="none";
@@ -44,5 +44,46 @@ function followUser( user_id, callback ){
     }}
     xhr.open("POST","/api/user/follow", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('user_id='+user_id);
 }
+
+function fade(obj, start, end, time ) {
+    var speed = Math.round( time / 100 );
+    var timer = 0;
+    if( start > end ){
+        for( i = start; i >= end; --i ){
+            ( function( tmp ){
+                setTimeout(function(){
+                    obj.style.opacity = (tmp / 100);
+                    if( (tmp/100) <= 0 ){
+						if( toast.parentNode ){
+	                        document.body.removeChild(toast);
+						}
+                    }
+                }, (timer * speed));
+                timer++;
+            }(i));
+        }
+    } else if( start < end ){
+        for( i = start; i <= end; ++i ){
+            ( function( tmp ){
+                setTimeout(function(){
+                    obj.style.opacity = (tmp / 100);
+                }, (timer * speed));
+                timer++;
+            }(i));
+        }
+    }
+}
+
+function makeToast(text){
+    var toast = document.createElement("div");
+    toast.id = "toast";
+    document.body.appendChild(toast);
+    toast.innerHTML = text;
+    fade( toast, 0, 70, 500 );
+    setTimeout( function(){
+        fade( toast, 70, 0, 500 );
+    }, 500 );
+}
+
 
 postOption = {};

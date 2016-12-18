@@ -98,30 +98,52 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res){
 });
 
 
-router.post( '/api/newsfeed/getposts' , checkSession, function( req, res ){
-	db.Dontsees.find({ user_id : req.user.id }, function( err, dontsees ){
-		var donts = [];
-		if( dontsees && dontsees.length ){
-			for( var i = dontsees.length - 1 ; i >= 0 ; --i ){
-				donts.push( dontsees[i].post_id );
-			}
-		}
-		db.Follows.find({ from_id : req.user.id }, function( err, follows ){
-			var results = [];
-			var skip = parseInt(req.body['skip']);
-			var limit = parseInt(req.body['limit']);
-			var userid = parseInt(req.body['userid']);
-			var tos = new Array();
-			if( userid ){
-				tos.push( userid );
-			} else {
-				if( follows && follows.length ){
+router.post( '/api/newsfeed/getposts', function( req, res ){
+	if( req.user && req.user.id ){
+	} else {
+		req.user = { id : 0 };
+	}
+	var donts = [];
+	var results = [];
+	var skip = parseInt(req.body['skip']);
+	var limit = parseInt(req.body['limit']);
+	var userid = parseInt(req.body['userid']);
+	var tos = new Array();
+	async.waterfall([
+		function( callback ){
+			db.Dontsees.find({ user_id : req.user.id }, function( err, dontsees ){
+				if( err ){
+					throw err;
+				} else if( dontsees && dontsees.length ){
+					for( var i = dontsees.length - 1 ; i >= 0 ; --i ){
+						donts.push( dontsees[i].post_id );
+						if( donts.length == dontsess.length ){
+							callback( null );
+						}
+					}
+				} else {
+					callback( null );
+				}
+			});
+		}, function( callback ){
+			db.Follows.find({ from_id : req.user.id }, function( err, follows ){
+				if( err ){
+					throw err;
+				} else if( follows && follows.length ){
 					for( var i = follows.length - 1 ; i >= 0 ; --i ){
 						tos.push( follows[i].to_id );
+						if( tos.length == follows.length ){
+							callback( null );
+						}
 					}
+				} else {
+					callback( null );
 				}
-				tos.push( req.user.id );
-				tos.push( 1 );
+			});	
+		}, function( callback ){
+			tos.push( req.user.id );
+			if( userid ){
+				tos.push( userid );
 			}
 			db.Posts.find( { id : { $nin : donts }, user_id : { $in : tos } } ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
 				if( err ){
@@ -129,40 +151,45 @@ router.post( '/api/newsfeed/getposts' , checkSession, function( req, res ){
 				} else if( posts.length <= 0 ){
 					res.send("[]")
 				} else {
-					async.forEach( posts , function( post, key, callback ){
-						db.Replys.find({ post_id : post.id }).sort({ id : -1 }).exec( function( err, reply ){
-							var replys;
-							if( reply.length > 4 ){
-								replys = reply.slice(0,4)
-								replys.push("더있어요");
-							} else {
-								replys = reply;
-							}
-							db.Favorites.findOne({ post_id : post.id, user_id : req.user.id }, function( err, favorite ){
-								var isfavorite = false;
-								if( favorite ){
-									isfavorite = true;
-								}
-								var result = {
-									id : post.id,
-									user_id : post.user_id,
-									user_userid : post.user_userid,
-									user_name : post.user_name,
-									text : post.text,
-									html : post.html,
-									file : post.file,
-									date : post.date,
-									reply : replys,
-									isfavorite : isfavorite
-								};
-								results.push( result );
-								if( results.length == posts.length ){
-									res.send({ post : results });
-								}
-							});
-						});
-					});
+					callback( null, posts );
 				}
+			});
+		}
+	],function( err, posts ){
+		if( err ){
+			throw err;
+		}
+		async.forEach( posts , function( post, key, callback ){
+			db.Replys.find({ post_id : post.id }).sort({ id : -1 }).exec( function( err, reply ){
+				var replys;
+				if( reply.length > 4 ){
+					replys = reply.slice(0,4)
+					replys.push("더있어요");
+				} else {
+					replys = reply;
+				}
+				db.Favorites.findOne({ post_id : post.id, user_id : req.user.id }, function( err, favorite ){
+					var isfavorite = false;
+					if( favorite ){
+						isfavorite = true;
+					}
+					var result = {
+						id : post.id,
+						user_id : post.user_id,
+						user_userid : post.user_userid,
+						user_name : post.user_name,
+						text : post.text,
+						html : post.html,
+						file : post.file,
+						date : post.date,
+						reply : replys,
+						isfavorite : isfavorite
+					};
+					results.push( result );
+					if( results.length == posts.length ){
+						res.send({ post : results });
+					}
+				});
 			});
 		});
 	});
@@ -173,7 +200,9 @@ router.post( '/api/newsfeed/getreplys' , checkSession, function( req, res ){
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
 	db.Replys.find({ post_id : postid }).skip( skip ).sort({ id : -1 }).exec( function( err, reply ){
-		if( limit > 4 && reply.length > 4 ){
+		if( reply && reply.length == 0 ){
+			res.end();
+		} else if( limit > 4 && reply.length > 4 ){
 			replys = reply.slice(0,4)
 			replys.push("더있어요");
 			res.send( replys )
@@ -262,7 +291,7 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 			}
 		});
 		req.busboy.on( 'finish', function(){
-			if( text.length>=0 ){
+			if( text.length >= 0 || filecount != 0 ){
 				var current = new db.Replys({
 					id : replyid,
 					user_id : req.user.id,
@@ -276,7 +305,7 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 					if( error ){
 						throw error;
 					}
-					res.send({ id : req.user.id, name : req.user.name, reply_id:replyid });
+					res.send( replyid.toString() );
 				});
 			}
 		});

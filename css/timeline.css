@@ -48,12 +48,15 @@ textarea {
 	padding : 10px;
     padding-top : 53px;
 	overflow-y : scroll;
+	width : 650px;
+	display : block;
+	margin : auto;
 }
 
 #post_wrap > .post {
 	//box-shadow : 2px 2px 3px rgba(0,0,0,0.05);
 	margin : auto;
-
+	width : calc( 100% - 20px );
 	font-family : 'NanumGothic';
 	word-wrap : break-word;
 	//white-space : pre;
@@ -61,7 +64,6 @@ textarea {
 	position : relative;
 	font-size : 13px;
 	letter-spacing : 0px;
-	width : 620px;
 	border : 1px solid;
 	border-color : #e5e6e9 #dfe0e4 #d0d1d5;
 	border-radius : 3px;
@@ -134,7 +136,7 @@ textarea {
 
 #post_wrap .date img {
 	position : absolute;
-	top : -4px;
+	top : 0px;
 	right : 0px;
 	filter : grayscale(100%);
 	-webkit-filter : grayscale(100%);
@@ -834,9 +836,6 @@ textarea {
 	}
 	#post_wrap {
 		width : calc( 100vw - 20px );
-	}
-	#post_wrap > .post {
-		width : calc( 100% - 20px );
 	}
 	#post_wrap > .post .reply_text {
 		width : calc( 100vw - 140px );

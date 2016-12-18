@@ -63,7 +63,7 @@ window.addEventListener('load', function(){
 	} else {
 		user_img.onclick = function( event ){
 			viewimg(0,1,new Date(),"/profileimg/" + user.id);
-			event.cancleBubble();
+			event.cancleBubble = true;
 		}
 		user_follow = document.createElement("div");
 		user_follow.id = "user_follow";
@@ -73,14 +73,18 @@ window.addEventListener('load', function(){
 			user_follow.innerText = "팔로우"
 		}
 		user_follow.onclick = function(){
-			followUser( user.id, function( result ){
-				user.following = !user.following;
-				if( result ){
-					user_follow.innerText = "언팔로우"
-				} else {
-					user_follow.innerText = "팔로우"
-				}
-			});
+			if( session.id ){
+				followUser( user.id, function( result ){
+					user.following = !user.following;
+					if( result ){
+						user_follow.innerText = "언팔로우"
+					} else {
+						user_follow.innerText = "팔로우"
+					}
+				});
+			} else {
+				location.href = "/login/" + document.URL.split('/').slice(3).join("-");
+			}
 		}
 		container.appendChild(user_follow);
 	}

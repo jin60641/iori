@@ -666,11 +666,19 @@ function getDateString(date,reply,change){
 	} else if( gap >= 86400 ){
 		if(Math.floor(gap/86400) == 1){
 			var a = postdate.toLocaleTimeString();
+			var b = new Date();
+			b.setHours(0);
+			b.setMinutes(0);
+			b.setSeconds(0);
+			b.setMilliseconds(0);
+			return "<span style='padding-right:25px;'>어제</span><img src='/img/postdate.jpg' onclick='alert(\"" + a + "\")' style='cursor:pointer'>";
+			/*
 			if( a.indexOf("GMT") >= 0 ){
 				return "어제 " + a.substr(0,a.length-10);
 			} else {
 				return PointToDate("어제 " + a.substr(0,a.length-3));
 			}
+			*/
 		} else {
 			var a = postdate.toLocaleString();
 			if( a.indexOf("GMT") >= 0 ){
@@ -788,13 +796,16 @@ var posts = 0;
 //덧글 불러오기
 function getReplys(obj,limit){
 	var replywrap = obj.parentNode;
+	var reply_skip = 0;
 	if(obj.id.substr(10,1) == '_'){
 		var postid = obj.id.substr(11);
-		var skip = 0;
+		reply_skip = 0;
 	} else {
 		var postid = obj.id.substr(10);
-		var skip = replywrap.childElementCount-4;
+		reply_skip = replywrap.childElementCount-4;
 	}
+	console.log(obj);
+	console.log(limit,skip);
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){if (xhr.readyState == 4 && xhr.status == 200){
 		var xhrResult = JSON.parse(xhr.responseText);
@@ -861,7 +872,7 @@ function getReplys(obj,limit){
 			replywrap.removeChild(obj);
 		}
 	}}
-	xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+postid+'&skip='+skip+'&limit='+limit);
+	xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+postid+'&skip='+reply_skip+'&limit='+limit);
 }
 
 //게시글 불러오기
@@ -914,7 +925,7 @@ function getPosts(limit){
 						var lncnt = 0;
 						for( var k = 0; k < texts.length; ++k ){
 							++lncnt;
-							if( texts[k].length > postwrap.firstElementChild.clientWidth/12.8 ){
+							if( texts[k].length > (postwrap.clientWidth+20)/12.8 ){
 								++lncnt;
 							}
 							if( lncnt > 5 ){
@@ -1513,24 +1524,25 @@ window.addEventListener('load',function(){
 	window.addEventListener('resize', function(){
 		imgmenu_resize();
 	});
-	socket.on( 'notice_new', function(){
-		notice.innerHTML = parseInt(notice.innerHTML)+1;
-	})
+
 	getPosts(10);
+
+	socket.on( 'notice_new', function(){
+//		notice.innerHTML = parseInt(notice.innerHTML)+1;
+	})
 	socket.on( 'connect_failed', function(){
-		location.href = "/";
 	});
 	socket.onbeforeunload = function(){
-		location.href = "/";
 	}
 	socket.on( 'disconnect', function(){
-//		location.href = "/";
+	});
+	socket.on( 'reply_new', function( data ){
+		if( document.getElementById( "post_" + data.post_id ) ){
+			getReplys( document.getElementById( "replywrite_" + data.post_id ), 1 );
+		}
 	});
 	socket.on( 'post_new', function(){
 		getPosts(0,1);
-	});
-	socket.on( 'reply_new', function( postid ){
-		getReplys(document.getElementById("replywrite_" + postid),1);
 	});
 	socket.on( 'post_removed', function( postid ){
 		postwrap.removeChild(document.getElementById("post_"+postid));	
@@ -1561,8 +1573,9 @@ function replyWrite(post){
 		formdata.append("text",tmp);
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
+			var replyid = xhr.responseText;
 			getReplys(post,1);
-			//socket.emit( 'reply_write', postid )
+			socket.emit( 'reply_write', replyid )
 //			getReplys(document.getElementById("replywrite_" + postid),1);
 		}}
 		xhr.open("POST","/api/newsfeed/writereply/" + postid, false); xhr.send(formdata)
