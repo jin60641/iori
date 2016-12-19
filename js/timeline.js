@@ -62,12 +62,13 @@ function hidemenu(){
 }
 
 //보고싶지 않습니다(덧글)
-function dontsee_reply(replyid){
+function dontseeReply(post_id,reply_id){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var reply = document.getElementById(replyid);
+		var reply = document.getElementById("reply_" + post_id + "_" + reply_id);
+		reply.parentNode.removeChild(reply);
 	}};
-	xhr.open("POST", "/api/newsfeed/dontsee_reply", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('replyid='+replyid.substr(10));
+	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=reply&obj_id='+reply_id);
 }
 
 //보고싶지 않습니다(게시물)
@@ -80,10 +81,10 @@ function dontsee(postid){
 		dontsee_menu.className = "post";
 		dontsee_menu.style.paddingBottom = "8px";
 		dontsee_menu.innerHTML = "뉴스피드에 이 게시물이 표시되지 않습니다. <span style='color:#34a798;cursor:pointer;' onclick='dontsee_cancle(" + postid + ")'>취소</span>";
-		dontsee_menu.innerHTML += "<img src='/img/remove_reply' style='width:16px; float:right; cursor:pointer' onclick='this.parentNode.parentNode.removeChild(this.parentNode)'><br>";
+		dontsee_menu.innerHTML += "<img src='/img/remove_reply.jpg' style='width:16px; float:right; cursor:pointer' onclick='this.parentNode.parentNode.removeChild(this.parentNode)'><br>";
 		postwrap.insertBefore(dontsee_menu,post);
 	}}
-	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+postid);
+	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+postid);
 }
 
 //보고싶지 않습니다 취소
@@ -94,7 +95,7 @@ function dontsee_cancle(postid){
 		post.style.display="";
 		postwrap.removeChild(post.previousElementSibling);
 	}}
-	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+postid);
+	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+postid);
 }
 
 //관심글 등록, 취소
@@ -835,36 +836,26 @@ function getReplys(obj,limit){
 				reply_menu_btn = reply.lastElementChild.firstChild;
 				reply_menu = document.createElement("div");
 				reply_menu_btn.appendChild(reply_menu);
+				reply_menu_btn.onclick = function(event){
+					event.stopPropagation();
+					event.preventDefault();
+					this.firstElementChild.style.display="block";
+				}
+				reply_menu.className = "reply_menu";
 				if( obj.id.substr(10,1) == '_'){
-					reply_menu.className = "reply_menu";
+					eval("reply.style." + getBrowser() + "Animation='fade_post .5s linear'");
+					replywrap.insertBefore(reply,replywrap.lastElementChild.previousElementSibling.previousElementSibling);
+				} else {
+					replywrap.insertBefore(reply,replywrap.firstElementChild);
+				}
+				if( Replys[0] == Replys[i].user_id ){
 					reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
-					reply_menu_btn.onclick = function(event){
-						event.stopPropagation();
-						event.preventDefault();
-						this.firstElementChild.style.display="block";
-					}
 					reply_menu.innerHTML += "<div onclick='removeReply(" + postid + "," + Replys[i].id + ")' >댓글삭제</div>";
 					reply_menu.innerHTML += "<div onclick='changeReply(" + postid + "," + Replys[i].id + ")' >댓글수정</div>";
-					replywrap.insertBefore(reply,replywrap.lastElementChild.previousElementSibling.previousElementSibling);
-					eval("reply.style." + getBrowser() + "Animation='fade_post .5s linear'");
 				} else {
-					if( Replys[0] == Replys[i].user_id ){
-						reply_menu.className = "reply_menu";
-						reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
-						reply_menu_btn.onclick = function(event){
-							event.stopPropagation();
-							event.preventDefault();
-							this.firstElementChild.style.display="block";
-						}
-						reply_menu.innerHTML += "<div onclick='removeReply(" + postid + "," + Replys[i].id + ")' >댓글삭제</div>";
-						reply_menu.innerHTML += "<div onclick='changeReply(" + postid + "," + Replys[i].id + ")' >댓글수정</div>";
-					} else {
-						reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
-						reply_menu_btn.onclick = function(){
-							dontsee_reply( this.parentNode.parentNode.id );
-						}
-					}
-					replywrap.insertBefore(reply,replywrap.firstElementChild);
+					reply_menu.innerHTML += "<div onclick='dontseeReply(" + postid + "," + Replys[i].id + ")' >보고싶지 않습니다</div>";
+					reply_menu.innerHTML += "<div onclick='reportReply(" + postid + "," + Replys[i].id + ")' >댓글신고</div>";
+					reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
 				}
 			}
 		}
@@ -1101,21 +1092,20 @@ function getPosts(limit){
 							reply_menu_btn = reply.lastElementChild.firstChild;
 							reply_menu = document.createElement("div");
 							reply_menu_btn.appendChild(reply_menu);
+							reply_menu_btn.onclick = function(event){
+								event.stopPropagation();
+								event.preventDefault();
+								this.firstElementChild.style.display="block" 
+							}
+							reply_menu.className = "reply_menu";
 							if( session.id == Replys[j].user_id ){
-								reply_menu.className = "reply_menu";
 								reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
-								reply_menu_btn.onclick = function(event){
-									event.stopPropagation();
-									event.preventDefault();
-									this.firstElementChild.style.display="block" 
-								}
 								reply_menu.innerHTML += "<div onclick='removeReply(" + Posts[i].id + "," + Replys[j].id + ")' >댓글삭제</div>";
 								reply_menu.innerHTML += "<div onclick='changeReply(" + Posts[i].id + "," + Replys[j].id + ")' >댓글수정</div>";
 							} else {
-								reply_menu_btn.style.backgroundImage = "url('/img/remove_reply')"
-								reply_menu_btn.onclick = function(){
-									dontsee_reply( this.parentNode.parentNode.id );
-								}
+								reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
+								reply_menu.innerHTML += "<div onclick='dontseeReply(" + Posts[i].id + "," + Replys[j].id + ")' >보고싶지 않습니다</div>";
+								reply_menu.innerHTML += "<div onclick='reportReply(" + Posts[i].id + "," + Replys[j].id + ")' >댓글신고</div>";
 							}
 							replywrap.appendChild(reply);
 						}
@@ -1214,6 +1204,9 @@ function keydown(e){
 					select.style.borderColor = "#ff5c26";
 					select.style.boxShadow = "inset 0px 0px 0px 1px #ff5c26";
 				} else {
+					select.scrollIntoViewIfNeeded();
+					select.style.borderColor = "#ff5c26";
+					select.style.boxShadow = "inset 0px 0px 0px 1px #ff5c26";
 					return;
 				}
 			} else {
@@ -1233,6 +1226,9 @@ function keydown(e){
 					select.style.borderColor = "#ff5c26";
 					select.style.boxShadow = "inset 0px 0px 0px 1px #ff5c26";
 				} else {
+					select.scrollIntoViewIfNeeded();
+					select.style.borderColor = "#ff5c26";
+					select.style.boxShadow = "inset 0px 0px 0px 1px #ff5c26";
 					return;
 				}
 			} else {

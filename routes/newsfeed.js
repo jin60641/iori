@@ -28,32 +28,32 @@ String.prototype.xssFilter = function() {
 
 
 router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
-	var postid = parseInt(req.body['postid']);
-	if( postid ){
-		db.Dontsees.remove({ post_id : postid, user_id : req.user.id }, function( err, dontsee ){
+	var type = req.body['type'];
+	var obj_id = parseInt(req.body['obj_id']);
+	if( type == "post" || type == "reply" || obj_id != "NaN" ){
+		db.Dontsees.remove({ type : type, obj_id : obj_id, user_id : req.user.id }, function( err, dontsee ){
 			if( dontsee == 1 ){
 				res.end();
 			} else {
-				db.Dontsees.findOne().sort({id:-1}).exec(
-					function( err, result ){
-						if( !result ){
-							dontseeid = 1;
-						} else {
-							dontseeid = result.id + 1;
-						}
-						var current = new db.Dontsees({
-							id : dontseeid,
-							user_id : req.user.id,
-							post_id : postid
-						});
-						current.save( function( err ){
-							if( err ){
-								throw err;
-							}
-							res.end();
-						});
+				db.Dontsees.findOne().sort({id:-1}).exec( function( err, result ){
+					if( !result ){
+						dontsee_id = 1;
+					} else {
+						dontsee_id = result.id + 1;
 					}
-				);
+					var current = new db.Dontsees({
+						id : dontsee_id,
+						type : type,
+						user_id : req.user.id,
+						obj_id : obj_id
+					});
+					current.save( function( err ){
+						if( err ){
+							throw err;
+						}
+						res.end();
+					});
+				});
 			}
 		});
 	} else {
@@ -103,7 +103,8 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 	} else {
 		req.user = { id : 0 };
 	}
-	var donts = [];
+	var dontsee_posts = [];
+	var dontsee_replys = [];
 	var results = [];
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
@@ -116,8 +117,12 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 					throw err;
 				} else if( dontsees && dontsees.length ){
 					for( var i = dontsees.length - 1 ; i >= 0 ; --i ){
-						donts.push( dontsees[i].post_id );
-						if( donts.length == dontsess.length ){
+						if( dontsees[i].type == "post" ){
+							dontsee_posts.push( dontsees[i].obj_id );
+						} else if( dontsees[i].type == "reply" ){
+							dontsee_replys.push( dontsees[i].obj_id );
+						}
+						if( !i ){
 							callback( null );
 						}
 					}
@@ -132,7 +137,7 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 				} else if( follows && follows.length ){
 					for( var i = follows.length - 1 ; i >= 0 ; --i ){
 						tos.push( follows[i].to_id );
-						if( tos.length == follows.length ){
+						if( !i ){
 							callback( null );
 						}
 					}
@@ -145,7 +150,7 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 			if( userid ){
 				tos.push( userid );
 			}
-			db.Posts.find( { id : { $nin : donts }, user_id : { $in : tos } } ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
+			db.Posts.find({ id : { $nin : dontsee_posts }, user_id : { $in : tos } } ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
 				if( err ){
 					throw err;
 				} else if( posts.length <= 0 ){
@@ -160,7 +165,7 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 			throw err;
 		}
 		async.forEach( posts , function( post, key, callback ){
-			db.Replys.find({ post_id : post.id }).sort({ id : -1 }).exec( function( err, reply ){
+			db.Replys.find({ id : { $nin : dontsee_replys }, post_id : post.id }).sort({ id : -1 }).exec( function( err, reply ){
 				var replys;
 				if( reply.length > 4 ){
 					replys = reply.slice(0,4)

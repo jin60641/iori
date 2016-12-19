@@ -25,9 +25,12 @@ var FavoriteSchema = new mongoose.Schema({
 var DontseeSchema = new mongoose.Schema({
     id : { type : Number },
     user_id : { type : Number },
-    post_id : { type : Number },
+	type : { type : String },
+    obj_id : { type : Number },
     date : { type : Date, default: Date.now }
 });
+
+
 
 var PostSchema = new mongoose.Schema({
     id : { type : Number },
