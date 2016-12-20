@@ -130,7 +130,7 @@ window.addEventListener('load', function(){
 	}
 //	x.open("POST","/isfriend", false); x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); x.send('id='+user.user_id);
 	window.addEventListener('scroll', resizeContainer );
-//	window.addEventListener('resize', resizeContainer );
+	window.addEventListener('resize', resizeContainer );
 });
 
 function resizeContainer(){
@@ -144,7 +144,6 @@ function resizeContainer(){
 	*/
 
 	var header_size = 42;
-	
 	var max_scroll = 200;
 	var save_size = 108;
 //	if( document.body.clientHeight 

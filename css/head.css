@@ -93,15 +93,20 @@
 	vertical-align : middle;
 }
 
+#head .navi_menu {
+	text-decoration : none;
+	position : absolute;
+	cursor : pointer;
+	top : 7px;
+}
+
 #head #navi_search {
 	display : none;
-	position : absolute;
-	right : 110px;
+	right : 80px;
 }
 
 #head #navi_profile {
-	right : 70px;
-	position : absolute;
+	right : 40px;
 }
 
 #head #search {
@@ -220,17 +225,16 @@
 	
 #navi_profile img, #navi_search img {
 	vertical-align : bottom;
-	position : absolute;
 	top : 1px;
 	left : 0px;
 	border-radius : 20px;
 	width : 30px;
 	height : 30px;
-	-webkit-transition :all .5s ease-out;
-	-moz-transition :	all .5s ease-out;
-	-o-transition :		all .5s ease-out;
-	-ms-transition :	all .5s ease-out;
-	transition : 		all .5s ease-out;
+	-webkit-transition :all .4s ease-out;
+	-moz-transition :	all .4s ease-out;
+	-o-transition :		all .4s ease-out;
+	-ms-transition :	all .4s ease-out;
+	transition : 		all .4s ease-out;
 }
 
 #navi_profile img:hover, #navi_search img:hover {
@@ -238,6 +242,7 @@
 //	transform : scale(1.1,1.1);
 }
 
+/*
 #head .navi_menu {
 	cursor : pointer;
 	font-size : 14px;
@@ -245,13 +250,18 @@
 	letter-spacing : 1px;
 	//color : white;
 	color : #ff5c3e;
-	text-decoration : none;
 	top : 7px;
 	padding : 8px 0px 7px 0px;
 	position : relatvie;
 	margin : 3px 2px 3px 3px;
 }
 
+#head .navi_menu:hover {
+	background : rgba(0, 0, 0, .1);
+	border-radius : 2px;
+}
+
+*/
 
 #head #notice {
 	display : inline-block;
@@ -265,11 +275,6 @@
 	display : none;
 }
 
-
-#head .navi_menu:hover {
-	background : rgba(0, 0, 0, .1);
-	border-radius : 2px;
-}
 
 #notice_box {
 	position : absolute;

@@ -670,15 +670,11 @@ function getDateString(date,reply,change){
 			if( reply ){
 				return a.substr(0,a.length-3);
 			}
-			var b = new Date();
-			b.setHours(0);
-			b.setMinutes(0);
-			b.setSeconds(0);
-			b.setMilliseconds(0);
+			if( a.indexOf("GMT") >= 0 ){
+				a = a.substr(0,a.indexOf("GMT"));
+			}
 			return "<span style='padding-right:25px;'>어제</span><img src='/img/postdate.jpg' onclick='alert(\"" + a + "\")' style='cursor:pointer'>";
 			/*
-			if( a.indexOf("GMT") >= 0 ){
-				return "어제 " + a.substr(0,a.length-10);
 			} else {
 				return PointToDate("어제 " + a.substr(0,a.length-3));
 			}
