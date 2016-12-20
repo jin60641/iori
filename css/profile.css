@@ -49,7 +49,7 @@
 
 #body #container #user_name, #body #container #user_userid {
 	position : absolute;
-	left : calc( 5vw + 15vh + 44px );
+	left : calc( 5vw + 15vh + 40.2px );
 }
 #body #container #user_name {
 	bottom : 6px;
@@ -114,6 +114,6 @@ body #post_wrap {
 		top : 14px;
 	}
 	#body #container #user_name, #body #container #user_userid {
-		left : 150px;
+		left : calc( 5vw + 90px );
 	}
 }
