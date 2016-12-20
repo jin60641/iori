@@ -130,7 +130,7 @@ window.addEventListener('load', function(){
 	}
 //	x.open("POST","/isfriend", false); x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); x.send('id='+user.user_id);
 	window.addEventListener('scroll', resizeContainer );
-	window.addEventListener('resize', resizeContainer );
+//	window.addEventListener('resize', resizeContainer );
 });
 
 function resizeContainer(){
@@ -142,9 +142,15 @@ function resizeContainer(){
 		container.style.top = document.body.scrollTop + 42 - body.clientHeight + 80 + "px";
 	}
 	*/
-	if( document.body.scrollTop <= body.clientHeight + 42 - 130 ){
-		container.style.top = 42 - document.body.scrollTop + "px";
+
+	var header_size = 42;
+	
+	var max_scroll = 200;
+	var save_size = 108;
+//	if( document.body.clientHeight 
+	if( document.body.scrollTop <= body.clientHeight - save_size ){
+		container.style.top = header_size - document.body.scrollTop + "px";
 	} else {
-		container.style.top = -body.clientHeight + 130+ "px";
+		container.style.top = -body.clientHeight + header_size + save_size + "px";
 	}
 }

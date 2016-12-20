@@ -667,6 +667,9 @@ function getDateString(date,reply,change){
 	} else if( gap >= 86400 ){
 		if(Math.floor(gap/86400) == 1){
 			var a = postdate.toLocaleTimeString();
+			if( reply ){
+				return a.substr(0,a.length-3);
+			}
 			var b = new Date();
 			b.setHours(0);
 			b.setMinutes(0);

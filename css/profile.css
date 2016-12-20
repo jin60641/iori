@@ -1,23 +1,35 @@
 #body {
 	width : 100%;
 	padding-top : 42px;
-	height : 20vh;
+	min-height : 68px;
+	height : 25vh;
 }
 
 #body #container {
 	z-index : 100;
 	width : 100vw;
 	position : fixed;
-	min-height : 40px;
-	height : 20vh;
+	min-height : 84px;
+	height : 25vh;
 	box-shadow : 0px 4px 8px rgba(0,0,0,.2);
+	background-color : white;
+}
+
+#body #container #user_box {
+	position : absolute;
+	width : 100%;
+	background-color : white;
+	bottom : 0px;	
 }
 
 #body #container #user_img {
 	width : calc( 15vh + 25.2px );
 	height : calc( 15vh + 25.2px );
 	//top : calc( 17.5vh - 15.1px );
-	top : calc( 9.5vh - 20.1px );
+	top : calc( 16.5vh - 39.6px );
+	min-height : 74px;
+	min-width : 74px;
+//	top : calc( 14.5vh - 20.1px );
 	left : 5vw;
 	border : 5px white solid;
 	position : absolute;
@@ -25,25 +37,28 @@
 	vertical-align : center;
 }
 
+
 #body #headerimg_form label{
 	width : 100vw;
-	min-height : 40px;
-	height : 20vh;
+	height : calc( 25vh - 50px );
+	min-height : 32px;
 	display : block;
+	box-shadow : inset 0px 0px 1px 1px rgba(0,0,0,0.1);
 }
 
-#body #container #user_name {
+
+#body #container #user_name, #body #container #user_userid {
 	position : absolute;
 	left : calc( 5vw + 15vh + 44px );
-	bottom : 1vh;
-	font-size : 27px;
+}
+#body #container #user_name {
+	bottom : 6px;
+	font-size : 19px;
 }
 
 #body #container #user_userid {
-	position : absolute;
-	left : calc( 5vw + 15vh + 44px );
-	bottom : calc( 1vh + 34px );
-	font-size : 16px;
+	bottom : 31px;
+	font-size : 13px;
 	color : rgba(0,0,0,.7)
 }
 
@@ -59,7 +74,7 @@
 	width : 78px;
 	text-align : center;
 	padding : 9px;
-	bottom : calc( 1vh + 10px );
+	bottom : 7px;
 	background-color : white;
     border : 1px solid #e1e8ed;
     border-radius : 4px;
@@ -93,3 +108,12 @@ body #post_wrap {
 	padding-top : 10px;
 }
 
+
+@media screen and ( max-height : 329px ) {
+	#body #container #user_img {
+		top : 14px;
+	}
+	#body #container #user_name, #body #container #user_userid {
+		left : 150px;
+	}
+}
