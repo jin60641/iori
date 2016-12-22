@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var ejs = require('ejs');
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');

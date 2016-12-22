@@ -9,10 +9,17 @@ function getCookie(cname) {
 	return "";
 }
 
-if( document.cookie ){
+if( location.hash && location.hash == "#_=_" ){
+	location.href = location.origin + location.pathname;
+}
+
+if( session == "" && document.cookie ){
 	if ( getCookie("facebook") == "true" ){
-		var returnTo = document.URL.split('/').slice(3).toString();
-		location.href = "/api/auth/facebook/" + returnTo;
+		if( document.URL.indexOf("login") ){
+			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(4).toString();
+		} else {
+			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(3).join('-');
+		}
 	} else if( getCookie("userid") && getCookie("password") ){
 		var params = "password=" + getCookie("password") + "&userid=" + getCookie("userid");
 		var xhr = new XMLHttpRequest();
@@ -31,8 +38,9 @@ if( document.cookie ){
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send(params);
 	}
+} else if ( session != "" && session.signUp == 0 ){
+	location.href = "/api/auth/facebook/" + register;
 }
-
 if( session.level >= 9 ){
 	//관리자
 }
@@ -150,10 +158,52 @@ function search_result_show( boolean ){
 	}
 }
 
+function close_all(){
+	document.getElementById("navi_profile").firstElementChild.style.borderRadius = "";
+	search_result_show(false);
+	head_menu_show(false);
+}
+
 window.addEventListener('load',function(){
 	var head = document.createElement("div");
 	document.body.insertBefore( head, document.body.firstChild );
 	head.id = "head";
+
+	var navi_tab = document.createElement("div");
+	navi_tab.id = "navi_tab";
+
+	var navi_tab_home = document.createElement("a");
+	navi_tab_home.href = '/';
+	navi_tab_home.id = "navi_tab_home";
+	navi_tab_home.innerText = "홈";
+	navi_tab.appendChild(navi_tab_home);
+	
+	var navi_tab_notice = document.createElement("a");
+	navi_tab_notice.href = '/notice';
+	navi_tab_notice.id = "navi_tab_notice";
+	navi_tab_notice.innerText = "알림";
+	navi_tab.appendChild(navi_tab_notice);
+	
+	var navi_tab_chat = document.createElement("a");
+	navi_tab_chat.href = '/chat';
+	navi_tab_chat.id = "navi_tab_chat";
+	navi_tab_chat.innerText = "쪽지";
+	navi_tab.appendChild(navi_tab_chat);
+	
+	head.appendChild(navi_tab);
+	var navi_tab_now = document.getElementById("navi_tab_" + location.pathname.substr(1));
+	if( navi_tab_now ){
+		navi_tab_now.style.color = "#ff5c3e";
+		navi_tab_now.style.height = "24px";
+		navi_tab_now.style.borderBottom = "5px solid #ff5c3e";
+	} else if ( document.URL.split('/').slice(3)[0] == "" ){
+		navi_tab_home.style.color = "#ff5c3e";
+		navi_tab_home.style.height = "24px";
+		navi_tab_home.style.borderBottom = "5px solid #ff5c3e";
+	}
+	
+		
+
 	var search = document.createElement("input");
 	search.id = "search";
 	search.type = "text";
@@ -190,15 +240,17 @@ window.addEventListener('load',function(){
 	head.appendChild(search_result);
 
 	var head_logo = document.createElement("img");
+	head_logo.id = "head_logo";
 	head_logo.src = "/img/logo_orange.png";
-	head_logo.onclick = goTop;
+	head_logo.onclick = function(){ 
+		goTop();
+	}
+	head.appendChild(head_logo);
 
 
-	window.addEventListener('click', function(){
-		document.getElementById("search_result").style.display = "none";
-		document.getElementById("navi_profile").firstElementChild.style.borderRadius = "";
-		head_menu_show(false);
-	});
+	window.addEventListener('click', close_all );
+	window.addEventListener('touchstart', close_all );
+	window.addEventListener('touch', close_all );
 
 	var navi_search = document.createElement("div");
 	navi_search.id = "navi_search";
@@ -222,7 +274,7 @@ window.addEventListener('load',function(){
 	var head_menu = document.createElement("div");
 	head_menu.id = "head_menu";
 	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
-	head_menu.innerHTML += "<a href='/'><img src='/img/menu_home.png'>| 홈</a>";
+	head_menu.innerHTML += "<a href='/@" + session.user_id + "'><img src='/img/menu_home.png'>| 프로필</a>";
 	head_menu.innerHTML += "<a href='/room'><img src='/img/menu_game.png'>| 게임</a>";
 	head_menu.innerHTML += "<a href='/ranking'><img src='/img/menu_ranking.png'>| 랭킹</a>";
 	if( session == "" ){

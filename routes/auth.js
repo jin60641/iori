@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser')
 var cookie = require('cookie')
 router.use(cookieParser())
 var bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 var session = require('express-session')
 var sessionstore = require('sessionstore');

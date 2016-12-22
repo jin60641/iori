@@ -46,8 +46,8 @@ textarea {
 
 #post_wrap {
 	padding : 10px;
-    padding-top : 53px;
-	overflow-y : scroll;
+	padding-top : 53px;
+	overflow-y : hidden;
 	width : 650px;
 	display : block;
 	margin : auto;
@@ -136,8 +136,8 @@ textarea {
 
 #post_wrap .date img {
 	position : absolute;
-	top : 0px;
-	right : 0px;
+	top : -3px;
+	right : -2px;
 	filter : grayscale(100%);
 	-webkit-filter : grayscale(100%);
 	display : inline;
@@ -812,7 +812,106 @@ textarea {
 	height : 100%;
 }
 
-#game_btn {
+#post_slider {
+	padding-top : 42px;
+	display: table;
+	position : relative;
+	vertical-align : middle;
+	width : 100vw;
+	height : calc( 100vh - 42px );
+	letter-spacing : 0px;
+	word-spacing : 0px;
+	font-size : 0px;
+}
+
+#post_slider > #slide_imgs {
+	white-space : nowrap;
+	letter-spacing : 0px;
+	word-spacing : 0px;
+	font-size : 0px;
+	width : 100vw;
+	height : calc( 100vh - 42px );
+	position : absolute;
+	display : inline-block;
+	vertical-align : top;
+	margin : 0px;
+	padding : 0px;
+	left : 0px;
+	transition : left .5s;
+}
+
+#post_slider > #slide_imgs > .slide {
+	transition : left .5s;
+	position : relative;
+	width : 100vw;
+	height : calc( 100vh - 42px );
+	max-width : 100%;
+	display : inline-block;
+	vertical-align : top;
+	margin : 0px;
+	padding : 0px;
+}
+
+#post_slider > #slide_box {
+	text-align : center;
+	display : table-cell;
+	vertical-align : middle;
+	white-space : nowrap;
+	position : relative;
+	font-size : 14pt;
+	word-spacing : initial;
+	letter-spacing : 0.2em;
+	line-height : 40px;
+	color : white;
+	cursor : default;
+}
+
+#post_slider > #slide_box > #slide_logo {
+	display : block;
+	margin : 0 auto 10px auto;
+	width : 80px;
+}
+
+#post_slider > #slide_box > #slide_line {
+	display : block;
+	margin : 0 auto 30px auto;
+	background-color : white;
+	width : 77px;
+	height : 3px;
+}
+
+#post_slider > #slide_box > #slide_btn {
+	border : 1px solid white;
+	font-size : 18pt;
+	line-height : 66px;
+	font-weight: bold;
+	cursor : pointer;
+	letter-spacing : 12pt;
+	width : 470px;
+	height : 66px;
+	background-color : rgba(0,0,0,.2);
+	display : block;
+	margin : 10px auto 0 auto;
+}
+
+#post_slider > .slide_arrow {
+	width : 16px;
+	height : 32px;
+	position : absolute;
+	top : calc( 50% - 16px );
+	display : none;
+	cursor : pointer;
+}
+
+#post_slider > #slide_left {
+	left : 70px;
+}
+
+#post_slider > #slide_right {
+	right : 70px;
+}
+
+#bottom_btn {
 	width : 100vw;
 	padding : 10px 0 10px 0;
 	box-shadow : -2px -2px 8px rgba(0,0,0,0.2);

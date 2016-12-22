@@ -10,7 +10,8 @@ function makeObj( req, res, ejs, obj ){
 		if( exists ){
 	    	res.render( url, obj );
 		} else {
-			res.send("404 Not Found 페이지 디자인이 없어요홍홍~");
+			res.render( __dirname + "/../views/error.ejs", obj );
+//			res.send("404 Not Found 페이지 디자인이 없어요홍홍~");
 		}
 	});
 

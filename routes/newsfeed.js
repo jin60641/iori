@@ -4,7 +4,7 @@ var ejs = require('ejs');
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');
-var async = require("async")
+var async = require("async");
 var request = require("request");
 
 router.use(require('body-parser').urlencoded());

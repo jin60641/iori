@@ -650,7 +650,7 @@ function getDateString(date,reply,change){
 	var now_time = Math.floor(now.getTime()/1000)
 	var gap = now_time - postdate_time;
 	if( change ){
-		a=postdate.toLocaleString()
+		a = postdate.toLocaleString()
 		if( a.indexOf("GMT") >= 0 ){
 			a = a.substr(0,a.length-10); 
 		}
@@ -667,11 +667,14 @@ function getDateString(date,reply,change){
 	} else if( gap >= 86400 ){
 		if(Math.floor(gap/86400) == 1){
 			var a = postdate.toLocaleTimeString();
-			if( reply ){
-				return a.substr(0,a.length-3);
-			}
 			if( a.indexOf("GMT") >= 0 ){
 				a = a.substr(0,a.indexOf("GMT"));
+			}
+			if( a.indexOf("초") >= 0 ){
+				a = a.substr(0,a.indexOf("초")-2);
+			}
+			if( reply ){
+				return a;
 			}
 			return "<span style='padding-right:25px;'>어제</span><img src='/img/postdate.jpg' onclick='alert(\"" + a + "\")' style='cursor:pointer'>";
 			/*
@@ -874,7 +877,7 @@ function getPosts(limit){
 		skip = posts;
 	}
 	if( !dateUpdateId ){
-		dateUpdateId = setInterval(dateUpdate,5000)
+		dateUpdateId = setInterval(dateUpdate,30000)
 	} else {
 		dateUpdate();
 	}
@@ -1046,7 +1049,7 @@ function getPosts(limit){
 					div.appendChild(inside);
 					var btn = document.createElement("div");
 					btn.className = 'postmenubtn';
-					btn.onclick= function(){ showmenu(this) };
+					btn.addEventListener('click', function(){ showmenu(this) });
 					div.appendChild(btn);
 					var menu = document.createElement("div")
 					menu.id = 'menu_' + Posts[i].id;
@@ -1138,6 +1141,96 @@ function getPosts(limit){
 						eval("div.style." + getBrowser() + "Animation='fade_post .5s linear'");
 					}
 				}
+			} else if( posts == 0 && ( session == "" || ( session != "" && session.signUp != 1 ) ) ){
+				var post_slider = document.createElement("div");
+				post_slider.id = "post_slider";
+			
+				var slide_imgs = document.createElement("div");
+				slide_imgs.style.left = "0px";
+				slide_imgs.id = "slide_imgs";
+
+				var slide_count = 4;
+				for( var i = 1; i <= slide_count; ++i ){
+					var slide = document.createElement("div");
+					slide.className = "slide";
+					slide.style.background = "url('/img/slider_" + i + ".jpg')";
+					slide_imgs.appendChild(slide);
+				};
+			
+				post_slider.appendChild(slide_imgs);
+			/*
+				var slide1 = document.createElement("img");
+				slide1.className = "slide";
+				slide1.src = "/img/main/img_main.png";
+				slider.appendChild(slide1);
+			*/
+			
+				post_slider.onmouseover = function(){
+					var arrows = document.getElementsByClassName("slide_arrow");
+					for( var i = 0; i < arrows.length; ++i ){
+						arrows[i].style.display = "block";
+					}
+				}
+			
+				post_slider.onmouseout = function(){
+					var arrows = document.getElementsByClassName("slide_arrow");
+					for( var i = 0; i < arrows.length; ++i ){
+						arrows[i].style.display = "none";
+					}
+				}
+				var slide_box = document.createElement("div");
+				slide_box.id = "slide_box";
+
+				slide_logo = document.createElement("img");
+				slide_logo.src = "/img/logo_white.png";
+				slide_logo.id = "slide_logo";
+				slide_box.appendChild(slide_logo);
+			
+				var slide_line = document.createElement("div");
+				slide_line.id = "slide_line";
+				slide_box.appendChild(slide_line);
+
+				var slide_text = document.createElement("text");
+				slide_text.innerHTML = "Lorem ipsum dolor sit amet, consectetur adipisicing elit<br>sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+				slide_box.appendChild(slide_text);
+
+				var slide_btn = document.createElement("div");
+				slide_btn.id = "slide_btn";
+				slide_btn.onclick = function(){
+					location.href = "/register";
+				}
+				slide_btn.innerText = "지금 시작하기";
+				slide_box.appendChild(slide_btn);
+			
+				post_slider.appendChild(slide_box);
+			
+				var slide_left = document.createElement("img");
+				slide_left.className = "slide_arrow";
+				slide_left.id = "slide_left";
+				slide_left.src = "/img/btn_slide_left.png";
+				post_slider.appendChild(slide_left);
+
+				slide_left.onclick = function(){
+					sliding(-1);
+					clearInterval(sliderTimer);
+					sliderTimer = setInterval(sliding,3000);
+				}
+			
+				var slide_right = document.createElement("img");
+				slide_right.id = "slide_right";
+				slide_right.className = "slide_arrow";
+				slide_right.src = "/img/btn_slide_right.png";
+				post_slider.appendChild(slide_right);
+			
+				slide_right.onclick = function(){
+					clearInterval(sliderTimer);
+					sliderTimer = setInterval(sliding,3000);
+					sliding(1);
+				}
+			
+				document.body.removeChild(post_wrap);
+				document.body.appendChild(post_slider);
+				sliderTimer = setInterval(sliding,3000);
 			} else if( posts == 0 ){
 				var post = document.createElement("div");
 				post.className = "post";
@@ -1170,6 +1263,48 @@ function getPosts(limit){
 	}
 	xhr.send(params);
 }
+
+var sliding_tmp = 0;
+function sliding( type ){
+    if( !type ){
+        type = 1;
+    }
+    var imgs = document.getElementById("slide_imgs");
+    var margin = document.body.clientWidth;
+    var current_left = parseInt(imgs.style.left.split("px")[0]);
+    if( !sliding_tmp ){
+        sliding_tmp = 1;
+        if( ( type == -1 && current_left == 0 ) ){
+            var img = imgs.childNodes[imgs.childElementCount-1];
+            imgs.removeChild(img);
+            img = img.cloneNode(true);
+            img.style.marginLeft =  margin * type + "px";
+            img.onload = function(){
+                img.style.transition = "margin-left .5s";
+                img.style.marginLeft = "0px";
+            }
+            imgs.insertBefore(img,imgs.childNodes[0]);
+            removeTimer = setTimeout(function(){
+                sliding_tmp = 0;
+            },500);
+            return;
+        } else if ( ( type == 1 && current_left >= -margin * ( imgs.childElementCount - 1 ) ) ){
+            var img = imgs.childNodes[0];
+            imgs.appendChild(img.cloneNode(true))
+            img.style.transition = "margin-left .5s";
+            img.style.marginLeft = -margin + "px";
+            removeTimer = setTimeout(function(){
+                sliding_tmp = 0;
+                imgs.removeChild(imgs.firstChild)
+            },500);
+            return;
+        }
+        imgs.style.left = current_left - margin * type + "px";
+    }
+}
+
+
+
 
 // 이미지 보고있을때 단축키들
 var select;

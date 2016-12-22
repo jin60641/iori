@@ -1,0 +1,36 @@
+﻿
+#error_container {
+	padding-top : 42px;
+
+}
+
+#error_container > #error_box {
+	text-align : center;
+	display : block;
+	width : calc( 100vw - 100px );
+	max-width : 640px;
+	padding-bottom : 20px;
+	margin : auto;
+	margin-top : 20px;
+	background-color : white;
+	padding : 30px;
+	box-shadow : 2px 2px 3px 3px rgba(0,0,0,.03);
+	color : #fff;
+//	max-height : 700px;
+//	height : calc( 100vh - 142px );
+//	background-image : url('/img/error.png');
+	background-repeat : no-repeat;
+	background-position : left bottom;
+	font-size : 15px;
+}
+
+#error_container > #error_box > #error_message {
+	max-width : 640px;
+	letter-spacing : 2px;
+	color : black;
+}
+
+#error_container > #error_box > #error_message > div {
+	font-size : 20px;
+	margin-bottom : 20px;
+}

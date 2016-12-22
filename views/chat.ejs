@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+	<head>
+		<% include ./header %>
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/chat.css">
+		<script>
+			dialogs = "<%= dialogs %>".replace(/&#34;/g,'"');
+			if( dialogs.length > 0 ){
+				dialogs = JSON.parse(dialogs)
+			}
+		</script>
+		<script src="/js/chat.js"></script>
+		<% include ./footer %>
+	</head>
+	<body>
+	</body>
+</html>

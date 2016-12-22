@@ -10,7 +10,8 @@ window.addEventListener('load', function(){
 	form_userid.onkeydown = enterLogin;
 	form_userid.placeholder = "이메일로도 로그인 가능합니다.";
 	form_userid.id = "form_userid";
-	form_userid.type = "userid";
+	form_userid.type = "text";
+	form_userid.name = "userid";
 	form.appendChild(form_userid);
 
 	var form_password_label = document.createElement("label");

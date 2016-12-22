@@ -12,6 +12,7 @@ var makeObj = require('./routes/makeObj.js');
 router.use(require('./routes/auth.js'));
 router.use(require('./routes/newsfeed.js'));
 router.use(require('./routes/user.js'));
+router.use(require('./routes/chat.js'));
 
 String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");
@@ -22,14 +23,6 @@ function checkAdmin( req, res, next ){
 		return next();
 	} else {
 		res.redirect('/');
-	}
-}
-
-function checkSession( req, res, next ){
-	if( req.user && req.user.signUp ){
-		return next();
-	} else {
-		res.redirect('/login/' + req.url.substr(1).replace(/\//g,'-'));
 	}
 }
 
@@ -97,6 +90,8 @@ router.get( '/profileimg/:userid', function( req, res ){
         }
     });
 });
+
+//router.use(require('../ujujuju/ujujuju.js'));
 
 router.get('/:dir/:filename', function( req, res ){
 	var dir = req.params['dir'];
