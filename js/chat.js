@@ -4,6 +4,17 @@ window.addEventListener('load', function(){
 
 	var chat_header = document.createElement("div");
 	chat_header.id = "chat_header";
+
+
+	var chat_menu = document.createElement("div");
+	chat_menu.id = "chat_menu";
+	chat_menu.innerText = "새 메시지";
+	chat_header.appendChild(chat_menu);
+
+	var chat_title = document.createElement("div");
+	chat_title.id = "chat_title";
+	chat_header.appendChild(chat_title);
+
 	chat_wrap.appendChild(chat_header);
 
 	var chat_dialog = document.createElement("div");
@@ -63,6 +74,12 @@ window.addEventListener('load', function(){
 
 	var chat_panel = document.createElement("div");
 	chat_panel.id = "chat_panel";
+	chat_panel.addEventListener('scroll', function(e){
+		if( chat_panel.scrollTop <= 200 ){
+			getChats(10);
+		}
+	});
+
 	chat_box.appendChild(chat_panel);
 
 	var send_panel = document.createElement("div");
@@ -104,7 +121,7 @@ window.addEventListener('load', function(){
 
 	var default_dialog = document.createElement("div");
 	default_dialog.id = "default_dialog";
-	default_dialog.innerText = "Please select a chat to start messaging";
+	default_dialog.innerText = "채팅을 선택해주세요";
 	chat_box.appendChild(default_dialog);
 	
 	document.body.appendChild(chat_wrap);	
@@ -114,13 +131,12 @@ window.addEventListener('load', function(){
 	}
 	
 	socket.on('chat_new', function( data ){
-		console.log(data);
-		getChats( 0, data.type, data.dialog_id );
+		getChats( 0, data.type, data.dialog_id, true );
 	});
 });
 
 var skip_obj = {};
-function getChats( limit, type, dialog_id ){
+function getChats( limit, type, dialog_id, scroll ){
 	var params = { limit : limit }
 
 	if( type ){
@@ -153,8 +169,16 @@ function getChats( limit, type, dialog_id ){
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		var chats;
+		try {
+			chats = JSON.parse(xhr.responseText);
+		} catch(e){
+			if( xhr.responseText.length < 20 ){
+				alert(xhr.responseText);
+			}
+			location.href = "/chat";
+		}
 		var chat_panel = document.getElementById("chat_panel");
-		var chats = JSON.parse(xhr.responseText);
 		skip_obj[params.dialog_id] += ( chats.length - params.limit );
 		var chat_dialog_box = document.getElementById("chat_dialog_box");
 		for( var i = chats.length - 1; i >= 0; --i ){
@@ -176,15 +200,21 @@ function getChats( limit, type, dialog_id ){
 			chat_body.appendChild(chat_body_name);
 
 			if( chats[i].text ){
+				chat_body.innerHTML += "<div class='chat_body_caret'><div class='outer'></div><div class='inner'></div></div>";
 				var chat_body_text = document.createElement("div");
 				chat_body_text.className = "chat_body_text";
 				chat_body_text.innerText = chats[i].text;
 				chat_body.appendChild(chat_body_text);
 			} else if ( chats[i].file ){
-				for( var j = 0; j <= chats[i].file; ++j ){
+				for( var j = 1; j <= chats[i].file; ++j ){
 					var chat_body_file = document.createElement("img");
 					chat_body_file.className = "chat_body_file";
 					chat_body_file.src = "/files/chat/" + chats[i].id + "/" + j;
+					if( scroll ){
+						chat_body_file.onload = function(){
+							chat_panel.scrollTop = chat_panel.scrollHeight;
+						}
+					}
 					chat_body.appendChild(chat_body_file);
 				}
 			}
@@ -195,35 +225,43 @@ function getChats( limit, type, dialog_id ){
 				chat.className += " my_chat";
 				chat.appendChild( chat_profileimg );
 			}
-		
-			chat_panel.appendChild(chat);
-
-			var dialog;
-			var className = "chat_dialogs";
-			if( chats[i].type == "g" ){
-				dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].to.id);
-			} else {
-				if( chats[i].from.id == session.id ){
-					dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].to.uid);
+/*
+			var previous = chat.previousElementSibling
+*/
+			if( scroll ){
+				var dialog;
+				var className = "chat_dialogs";
+				if( chats[i].type == "g" ){
+					dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].to.id);
 				} else {
-					dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].from.uid);
+					if( chats[i].from.id == session.id ){
+						dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].to.uid);
+					} else {
+						dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].from.uid);
+					}
 				}
-			}
-			if( dialog ){
-				className = dialog.className;
-				chat_dialog_box.removeChild(dialog);
-			}
-
-			var new_dialog = makeDialog( chats[i] );
-			new_dialog.className = className;
-			if( chat_dialog_box.childElementCount == 1 ){
-				chat_dialog_box.appendChild(new_dialog);
+			
+				if( dialog ){
+					className = dialog.className;
+					chat_dialog_box.removeChild(dialog);
+				}
+	
+				var new_dialog = makeDialog( chats[i] );
+				new_dialog.className = className;
+				if( chat_dialog_box.childElementCount == 1 ){
+					chat_dialog_box.appendChild(new_dialog);
+				} else {
+					chat_dialog_box.insertBefore(new_dialog,chat_dialog_box.firstChild);
+				}
+				chat_panel.appendChild(chat);
 			} else {
-				chat_dialog_box.insertBefore(new_dialog,chat_dialog_box.firstChild);
+				chat_panel.insertBefore(chat,chat_panel.firstElementChild);
+				chat_panel.scrollTop += chat.clientHeight
 			}
-
 		}
-		chat_panel.scrollTop = chat_panel.scrollHeight;
+		if( scroll ){
+			chat_panel.scrollTop = chat_panel.scrollHeight;
+		}
 	}};
 	xhr.open("POST", "/api/chat/getchats", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
 }
@@ -280,7 +318,7 @@ function openDialog(){
 	if( dialog && dialog.id == undefined ){
 		dialog =  document.getElementById( "chat_dialogs_" + location.hash.substr(1,1) + "_" + location.hash.substr(3) );
 	}
-	if( dialog.className.indexOf("selected") >= 0 ){
+	if( dialog && dialog.className.indexOf("selected") >= 0 ){
 		var chat_panel = document.getElementById("chat_panel");
 		chat_panel.scrollTop = chat_panel.scrollHeight;
 		return false;
@@ -301,9 +339,10 @@ function openDialog(){
 		var dialog_id = dialog.id.split('_').slice(3).join('_')
 		location.hash = "#" + type + "?" + dialog_id;
 	}
-	getChats(20);
+	getChats(20,null,null,true);
 	
 	document.getElementById("default_dialog").style.display = "none";
+	document.getElementById("send_panel").style.display = "block";
 
 }
 
@@ -381,7 +420,7 @@ function chatWrite(){
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
 			var to_id = parseInt(xhr.responseText);
 			if( to_id != NaN ){
-				getChats(0);
+				getChats(0,null,null,true);
 			}
 		}}
 		xhr.open("POST","/api/chat/writechat", false);  xhr.send(formdata);

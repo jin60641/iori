@@ -22,11 +22,12 @@ String.prototype.trim = function() {
 }
 
 String.prototype.xssFilter = function() {
-	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
+	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" ).replace( /"/g , '\\"' ).replace( /'/g, "\\'" );
 }
 
+
 router.get('/chat', checkSession, function( req, res ){
-	db.Chats.find({ type : "u", $or : [ { "from.uid" : req.user.id }, { "to.uid" : req.user.uid } ] }).sort({ id : -1 }).exec( function( err, chats ){
+	db.Chats.find({ type : "u", $or : [ { "from.uid" : req.user.uid }, { "to.uid" : req.user.uid } ] }).sort({ id : -1 }).exec( function( err, chats ){
 		if( err ){
 			throw err;
 		} else {
