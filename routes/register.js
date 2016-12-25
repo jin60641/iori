@@ -4,7 +4,7 @@ var db = require("./dbconfig");
 var smtpTransport = require("./mailconfig").smtpTransport;
 
 function Register( req, res ){
-	var password, email, name, user_id;
+	var password, email, name, uid;
 	try {
 		password = req.body['password'].trim();
 		email = req.body['email'].trim();
@@ -12,10 +12,10 @@ function Register( req, res ){
 	} catch(e){
 		res.end();
 	} finally {
-		if( req.body['userid'] && req.body['userid'].length > 0 ){
-			user_id = req.body['userid'].trim();
+		if( req.body['uid'] && req.body['uid'].length > 0 ){
+			uid = req.body['uid'].trim();
 		} else {
-			user_id = "";
+			uid = "";
 		}
 	}
 	async.parallel([
@@ -57,12 +57,12 @@ function Register( req, res ){
 			});
 		},
 		function(callback){
-			if( user_id.length > 0 ){
-				if( user_id.length >= 8 && user_id.length <= 20 ){
-					db.Users.findOne({ user_id : user_id }, function( err, result ){
+			if( uid.length > 0 ){
+				if( uid.length >= 8 && uid.length <= 20 ){
+					db.Users.findOne({ uid : uid }, function( err, result ){
 						if( !result ){
 							var regex = /[a-zA-Z0-9_]*/;
-							if( regex.test(user_id) == false ){
+							if( regex.test(uid) == false ){
 								callback(null,"아이디에는 영문 대/소문자와 밑줄(_)만 사용하실 수 있습니다.");
 							} else {
 								callback(null,'gd');
@@ -75,7 +75,7 @@ function Register( req, res ){
 					callback(null,'유효하지 않은 아이디입니다.');
 				}
 			} else {
-				user_id = "";
+				uid = "";
 				callback(null,'gd');
 			}
 		}
@@ -96,15 +96,14 @@ function Register( req, res ){
 					id : id_num,
 					password : password,
 					email : email,
-					user_id : user_id,
+					uid : uid,
 					name : name
 				});
 				var shasum2 = crypto.createHash('sha1');
 				shasum2.update(email);
 				password = shasum2.digest('hex');
-				console.log(user_id + ' ' +email );
-				if( current.user_id == "" ){
-					current.user_id = password.substr(0,20);
+				if( current.uid == "" ){
+					current.uid = password.substr(0,20);
 				}
 				current.save( function( err2 ){
 					if( err2 ){

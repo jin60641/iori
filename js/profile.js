@@ -47,13 +47,15 @@ window.addEventListener('load', function(){
 
 	var user_img = document.createElement("img");
 	user_img.id = "user_img";
-	user_img.src = "/profileimg/" + user.id;
+	user_img.src = "/files/profile/" + user.id;
 	profileimg_label.appendChild(user_img);	
 
 	container.appendChild(headerimg_form);
 	container.appendChild(profileimg_form);
 
 	profileimg_label.style.cursor = "pointer";
+
+
 	if( user.id == session.id ){
 		profileimg_label.htmlFor = "profileimg_file";
 		headerimg_label.htmlFor = "headerimg_file";
@@ -65,7 +67,16 @@ window.addEventListener('load', function(){
 			viewimg(0,1,new Date(),"/profileimg/" + user.id);
 			event.cancleBubble = true;
 		}
-		user_follow = document.createElement("div");
+
+		var user_chat = document.createElement("div");
+		user_chat.id = "user_chat";
+		user_chat.innerText = "ㅁ";
+		user_chat.onclick = function(){
+			location.href = "/chat/#u?" + user.uid;
+		}
+		container.appendChild(user_chat);
+		
+		var user_follow = document.createElement("div");
 		user_follow.id = "user_follow";
 		if( user.following ){
 			user_follow.innerText = "언팔로우"
@@ -96,7 +107,7 @@ window.addEventListener('load', function(){
 
 	user_userid = document.createElement("div");
 	user_userid.id = "user_userid";
-	user_userid.innerHTML = "@" + user.user_id;
+	user_userid.innerHTML = "@" + user.uid;
 	container.appendChild(user_userid);
 
 
@@ -128,7 +139,7 @@ window.addEventListener('load', function(){
 		}
 		container.appendChild(friend_box);
 	}
-//	x.open("POST","/isfriend", false); x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); x.send('id='+user.user_id);
+//	x.open("POST","/isfriend", false); x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); x.send('id='+user.uid);
 	window.addEventListener('scroll', resizeContainer );
 	window.addEventListener('resize', resizeContainer );
 });

@@ -19,14 +19,13 @@ var crypto = require('crypto');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-/*
+/* 자동로그인(서버)
 router.use( function( req, res, next ){
-	if( req.cookies && ( req.user == undefined || ( req.user && req.user.signUp != 1 ) ) ){
-		console.log(req.url);
+	if( req.cookies && ( req.user == undefined || ( req.user && req.user.signUp == false ) ) ){
 		next();
 		if( req.cookies['facebook'] == "true" ){
 //			res.redirect('/');
-		} else if( req.cookies['userid'] ){
+		} else if( req.cookies['uid'] ){
 		}
 	} else {
 		next();
@@ -75,8 +74,8 @@ passport.use(new FacebookTokenStrategy({
 }));
 */
 
-passport.use(new LocalStrategy({ usernameField : 'userid', passwordField : 'password' }, function( userid, password, next ){
-	db.Users.findOne({ $or : [{ email : userid }, { user_id : userid }] }, function( err, user ){
+passport.use(new LocalStrategy({ usernameField : 'uid', passwordField : 'password' }, function( uid, password, next ){
+	db.Users.findOne({ $or : [{ email : uid }, { uid : uid }] }, function( err, user ){
 		if( err ){
 			return next(err);
 		} else if(!user){
@@ -92,7 +91,7 @@ passport.use(new LocalStrategy({ usernameField : 'userid', passwordField : 'pass
 					var tmp = {
 						id : user.id,
 						name : user.name,
-						user_id : user.user_id,
+						uid : user.uid,
 						signUp : user.signUp
 					}
 					return next(null,tmp);
@@ -189,7 +188,7 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 			return next(err);
 		} else if( !user ){
 			return res.redirect('/');
-		} else if ( req.user && req.user.signUp == 1 ){
+		} else if ( req.user && req.user.signUp ){
 			return res.redirect('/');
 		} else {
 			db.Users.findOne({ email : user._json.email, signUp : true }, function( err, account ){
@@ -226,7 +225,7 @@ router.get('/api/auth/facebook/:link', function( req, res ){
 router.get('/api/auth/logout', function( req, res){
 	res.clearCookie("email")
 	res.clearCookie("password")
-	res.clearCookie("userid")
+	res.clearCookie("uid")
 	res.clearCookie("facebook")
     req.logout();
 	req.session.destroy( function( err ){

@@ -130,6 +130,11 @@ body {
 #chat_wrap #chat_dialog #chat_dialog_box .chat_dialogs_selected div {
 	color: white;
 }
+
+#chat_wrap #chat_dialog #chat_dialog_box .chat_dialogs_selected span {
+	color: white;
+}
+
 #chat_wrap #chat_box {
 	vertical-align : top;
 	display : inline-block;
@@ -140,11 +145,32 @@ body {
 }
 
 #chat_wrap #chat_box #chat_panel {
+	overflow : hidden;
 	height : calc( 100% - 50px );
 	border-bottom : 1px solid #e1e8ed;
 }
 
-#chat_wrap #chat_box #chat_panel .my_chat{
+#chat_wrap #chat_box #chat_panel:hover {
+	overflow-y : scroll;
+}
+
+#chat_wrap #chat_box #chat_panel .chat .chat_profileimg {
+	width : 48px;
+	height : 48px;
+	border-radius : 50%;
+	display : inline-block;
+	vertical-align : middle;
+}
+
+#chat_wrap #chat_box #chat_panel .chat .chat_body{
+	display : inline-block;
+	vertical-align : middle;
+}
+
+#chat_wrap #chat_box #chat_panel .chat {
+}
+
+#chat_wrap #chat_box #chat_panel .my_chat {
 	text-align : right;
 }
 
@@ -155,21 +181,46 @@ body {
 
 #chat_wrap #chat_box #send_panel textarea {
 	box-shadow : box-shadow: 0 1px 0 0 #e8e8e8;
+	overflow-y : hidden;
 	margin : 6px;
 	padding-top : 8px;
 	padding-left : 8px;
-	margin-bottom : 2px;
-	width : calc( 100% - 140px );
+	margin-bottom : 5px;
+	margin-right : 10px;
+	width : calc( 100% - 155px );
 	height : 23px;
 	border : 1px solid rgba(255, 92, 62, .3);
+	vertical-align : top;
 }
 
-#chat_wrap #chat_box #send_panel #upload_img {
-	
+#chat_wrap #chat_box #send_panel #chat_file_input {
+	display : none;
+}
+
+#chat_wrap #chat_box #send_panel #chat_file_label {	
+	cursor : pointer;
+	vertical-align : top;
+	display : inline-block;
+	background-size : 35px 35px;
+	width : 35px;
+	height : 35px;
+	border-radius : 4px;
+	background-image : url('/img/imageupload.jpg');
+	margin-right : 10px;
+	margin-top : 6px;
 }
 
 #chat_wrap #chat_box #send_panel #send_btn {
-	
+	display : inline-block;
+	vertical-align : top;
+	margin-top : 6px;
+	background-color : rgba(255, 92, 62, 1);
+	color : white;
+	padding: 9.5px 16px;
+	font-size : 14px;
+	font-weight : bold;
+    border-radius : 4px;
+	cursor : pointer;
 }
 
 #chat_wrap #chat_box #send_panel textarea:focus {
@@ -177,10 +228,11 @@ body {
 	outline : none;
 }
 
+
 #chat_wrap #chat_box #default_dialog {
+	background-color : white;
 	text-align : center;
-	padding-top : 48%;
-	height : 50%;
+	height : calc( 100% - 3px );
 	position : absolute;
 	top : 0px;
 	right : 0px;

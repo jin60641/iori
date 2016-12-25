@@ -24,12 +24,12 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
-router.get('/@:user_id(*)/favorite', function( req, res ){
-	db.Users.findOne({ user_id : req.params['user_id'] }, function( err, user ){
+router.get('/@:uid(*)/favorite', function( req, res ){
+	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
-			db.Favorites.find({ user_id : user.id }, function( err, result ){
+			db.Favorites.find({ uid : user.id }, function( err, result ){
 				if( err ){
 					throw err;
 				} else {
@@ -42,16 +42,16 @@ router.get('/@:user_id(*)/favorite', function( req, res ){
 	});
 });
 
-router.get('/@:user_id(*)', function( req, res ){
-	var user_id = req.params['user_id'];
-	db.Users.findOne({ user_id : user_id }, function( err, user ){
+router.get('/@:uid(*)', function( req, res ){
+	var uid = req.params['uid'];
+	db.Users.findOne({ uid : uid }, function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
 			var obj = {
 				id : user.id,
 				name : user.name,
-				user_id : user.user_id,
+				uid : user.uid,
 				following : false
 			}
 			if( req.user && req.user.id ){
@@ -78,7 +78,7 @@ router.get('/@:user_id(*)', function( req, res ){
 router.post( '/api/user/search', function( req, res){
 	query = req.body['query'];
 	if(query){
-		db.Users.find({ $or : [{ name : { $regex : query } }, { user_id : { $regex : query } }], signUp : 1 },{ __v : 0, _id : 0, signUp : 0, email : 0, password : 0 }, function( err, result ){
+		db.Users.find({ $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true },{ __v : 0, _id : 0, signUp : 0, email : 0, password : 0 }, function( err, result ){
 			if( result ){
 				res.send( result );
 			} else {
@@ -95,7 +95,7 @@ router.post( '/api/user/headerimg', checkSession, function( req, res ){
 	var fstream;
 	req.pipe( req.busboy );
 	req.busboy.on( 'file' , function( fieldname, file, filename ){
-		var uploadedFile = __dirname + '/../files/headerimg/' + req.user.id;
+		var uploadedFile = __dirname + '/../files/header/' + req.user.id;
 		fstream = fs.createWriteStream( uploadedFile );
 		file.pipe( fstream );
 		fstream.on( 'close' , function(){
@@ -110,7 +110,7 @@ router.post( '/api/user/profileimg', checkSession, function( req, res ){
 	var fstream;
 	req.pipe( req.busboy );
 	req.busboy.on( 'file' , function( fieldname, file, filename ){
-		var uploadedFile = __dirname + '/../files/profileimg/' + req.user.id;
+		var uploadedFile = __dirname + '/../files/profile/' + req.user.id;
 		fstream = fs.createWriteStream( uploadedFile );
 		file.pipe( fstream );
 		fstream.on( 'close' , function(){
@@ -120,8 +120,8 @@ router.post( '/api/user/profileimg', checkSession, function( req, res ){
 });
 
 router.post( '/api/user/follow', checkSession, function( req, res ){
-	var user_id = req.body['user_id'];
-	db.Users.findOne({ id : user_id }, { _id : 0, id : 1, name : 1, user_id : 1 }, function( err, user ){
+	var uid = req.body['uid'];
+	db.Users.findOne({ id : uid }, { _id : 0, id : 1, name : 1, uid : 1 }, function( err, user ){
 		if( err ){
 			throw err;
 		} else if ( user ){
@@ -138,12 +138,12 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 					});
 				} else {
 					var current = new db.Follows({
-						from_id : req.user.id,
-						from_userid : req.user.user_id,
-						from_name : req.user.name,
-						to_id : user.id,
-						to_userid : user.user_id,
-						to_name : user.name
+						from : {
+							id : req.user.id,
+							uid : req.user.uid,
+							name : req.user.name
+						},
+						to : user
 					});
 					current.save( function( err3 ){
 						if( err3 ){

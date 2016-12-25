@@ -70,23 +70,37 @@ router.get('/findpw', function( req, res ){
 	}
 });
 
-router.get( '/profile_header/:userid', function( req, res ){
-    var userid = parseInt(req.params['userid']);
-    fs.exists( __dirname + '/files/headerimg/' + userid, function( exists ){
+router.get( '/profile_header/:uid', function( req, res ){
+    var uid = req.params['uid'];
+    fs.exists( __dirname + '/files/header/' + parseInt(uid), function( exists ){
         if( exists ){
-            res.sendfile(__dirname + '/files/headerimg/' + userid );
+            res.sendfile(__dirname + '/files/header/' + parseInt(uid) );
         } else {
             res.sendfile(__dirname + '/img/profile_back.png' );
         }
     });
 });
-router.get( '/profileimg/:userid', function( req, res ){
-    var userid = parseInt(req.params['userid']);
-    fs.exists( __dirname + '/files/profileimg/' + userid, function( exists ){
+router.get( '/files/profile/:uid', function( req, res ){
+    var uid = req.params['uid'];
+    fs.exists( __dirname + '/files/profile/' + parseInt(uid), function( exists ){
         if( exists ){
-            res.sendfile(__dirname + '/files/profileimg/' + userid );
+            res.sendfile(__dirname + '/files/profile/' + parseInt(uid) );
         } else {
-            res.sendfile(__dirname + '/img/profile.jpg' );
+			db.Users.findOne({ uid : uid }, function( err, user ){
+				if( err ){
+					throw err;
+				} else if( user ){
+				    fs.exists( __dirname + '/files/profile/' + user.id, function( exists ){
+				        if( exists ){
+				            res.sendfile(__dirname + '/files/profile/' + user.id );
+						} else {
+		            		res.sendfile(__dirname + '/img/profile.jpg' );
+						}
+					});
+				} else {
+		            res.sendfile(__dirname + '/img/profile.jpg' );
+				}
+			});
         }
     });
 });

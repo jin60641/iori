@@ -20,8 +20,8 @@ if( session == "" && document.cookie ){
 		} else {
 			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(3).join('-');
 		}
-	} else if( getCookie("userid") && getCookie("password") ){
-		var params = "password=" + getCookie("password") + "&userid=" + getCookie("userid");
+	} else if( getCookie("uid") && getCookie("password") ){
+		var params = "password=" + getCookie("password") + "&uid=" + getCookie("uid");
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function(event){
 			if( xhr.readyState == 4 && xhr.status == 200 ){
@@ -57,7 +57,7 @@ function sendData_search( query ){
 				var xhrResult = JSON.parse( xhr.responseText );
 				if( xhrResult.length ){
 					for( var i = xhrResult.length - 1; i>=0; i--){
-						result.innerHTML+='<a href="/@' + xhrResult[i].user_id + '"><div><img src="/profileimg/' + xhrResult[i].id + '"><span><div class="search_result_userid">@' + xhrResult[i].user_id.toString() + '</div>' + xhrResult[i].name.toString() + '</span></div></a>';
+						result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="search_result_uid">@' + xhrResult[i].uid.toString() + '</div>' + xhrResult[i].name.toString() + '</span></div></a>';
 					}
 				}
 			} else {
@@ -261,8 +261,8 @@ window.addEventListener('load',function(){
 	var navi_profile = document.createElement("div");
 	navi_profile.id = "navi_profile";
 	navi_profile.className = "navi_menu";
-	navi_profile.innerHTML = "<img src='/profileimg/" + session.id + "'>";
-	if( session == "" ){
+	navi_profile.innerHTML = "<img src='/files/profile/" + session.id + "'>";
+	if( session == "" || session.signUp != 1 ){
 		navi_profile.onclick = function(){
 			location.href = "/login/" + document.URL.split('/').slice(3).join("-");
 		}
@@ -274,11 +274,11 @@ window.addEventListener('load',function(){
 	var head_menu = document.createElement("div");
 	head_menu.id = "head_menu";
 	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
-	head_menu.innerHTML += "<a href='/@" + session.user_id + "'><img src='/img/menu_home.png'>| 프로필</a>";
+	head_menu.innerHTML += "<a href='/@" + session.uid + "'><img src='/img/menu_home.png'>| 프로필</a>";
 	head_menu.innerHTML += "<a href='/room'><img src='/img/menu_game.png'>| 게임</a>";
 	head_menu.innerHTML += "<a href='/ranking'><img src='/img/menu_ranking.png'>| 랭킹</a>";
 	if( session == "" ){
-	} else {
+	} else if( session.signUp == 1 ){
 		head_menu.innerHTML += "<a href='#' onclick='sessionLogOut(this)' ><img src='/img/menu_logout.png'>| 로그아웃</a>";
 	}
 

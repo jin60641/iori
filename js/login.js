@@ -2,17 +2,17 @@ window.addEventListener('load', function(){
 	var form = document.createElement("form");
 	form.id = "form";
 	
-	var form_userid_label = document.createElement("label");
-	form_userid_label.innerText = "아이디";
-	form_userid_label.htmlFor = "form_userid";
-	form.appendChild(form_userid_label);
-	var form_userid = document.createElement("input");
-	form_userid.onkeydown = enterLogin;
-	form_userid.placeholder = "이메일로도 로그인 가능합니다.";
-	form_userid.id = "form_userid";
-	form_userid.type = "text";
-	form_userid.name = "userid";
-	form.appendChild(form_userid);
+	var form_uid_label = document.createElement("label");
+	form_uid_label.innerText = "아이디";
+	form_uid_label.htmlFor = "form_uid";
+	form.appendChild(form_uid_label);
+	var form_uid = document.createElement("input");
+	form_uid.onkeydown = enterLogin;
+	form_uid.placeholder = "이메일로도 로그인 가능합니다.";
+	form_uid.id = "form_uid";
+	form_uid.type = "text";
+	form_uid.name = "uid";
+	form.appendChild(form_uid);
 
 	var form_password_label = document.createElement("label");
 	form_password_label.innerText = "비밀번호";
@@ -49,8 +49,8 @@ window.addEventListener('load', function(){
 	form.appendChild(form_alert);
 
 	if( session ){
-		if( session.userid ){
-			form_userid.value =  session.userid;
+		if( session.uid ){
+			form_uid.value =  session.uid;
 		}
 	} else {
 		var form_facebook_btn = document.createElement("div");
@@ -87,12 +87,12 @@ function show_alert(msg){
 }
 
 function send_login(){
-	var userid = document.getElementById("form_userid").value;
+	var uid = document.getElementById("form_uid").value;
 	var password = document.getElementById("form_password").value;
 	var auto = document.getElementById("form_auto_login");
-	if( userid.length == 0 ){
+	if( uid.length == 0 ){
 		show_alert("이메일을 입력해 주세요.");
-		document.getElementById("form_userid").focus();
+		document.getElementById("form_uid").focus();
 	} else if( password.length == 0 ){
 		show_alert("비밀번호 입력해 주세요.");
 		document.getElementById("form_password").focus();
@@ -104,7 +104,7 @@ function send_login(){
 					if( auto.style.backgroundImage == 'url("/img/login/btn_checkbox_pressed.png")' ){
 						var now = new Date();
 						now.setTime(now.getTime() + (7*24*60*60*1000));
-						document.cookie = "facebook=false, userid="+userid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
+						document.cookie = "facebook=false, uid="+uid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
 					}
 					location.href = "/" + document.URL.split('/').slice(4).toString().split('-').join('/');
 				} else {
@@ -114,7 +114,7 @@ function send_login(){
 		}
 		xhr.open("POST", "/api/auth/local", false);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.send('userid='+userid+'&password='+password);
+		xhr.send('uid='+uid+'&password='+password);
 	}
 };
 

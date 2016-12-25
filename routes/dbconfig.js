@@ -16,15 +16,13 @@ db.once('open', function callback() {
 });
 
 var FavoriteSchema = new mongoose.Schema({
-    id : { type : Number },
-    user_id : { type : Number },
-    post_id : { type : Number },
+    uid : { type : Number },
+    pid : { type : Number },
     date : { type: Date, default : Date.now }
 });
 
 var DontseeSchema = new mongoose.Schema({
-    id : { type : Number },
-    user_id : { type : Number },
+    uid : { type : Number },
 	type : { type : String },
     obj_id : { type : Number },
     date : { type : Date, default : Date.now }
@@ -32,10 +30,16 @@ var DontseeSchema = new mongoose.Schema({
 
 var ChatSchema = new mongoose.Schema({
 	id : { type : Number },
-	user_id : { type : Number },
-	user_name : { type : String },
-	user_userid : { type : String },
-	to : { type : Number },
+	from : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+	to : { 
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
 	type : { type : String },
 	text : { type : String },
 	file : { type : Number },
@@ -44,15 +48,21 @@ var ChatSchema = new mongoose.Schema({
 
 var GroupSchema = new mongoose.Schema({
 	id : { type : Number },
-	user_ids : [{ type : Number }],
+	users : [{
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	}],
 	name : { type : String }
 });
 
 var PostSchema = new mongoose.Schema({
     id : { type : Number },
-    user_id : { type : Number },
-	user_userid : { type : String },
-    user_name : String,
+    user : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
     text : { type : String, default : "" },
     html : { type : String, default : "" },
     date : { type : Date, default : Date.now },
@@ -62,10 +72,12 @@ var PostSchema = new mongoose.Schema({
 
 var ReplySchema = new mongoose.Schema({
     id : { type : Number },
-    user_id : { type : Number },
-    user_name : String,
-	user_userid : { type : String },
-    post_id : { type : Number },
+    user : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+    pid : { type : Number },
     text : String,
     date : { type: Date, default : Date.now },
     change : { type : Date },
@@ -73,12 +85,16 @@ var ReplySchema = new mongoose.Schema({
 });
 
 var FollowSchema = new mongoose.Schema({
-    from_id : { type : Number },
-	from_userid : { type : String },
-	from_name : { type : String },
-    to_id : { type : Number },
-	to_userid : { type : String },
-	to_name : { type : String },
+	from : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+	to : { 
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
     date : { type: Date, default : Date.now }
 });
 
@@ -87,8 +103,8 @@ var UserSchema = new mongoose.Schema({
     email : String,
     name : String,
     password : String,
-    signUp : { type : Number },
-	user_id : String,
+    signUp : { type : Boolean, default : false },
+	uid : String,
 	date : { type : Date, default : Date.now }
 });
 

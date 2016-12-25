@@ -24,16 +24,16 @@ function sessionLogOut(){
 	var date = "Thu, 01 Jan 1970 00:00:01 GMT"
 	/*
 	document.cookie = "facebook=;expires=" + date + ";domain=iori.kr;path=/";
-	document.cookie = "userid=;expires=" + date + ";domain=iori.kr;path=/";
+	document.cookie = "uid=;expires=" + date + ";domain=iori.kr;path=/";
 	document.cookie = "email=;expires=" + date + ";domain=iori.kr;path=/";
 	document.cookie = "password=;expires=" + date + ";domain=iori.kr;path=/";
 	*/
-	document.cookie = "facebook=,userid=,email=,password=;expires=" + date + ";domain=iori.kr;path=/";
+	document.cookie = "facebook=,uid=,email=,password=;expires=" + date + ";domain=iori.kr;path=/";
 
 	location.href = "/api/auth/logout";
 }
 
-function followUser( user_id, callback ){
+function followUser( uid, callback ){
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 		if( xhr.responseText == "follow" ){
@@ -42,7 +42,7 @@ function followUser( user_id, callback ){
 			callback(0);
 		}
     }}
-    xhr.open("POST","/api/user/follow", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('user_id='+user_id);
+    xhr.open("POST","/api/user/follow", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('uid='+uid);
 }
 
 function fade(obj, start, end, time ) {

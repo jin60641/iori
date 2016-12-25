@@ -16,16 +16,16 @@ window.addEventListener('load', function(){
 	form_name.type = "text";
 	form.appendChild(form_name);
 
-	var form_userid_label = document.createElement("label");
-	form_userid_label.innerText = "아이디";
-	form_userid_label.htmlFor = "form_userid";
-	form.appendChild(form_userid_label);
+	var form_uid_label = document.createElement("label");
+	form_uid_label.innerText = "아이디";
+	form_uid_label.htmlFor = "form_uid";
+	form.appendChild(form_uid_label);
 
-	var form_userid = document.createElement("input");
-	form_userid.id = "form_userid";
-	form_userid.type = "text";
-	form_userid.placeholder = "최대 20자 영문 대/소문자, 숫자, 밑줄(_) 사용가능"
-	form.appendChild(form_userid);
+	var form_uid = document.createElement("input");
+	form_uid.id = "form_uid";
+	form_uid.type = "text";
+	form_uid.placeholder = "최대 20자 영문 대/소문자, 숫자, 밑줄(_) 사용가능"
+	form.appendChild(form_uid);
 
 	var form_email_label = document.createElement("label");
 	form_email_label.innerText = "이메일";
@@ -100,7 +100,6 @@ window.addEventListener('load', function(){
 });
 
 function show_alert(msg){
-	console.log(msg);
 	var form_alert = document.getElementById("form_alert");
 	form_alert.innerText = msg;
 	form_alert.style.opacity = 1;
@@ -108,7 +107,7 @@ function show_alert(msg){
 
 function send_register(){
 	var name = document.getElementById("form_name").value;
-	var userid = document.getElementById("form_userid").value;
+	var uid = document.getElementById("form_uid").value;
 	var email = document.getElementById("form_email").value;
 	var password = document.getElementById("form_password").value;
 	if( document.getElementById("form_agree").style.backgroundImage != 'url("/img/login/btn_checkbox_pressed.png")' ){
@@ -118,12 +117,12 @@ function send_register(){
 		document.getElementById("form_name").focus();
 		show_alert("이름을 입력해 주세요.");
 		return;
-	} else if( userid.length == 0 ){
-		document.getElementById("form_userid").focus();
+	} else if( uid.length == 0 ){
+		document.getElementById("form_uid").focus();
 		show_alert("아이디를 입력해 주세요.");
 		return;
-	} else if( userid.length < 8 || userid.length > 20 ){
-		document.getElementById("form_userid").focus();
+	} else if( uid.length < 8 || uid.length > 20 ){
+		document.getElementById("form_uid").focus();
 		show_alert("아이디는 8~20 자리 사이여야 합니다.");
 		return;
 	} else if( email.length == 0 ){
@@ -157,6 +156,7 @@ function send_register(){
 			document.getElementById("form_password").focus();
 			return;
 		} else if( score >= 2 ){
+			show_alert("서버의 응답을 기다리고 있습니다.");
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function(event){ 
 				if( xhr.readyState == 4 && xhr.status == 200 ){
@@ -165,8 +165,7 @@ function send_register(){
 			}
 			xhr.open("POST", "/register", false); 
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-			show_alert("서버의 응답을 기다리고 있습니다.");
-			xhr.send('name='+name+'&userid='+userid+'&email='+email+'&password='+password);
+			xhr.send('name='+name+'&uid='+uid+'&email='+email+'&password='+password);
 		}
 	}
 };
