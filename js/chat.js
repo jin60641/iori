@@ -8,7 +8,34 @@ window.addEventListener('load', function(){
 
 	var chat_menu = document.createElement("div");
 	chat_menu.id = "chat_menu";
-	chat_menu.innerText = "새 메시지";
+	
+	var chat_menu_text = document.createElement("div");
+	chat_menu_text.id = "chat_menu_text";
+	chat_menu.appendChild(chat_menu_text)
+	chat_menu_text.innerText = "새 메시지";
+	chat_menu_text.onclick = function( event ){
+		event.stopPropagation();
+		showChatMenu( true );
+	};
+
+	chat_menu.appendChild(chat_menu_text);
+
+	var chat_menu_box = document.createElement("div");
+	chat_menu_box.id = "chat_menu_box";
+	
+	var chat_new_user = document.createElement("div");
+	chat_new_user.id = "chat_new_user";
+	chat_new_user.innerText = "User";
+	chat_menu_box.appendChild(chat_new_user);
+
+	var chat_new_group = document.createElement("div");
+	chat_new_group.id = "chat_new_group";
+	chat_new_group.innerText = "Group";
+	chat_menu_box.appendChild(chat_new_group);
+
+	
+	chat_menu.appendChild(chat_menu_box);
+
 	chat_header.appendChild(chat_menu);
 
 	var chat_title = document.createElement("div");
@@ -133,6 +160,11 @@ window.addEventListener('load', function(){
 	socket.on('chat_new', function( data ){
 		getChats( 0, data.type, data.dialog_id, true );
 	});
+	
+	window.addEventListener('click', function(){
+		showChatMenu(false);
+	});
+
 });
 
 var skip_obj = {};
@@ -431,4 +463,11 @@ function chatWrite(){
 	}
 }
 
-
+function showChatMenu( boolean ){
+	var chat_menu_box = document.getElementById("chat_menu_box");
+	if( boolean ){
+		chat_menu_box.style.display = "block";
+	} else if( boolean == false ){
+		chat_menu_box.style.display = "";
+	}
+}
