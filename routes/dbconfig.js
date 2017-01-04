@@ -42,7 +42,7 @@ var ChatSchema = new mongoose.Schema({
 	},
 	type : { type : String },
 	text : { type : String },
-	file : { type : Number },
+	file : { type : Boolean, default : false },
 	date : { type : Date, default : Date.now }
 });
 
@@ -105,6 +105,7 @@ var UserSchema = new mongoose.Schema({
     password : String,
     signUp : { type : Boolean, default : false },
 	uid : String,
+	last : { type : Date },
 	date : { type : Date, default : Date.now }
 });
 

@@ -24,7 +24,45 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
-router.get('/@:uid(*)/favorite', function( req, res ){
+router.post('/@:uid(*)/follower', function( req, res ){
+	var uid = req.params['uid'];
+	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
+		if( err ){
+			throw err;
+		} else if( user ){
+			db.Follows.find({ "to.id" : user.id }, function( err, result ){
+				if( err ){
+					throw err;
+				} else if( result.length ){
+					res.send(result);
+				}
+			});
+		} else {
+			res.send("없는 사용자입니다.");
+		}
+	});
+});
+
+router.post('/@:uid(*)/following', function( req, res ){
+	var uid = req.params['uid'];
+	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
+		if( err ){
+			throw err;
+		} else if( user ){
+			db.Follows.find({ "from.id" : user.id }, function( err, result ){
+				if( err ){
+					throw err;
+				} else {
+					res.send(result);
+				}
+			});
+		} else {
+			res.send("없는 사용자입니다.");
+		}
+	});
+});
+
+router.post('/@:uid(*)/favorite', function( req, res ){
 	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
 		if( err ){
 			throw err;

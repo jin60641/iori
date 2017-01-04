@@ -208,7 +208,7 @@ router.post( '/api/newsfeed/removereply' , checkSession, function( req, res){
 	var reply_id = req.body['reply_id'];
 	db.Replys.findOne( { id : reply_id }, function( err, reply ){
 		if( reply ){
-			if( req.user.id == reply.uid ){
+			if( req.user.id == reply.user.id ){
 				var pid = reply.pid
 				var uploadedFile = __dirname + '/files/post/' + pid + '/reply/' + reply_id;
 				reply.remove( function(){
@@ -235,7 +235,7 @@ router.post( '/api/newsfeed/removepost' , checkSession, function( req, res){
 	var pid = req.body['pid'];
 	db.Posts.findOne( { id : pid }, function( err, post ){
 		if( post ){
-			if( req.user.id == post.uid ){
+			if( req.user.id == post.user.id ){
 				post.remove( function( err2, result ){
 					db.Replys.remove( { pid : pid }, function( error ){
 						var rimraf = require('rimraf');

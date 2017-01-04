@@ -17,7 +17,13 @@ function socketCore( socket ){
 			if( session && session.passport && session.passport.user && session.passport.user.signUp ){
 				socket.user = session.passport.user;
 				socket_ids[socket.user.id] = socket.id;
-				console.log("socket connected (" + socket.user.name + ")");
+				db.Users.update({ id : socket.user.id },{ last : new Date() }, function( err, result ){
+					if( err ){
+						throw err;
+					} else {
+						console.log("socket connected (" + socket.user.name + ")" );
+					}
+				});
 			} else {
 				console.log("socket connected (guest)");
 //				socket.disconnect();

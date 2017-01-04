@@ -1,13 +1,13 @@
-::-webkit-scrollbar {
+body::-webkit-scrollbar {
 	width : 8px;
 	height : 18px;
 }
 
-::-webkit-scrollbar-thumb:vertical:active {
+body::-webkit-scrollbar-thumb:vertical:active {
 	background-color : rgba(0, 0, 0, .3);
 }
 
-::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
 	background-clip : padding-box;
 	-webkit-border-radius : 8px;
 	-webkit-box-shadow : inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);

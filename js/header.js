@@ -9,14 +9,17 @@ function getCookie(cname) {
 	return "";
 }
 
+location.hash = location.hash.replace("#_=_","");
+/*
 if( location.hash && location.hash == "#_=_" ){
 	location.href = location.origin + location.pathname;
 }
+*/
 
 if( session == "" && document.cookie ){
 	if ( getCookie("facebook") == "true" ){
 		if( document.URL.indexOf("login") ){
-			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(4).toString();
+			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(4).join('-');
 		} else {
 			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(3).join('-');
 		}
@@ -51,22 +54,23 @@ function sendData_search( query ){
 	if( query ){
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-			var result = search_result;
+			var result = document.getElementById("head_search_result");
+	console.log(xhr.responseText);
 			if( xhr.responseText != "[]" ){
 				result.innerHTML="";
 				var xhrResult = JSON.parse( xhr.responseText );
 				if( xhrResult.length ){
 					for( var i = xhrResult.length - 1; i>=0; i--){
-						result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="search_result_uid">@' + xhrResult[i].uid.toString() + '</div>' + xhrResult[i].name.toString() + '</span></div></a>';
+						result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="head_search_result_uid">@' + xhrResult[i].uid.toString() + '</div>' + xhrResult[i].name.toString() + '</span></div></a>';
 					}
 				}
 			} else {
-				result.innerHTML='<div id="search_none">표시할 검색 결과가 없습니다.</div>';
+				result.innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
 			}
 		}}
 		xhr.open("POST", "/api/user/search", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('query='+query);
 	} else {
-		search_result.innerHTML='<div id="search_none">표시할 검색 결과가 없습니다.</div>';
+		search_result.innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
 	}
 }
 
@@ -143,7 +147,7 @@ function head_menu_show( boolean ){
 }
 
 function search_result_show( boolean ){
-	var search_result = document.getElementById("search_result");
+	var search_result = document.getElementById("head_search_result");
 	if( boolean != undefined ){
 		if( boolean ){
 			head_menu_show( false );
@@ -205,7 +209,7 @@ window.addEventListener('load',function(){
 		
 
 	var search = document.createElement("input");
-	search.id = "search";
+	search.id = "head_search";
 	search.type = "text";
 	search.name = "query";
 	search.onkeyup = function(){
@@ -226,7 +230,7 @@ window.addEventListener('load',function(){
 	head.appendChild(search);
 
 	var search_result = document.createElement("div");
-	search_result.id = "search_result";
+	search_result.id = "head_search_result";
 	search_result.onmouseover = function(){
 		searchResultView = 1;
 	}
@@ -234,7 +238,7 @@ window.addEventListener('load',function(){
 		searchResultView = 0;
 	}
 	var search_none = document.createElement("div");
-	search_none.id = "search_none";
+	search_none.id = "head_search_none";
 	search_none.innerText = "표시할 검색 결과가 없습니다.";
 	search_result.appendChild(search_none);
 	head.appendChild(search_result);
@@ -285,7 +289,7 @@ window.addEventListener('load',function(){
 	head_menu.style.display = "none";
 	head.appendChild(head_menu);
 	//<span onclick='sessionLogOut()'>로그아웃</span>";
-	search_result = document.getElementById("search_result");
+	search_result = document.getElementById("head_search_result");
 
 	//getNotices(0);
 	/*

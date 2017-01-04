@@ -97,6 +97,7 @@ function Register( req, res ){
 					password : password,
 					email : email,
 					uid : uid,
+					last : new Date(),
 					name : name
 				});
 				var shasum2 = crypto.createHash('sha1');

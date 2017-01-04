@@ -202,7 +202,11 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 							if( account ){
 								res.cookie("facebook","true",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
 								if( req.session.returnTo && req.session.returnTo != "/"){
-									return res.redirect('/' + req.session.returnTo.replace(/\-/g,"/") );
+									if( req.session.returnTo[0] == '/' ){
+										return res.redirect(req.session.returnTo);
+									} else {
+										return res.redirect('/' + req.session.returnTo.replace(/\-/g,"/") );
+									}
 								} else {
 									return res.redirect('/');
 								}

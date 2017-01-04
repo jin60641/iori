@@ -157,6 +157,7 @@ function send_register(){
 			return;
 		} else if( score >= 2 ){
 			show_alert("서버의 응답을 기다리고 있습니다.");
+
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function(event){ 
 				if( xhr.readyState == 4 && xhr.status == 200 ){

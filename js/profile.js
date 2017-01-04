@@ -1,4 +1,4 @@
-postOption.userid = user.id;
+postOption.uid = user.id;
 
 window.addEventListener('load', function(){
 	body = document.createElement("div");
