@@ -1,15 +1,15 @@
 window.addEventListener('load', function(){
-	var chat_wrap = document.createElement("div");
+	var chat_wrap = $("div");
 	chat_wrap.id = "chat_wrap";
 
-	var chat_header = document.createElement("div");
+	var chat_header = $("div");
 	chat_header.id = "chat_header";
 
 
-	var chat_menu = document.createElement("div");
+	var chat_menu = $("div");
 	chat_menu.id = "chat_menu";
 	
-	var chat_menu_text = document.createElement("div");
+	var chat_menu_text = $("div");
 	chat_menu_text.id = "chat_menu_text";
 	chat_menu.appendChild(chat_menu_text)
 	chat_menu_text.innerText = "새 메시지";
@@ -20,16 +20,16 @@ window.addEventListener('load', function(){
 
 	chat_menu.appendChild(chat_menu_text);
 
-	var chat_menu_box = document.createElement("div");
+	var chat_menu_box = $("div");
 	chat_menu_box.id = "chat_menu_box";
 	
-	var chat_new_user = document.createElement("div");
+	var chat_new_user = $("div");
 	chat_new_user.id = "chat_new_user";
 	chat_new_user.innerText = "1:1 시작하기";
 	chat_new_user.onclick = showChatLayer;
 	chat_menu_box.appendChild(chat_new_user);
 
-	var chat_new_group = document.createElement("div");
+	var chat_new_group = $("div");
 	chat_new_group.id = "chat_new_group";
 	chat_new_group.innerText = "그룹생성";
 	chat_new_group.onclick = function(){
@@ -42,21 +42,24 @@ window.addEventListener('load', function(){
 
 	chat_header.appendChild(chat_menu);
 
-	var chat_title = document.createElement("div");
+	var chat_title = $("div");
 	chat_title.id = "chat_title";
+	chat_title.onclick = function(){
+		showChatLayer("true","info");
+	}
 	chat_header.appendChild(chat_title);
 
 	chat_wrap.appendChild(chat_header);
 
-	var chat_dialog = document.createElement("div");
+	var chat_dialog = $("div");
 	chat_dialog.id = "chat_dialog";
 	chat_wrap.appendChild(chat_dialog);
 	
-	var chat_dialog_search = document.createElement("div");
+	var chat_dialog_search = $("div");
 	chat_dialog_search.id = "chat_dialog_search";
 	chat_dialog_search.className = "chat_dialogs";
 	
-	var chat_dialog_search_input = document.createElement("input");
+	var chat_dialog_search_input = $("input");
 	chat_dialog_search_input.id = "chat_dialog_search_input";
 	chat_dialog_search_input.className = "chat_search";
 	chat_dialog_search_input.type = "text";
@@ -67,31 +70,37 @@ window.addEventListener('load', function(){
 
 	chat_dialog.appendChild(chat_dialog_search);
 
-	var chat_dialog_box = document.createElement("div");
+	var chat_dialog_box = $("div");
 	chat_dialog_box.id = "chat_dialog_box";
 	chat_dialog.appendChild(chat_dialog_box);
 
-	var dialogs_keys = Object.keys(dialogs);
-
-	for( var index = 0; index < dialogs_keys.length; ++index ){
-		var i = dialogs_keys[index];
+	for( var i = 0; i < dialogs.length; ++i ){
 		chat_dialog_box.appendChild(makeDialog(dialogs[i]));
 	}
+/*
+	var dialogs_keys = Object.keys(dialogs);
+		
+	for( var index = 0; index < dialogs_keys.length; ++index ){
+		var i = dialogs_keys[index];
+		dialogs[i].id;
+		chat_dialog_box.appendChild(makeDialog(dialogs[i]));
+	}
+*/
 
 // 더미데이터생성
 	for(var i = 0; i < 50; i++ ){	
-	var dialog = document.createElement("div");
+	var dialog = $("div");
 	dialog.className = "chat_dialogs";
 	
-	var time = document.createElement("div");
+	var time = $("div");
 	time.className = "chat_dialogs_time";
 	time.innerText = "Wed";
 	dialog.appendChild(time);
 	
-	var img = document.createElement("img");
+	var img = $("img");
 	img.src = "/files/profile/@jinsang_rungE";
 	dialog.appendChild(img);
-	var dialog_message_wrap = document.createElement("div");
+	var dialog_message_wrap = $("div");
 	dialog_message_wrap.innerHTML = "<div class='chat_dialogs_name'>더미계정</div>더미텍스트";
 	dialog_message_wrap.className = "chat_dialogs_message_wrap"
 	
@@ -102,7 +111,7 @@ window.addEventListener('load', function(){
 /////////////
 
 
-	var chat_box = document.createElement("div");
+	var chat_box = $("div");
 	chat_box.id = "chat_box";
 	chat_box.addEventListener('dragover', DragOver, false);
 	chat_box.addEventListener('dragleave', DragOut, false);
@@ -110,7 +119,7 @@ window.addEventListener('load', function(){
 //	chat_box.addEventListener('paste', openfile_chat_paste, false);
 	chat_wrap.appendChild(chat_box);
 
-	var chat_panel = document.createElement("div");
+	var chat_panel = $("div");
 	chat_panel.id = "chat_panel";
 	chat_panel.addEventListener('scroll', function(e){
 		if( chat_panel.scrollTop <= 200 ){
@@ -120,10 +129,10 @@ window.addEventListener('load', function(){
 
 	chat_box.appendChild(chat_panel);
 
-	var send_panel = document.createElement("div");
+	var send_panel = $("div");
 	send_panel.id = "send_panel";
 
-	var chat_input = document.createElement("textarea");
+	var chat_input = $("textarea");
 	chat_input.placeholder = "메세지를 입력하세요";
 	chat_input.id = "chat_input";
 	send_panel.appendChild(chat_input);
@@ -133,7 +142,7 @@ window.addEventListener('load', function(){
 	chat_input.onkeydown = captureKey;
 
 
-	var chat_file_input = document.createElement("input");
+	var chat_file_input = $("input");
 	chat_file_input.type = "file";
 	chat_file_input.id = "chat_file_input";
 	chat_file_input.accept = "image/*";
@@ -142,12 +151,12 @@ window.addEventListener('load', function(){
 
 	send_panel.appendChild(chat_file_input);
 
-	var chat_file_label = document.createElement("label");
+	var chat_file_label = $("label");
 	chat_file_label.id = "chat_file_label";
 	chat_file_label.htmlFor = "chat_file_input";
 	send_panel.appendChild(chat_file_label);
 
-	var send_btn = document.createElement("div");
+	var send_btn = $("div");
 	send_btn.innerText = "보내기";
 	send_btn.id = "send_btn";
 	send_btn.onclick = chatWrite;
@@ -157,12 +166,16 @@ window.addEventListener('load', function(){
 	
 
 
-	var default_dialog = document.createElement("div");
+	var default_dialog = $("div");
 	default_dialog.id = "default_dialog";
 	default_dialog.innerText = "채팅을 선택해주세요";
 	chat_box.appendChild(default_dialog);
 	
 	document.body.appendChild(chat_wrap);	
+
+	socket.on('update_last', function(){
+		updateTitle();
+	});
 
 	socket.on('chat_new', function( data ){
 		getChats( 0, data.type, data.dialog_id, true, true );
@@ -175,7 +188,7 @@ window.addEventListener('load', function(){
 		showChatMenu(false);
 	});
 
-	var imglayer = document.createElement("div");
+	var imglayer = $("div");
 	imglayer.id = "imglayer";
 	imglayer.addEventListener('transitionend', function(){ if( this.style.opacity == "0" ){
 		this.style.zIndex = "-500";
@@ -195,15 +208,15 @@ window.addEventListener('load', function(){
 		}
 	}
 
-	var righthover = document.createElement("div");
+	var righthover = $("div");
 	righthover.id = "righthover";
 	imglayer.appendChild(righthover);
 
-	var rightbtn = document.createElement("div");
+	var rightbtn = $("div");
 	rightbtn.onclick = function(e){
 		e.stopPropagation();
 		e.preventDefault();
-		var img = document.getElementById("imglayer_img");
+		var img = $("#imglayer_img");
 		var params = { 
 			flag : "gt",
 			type : location.hash.substr(1,1),
@@ -228,15 +241,15 @@ window.addEventListener('load', function(){
 	rightbtn.id = "rightbtn";
 	imglayer.appendChild(rightbtn);
 
-	var lefthover = document.createElement("div");
+	var lefthover = $("div");
 	lefthover.id = "lefthover";
 	imglayer.appendChild(lefthover);
 
-	var leftbtn = document.createElement("div");
+	var leftbtn = $("div");
 	leftbtn.onclick = function(e){
 		e.stopPropagation();
 		e.preventDefault();
-		var img = document.getElementById("imglayer_img");
+		var img = $("#imglayer_img");
 		var params = {
 			flag : "lt", 
 			type : location.hash.substr(1,1),
@@ -261,13 +274,13 @@ window.addEventListener('load', function(){
 	leftbtn.id = "leftbtn";
 	imglayer.appendChild(leftbtn);
 
-	var imgmenuhover = document.createElement("div");
+	var imgmenuhover = $("div");
 	imgmenuhover.id = "imgmenuhover";
 	imgmenuhover.onclick = function(){
 		event.stopPropagation();
 	}
 	imglayer.appendChild(imgmenuhover);
-	var imgmenu = document.createElement("div");
+	var imgmenu = $("div");
 	imgmenu.id = "imgmenu";
 	imgmenu.onclick = function(event){
 		event.stopPropagation();
@@ -297,7 +310,7 @@ window.addEventListener('load', function(){
 	}
 	imglayer.appendChild(imgmenu);
 
-	var imgbox = document.createElement("div");
+	var imgbox = $("div");
 	imgbox.id = "imgbox";
 	imglayer.appendChild(imgbox);
 	document.body.appendChild(imglayer);
@@ -325,8 +338,8 @@ window.addEventListener('load', function(){
 
 // 이미지 전체화면
 function viewfull(obj){
-	var imglayer = document.getElementById("imglayer");
-	var imgbox = document.getElementById("imgbox");
+	var imglayer = $("#imglayer");
+	var imgbox = $("#imgbox");
 	if( document.webkitIsFullScreen ){
 		document.webkitCancelFullScreen();
 		obj.src="/img/imgfull.png";
@@ -391,37 +404,37 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			}
 			location.href = "/chat";
 		}
-		var chat_panel = document.getElementById("chat_panel");
+		var chat_panel = $("#chat_panel");
 		skip_obj[params.dialog_id] += ( chats.length - params.limit );
-		var chat_dialog_box = document.getElementById("chat_dialog_box");
+		var chat_dialog_box = $("#chat_dialog_box");
 		for( var i = chats.length - 1; i >= 0; --i ){
-			var chat = document.createElement("div");
+			var chat = $("div");
 			chat.id = "chat_" + chats[i].id;
 			chat.className = "chat";
 		
-			var chat_profileimg = document.createElement("img");
-			chat_profileimg.src = "/files/profile/" + chats[i].from.uid;
+			var chat_profileimg = $("img");
+			chat_profileimg.src = "/files/profile/" + chats[i].from.uid + '?' + new Date();
 			chat_profileimg.className = "chat_profileimg";
 			chat.appendChild(chat_profileimg);
 			
-			var chat_body = document.createElement("div");
+			var chat_body = $("div");
 			chat_body.className = "chat_body";
 
-			var chat_body_name = document.createElement("div");
+			var chat_body_name = $("div");
 			chat_body_name.className = "chat_body_name";
 			chat_body_name.innerText = chats[i].from.name
 			chat_body.appendChild(chat_body_name);
 
 			if( chats[i].text ){
 				chat_body.innerHTML += "<div class='chat_body_caret'><div class='outer'></div><div class='inner'></div></div>";
-				var chat_body_text = document.createElement("div");
+				var chat_body_text = $("div");
 				chat_body_text.className = "chat_body_text";
 				chat_body_text.innerText = chats[i].text;
 				chat_body.appendChild(chat_body_text);
 			} else if ( chats[i].file ){
-				var chat_body_file = document.createElement("img");
+				var chat_body_file = $("img");
 				chat_body_file.className = "chat_body_file";
-				chat_body_file.src = "/files/chat/" + chats[i].id;
+				chat_body_file.src = "/files/chat/" + chats[i].id + '?' + new Date();
 				if( scroll ){
 					chat_body_file.onload = function(){
 						chat_panel.scrollTop = chat_panel.scrollHeight;
@@ -446,12 +459,12 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				var dialog;
 				var className = "chat_dialogs";
 				if( chats[i].type == "g" ){
-					dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].to.id);
+					dialog = $("#chat_dialogs_" +  chats[i].type + "_" + chats[i].to.id);
 				} else {
 					if( chats[i].from.id == session.id ){
-						dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].to.uid);
+						dialog = $("#chat_dialogs_" +  chats[i].type + "_" + chats[i].to.uid);
 					} else {
-						dialog = document.getElementById("chat_dialogs_" +  chats[i].type + "_" + chats[i].from.uid);
+						dialog = $("#chat_dialogs_" +  chats[i].type + "_" + chats[i].from.uid);
 					}
 				}
 			
@@ -472,11 +485,13 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 					chat_dialog_box.removeChild(dialog);
 					chat_dialog_box.appendChild(new_dialog);
 				} else if( dialog_scroll ){
-					chat_dialog_box.removeChild(dialog);
+					if( dialog ){
+						chat_dialog_box.removeChild(dialog);
+					}
 					chat_dialog_box.insertBefore(new_dialog,chat_dialog_box.firstChild);
 				} else {
 					if( dialog ){
-						chat_dialog_box.replaceChild(new_dialog,document.getElementById(new_dialog.id));
+						chat_dialog_box.replaceChild(new_dialog,$('#'+new_dialog.id));
 					} else {
 						chat_dialog_box.removeChild(dialog);
 						if( chat_dialog_box.childElementCount == 0 ){
@@ -500,29 +515,29 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 }
 
 function makeDialog( chat ){
-	var dialog = document.createElement("div");
+	var dialog = $("div");
 	dialog.className = "chat_dialogs";
 
-	var time = document.createElement("div");
+	var time = $("div");
 	time.className = "chat_dialogs_time";
 	time.innerText = getDateString(chat.date);
 	dialog.appendChild(time);
 	
-	var img = document.createElement("img");
+	var img = $("img");
 	dialog.appendChild(img);
 
-	var message_wrap = document.createElement("div");
+	var message_wrap = $("div");
 	message_wrap.className = "chat_dialogs_message_wrap"
 
-	var name = document.createElement("div");
+	var name = $("div");
 	name.className = "chat_dialogs_name"
 
 	message_wrap.appendChild(name);
 
-	if( chat.type == "group" ){
+	if( chat.type == "g" ){
 		dialog.id = "chat_dialogs_g_" + chat.to.id;
-		img.src = "/groupimg/" + chat.to.id;
-	//	name.innerText = dialog.group_name;
+		img.src = "/files/group/" + chat.to.id + '?' + new Date();
+		name.innerText = chat.to.name;
 		if( chat.from.id == session.id ){
 			message_wrap.innerHTML += "<span>나:</span>";
 		} else {
@@ -530,12 +545,12 @@ function makeDialog( chat ){
 		}
 	} else if( chat.to.id != session.id ){ 									// 내가 -> 남에게
 		dialog.id = "chat_dialogs_u_" + chat.to.uid;
-		img.src = "/files/profile/" + chat.to.uid;
+		img.src = "/files/profile/" + chat.to.uid + '?' + new Date();
 		name.innerText = chat.to.name;
 		message_wrap.innerHTML += "<span>나:</span>";
 	} else {													// 남이 -> 나에게
 		dialog.id = "chat_dialogs_u_" + chat.from.uid;
-		img.src = "/files/profile/" + chat.from.id;
+		img.src = "/files/profile/" + chat.from.id + '?' + new Date();
 		name.innerText = chat.from.name;
 	}
 
@@ -554,13 +569,13 @@ function makeDialog( chat ){
 var chat_panel_obj = {};
 function openDialog(text){
 	var dialog = this;
-	var chat_panel = document.getElementById("chat_panel");
+	var chat_panel = $("#chat_panel");
 	if( chat_panel.className.length ){
 		chat_panel_obj[chat_panel.className] = chat_panel;
 	}
 
 	if( dialog && dialog.id == undefined ){
-		dialog = document.getElementById( "chat_dialogs_" + location.hash.substr(1,1) + "_" + location.hash.substr(3) );
+		dialog = $( "#chat_dialogs_" + location.hash.substr(1,1) + "_" + location.hash.substr(3) );
 	}
 
 	if( dialog != undefined ){
@@ -570,28 +585,29 @@ function openDialog(text){
 
 		var dialog_id = dialog.id
 		showChatLayer(false);
-		dialog = document.getElementById(dialog_id)
+		dialog = $("#"+dialog_id)
 	}
 
 	if( dialog && dialog.className.indexOf("selected") >= 0 ){
 		chat_panel.scrollTop = chat_panel.scrollHeight;
 		return false;
 	}
-	var chat_input = document.getElementById("chat_input");
-	var file_input = document.getElementById("chat_file_input");
+	var chat_input = $("#chat_input");
+	var file_input = $("#chat_file_input");
 	file_input.value = "";
 	chat_input.value = "";
 
-	var dialogs = document.getElementById("chat_dialog_box").childNodes;
+	var dialogs = $("#chat_dialog_box").childNodes;
 	for( var i = 0; i < dialogs.length; ++i ){
 		dialogs[i].className = "chat_dialogs"
 	}
+
 	if( dialog != undefined ){
 		dialog.scrollIntoViewIfNeeded();
 		dialog.className = "chat_dialogs chat_dialogs_selected";
 	}
 
-	if( chat_panel_obj[dialog.id] ){
+	if( dialog && dialog.id && chat_panel_obj[dialog.id] ){
 		chat_box.replaceChild(chat_panel_obj[dialog.id],chat_panel);
 	} else {
 		var new_panel = chat_panel.cloneNode("true");
@@ -599,13 +615,14 @@ function openDialog(text){
 			new_panel.removeChild(new_panel.firstChild);
 		}
 		chat_box.replaceChild(new_panel,chat_panel);
-		new_panel.className = dialog.id;
+		new_panel.className = dialog_id;
 	}
 	
 	getChats(20,null,null,true);
 	
-	document.getElementById("default_dialog").style.display = "none";
-	document.getElementById("send_panel").style.display = "block";
+	$("#default_dialog").style.display = "none";
+	$("#send_panel").style.display = "block";
+
 	updateTitle();
 }
 
@@ -616,61 +633,15 @@ function getDateString(origin_date){
 	var now_time = Math.floor(now.getTime()/1000)
 	var gap = now_time - date_time;
 	if( gap < 86400 ){
-		return ((date.getHours()/12<1)?"오전":"오후") + " " + (date.getHours()%12) + ":" + date.getMinutes();
+		return ((date.getDate()!=now.getDate())?"어제 ":"") + (date.getHours()<=9?"0":"") + date.getHours() + ":" + (date.getMinutes()<=9?"0":"") + date.getMinutes();
 	} else if( date.getDate() != now.getDate() ){
-		return (date.getYear()-100)+'/'+date.getMonth()+'/'+date.getDate();
+		return (date.getYear()-100)+'/'+(date.getMonth()<=8?"0":"")+(date.getMonth()+1)+'/'+(date.getDate()<=9?0:"")+date.getDate();
 	}
 }
-
-function getLastDateString(origin_date){
-	var date = new Date(origin_date);
-	var now = new Date();
-	var date_time = Math.floor(date.getTime()/1000)
-	var now_time = Math.floor(now.getTime()/1000)
-	var gap = now_time - date_time;
-	if( gap < 3600 ){
-		if( gap < 60 ){
-			return "방금";
-		} else {
-			return Math.floor(gap/60)+"분 전";
-		}
-	} else if( gap < 86400 ){
-		return Math.floor(gap/3600)+"시간 전";
-	} else if( gap >= 86400 ){
-		if(Math.floor(gap/86400) == 1){
-			var a = date.toLocaleTimeString();
-			if( a.indexOf("GMT") >= 0 ){
-				a = a.substr(0,a.indexOf("GMT"));
-			}
-			if( a.indexOf("초") >= 0 ){
-				a = a.substr(0,a.indexOf("초")-2);
-			}
-			return "어제 " + ((date.getHours()/12<1)?"오전":"오후") + " " + (date.getHours()%12) + ":" + date.getMinutes();
-		} else {
-			var a = date.toLocaleString();
-			if( a.indexOf("GMT") >= 0 ){
-				a = a.substr(0,a.length-10);
-			}
-			if( true || /(BB|iPhone|iPod|Android)/i.test( navigator.userAgent ) ){
-				a = PointToDate(a);
-				var b = new Date();
-				b.setHours(0);
-				b.setMinutes(0);
-				b.setSeconds(0);
-				b.setMilliseconds(0);
-				return Math.floor((b.getTime()/1000 - date_time)/86400) + "일 전";
-			} else {
-				return PointToDate(a.substr(0,a.length-3));
-			}
-		}
-	}
-	return date;
-}
-
 
 function inputResize(event){
 	var obj = event.target;
-	var chat_panel = document.getElementById("chat_panel");
+	var chat_panel = $("#chat_panel");
 	if( obj.scrollHeight > 33 ){
 		if( obj.scrollHeight > 100 ){
 			if( parseInt(obj.style.height.replace("px","")) >= obj.scrollHeight - 10 ){
@@ -712,8 +683,8 @@ function captureKey(event){
 }
 
 function chatWrite(){
-	var chat_input = document.getElementById("chat_input");
-	var file_input = document.getElementById("chat_file_input");
+	var chat_input = $("#chat_input");
+	var file_input = $("#chat_file_input");
 	var tmp = chat_input.value;
 	if( file_input.files.length >= 1 ){
 		for( var i = 0; i < file_input.files.length; ++i ){
@@ -752,7 +723,7 @@ function chatWrite(){
 }
 
 function showChatMenu( boolean ){
-	var chat_menu_box = document.getElementById("chat_menu_box");
+	var chat_menu_box = $("#chat_menu_box");
 	if( boolean ){
 		chat_menu_box.style.display = "block";
 	} else if( boolean == false ){
@@ -763,40 +734,38 @@ function showChatMenu( boolean ){
 function showChatLayer( boolean, type ){
 	make_group_arr = [];
 	if( boolean == false ){
-		var layer = document.getElementById("chat_layer");
+		var layer = $("#chat_layer");
 		if( layer ){
 			document.body.removeChild(layer);
 		}
 		return;
 	}
 
-	var layer = document.createElement("div");
+	var layer = $("div");
 	layer.onclick = function(){
 		showChatLayer(false);
 	}
 	layer.id = "chat_layer";
 	
-	var layer_close = document.createElement("div");
+	var layer_close = $("div");
 	layer_close.id = "chat_layer_close"
-	layer_close.onclick = function(){
-		showChatLayer(false);
-	}
+	layer_close.onclick = layer.onclick;
 	layer.appendChild(layer_close);
 
 
-	var box = document.createElement("div");
+	var box = $("div");
 	box.id = "chat_layer_box";
 	box.onclick = function(event){
 		event.stopPropagation();
 		event.cancelBubble = true;
 	}
 	
-	var box_close = document.createElement("div");
+	var box_close = $("div");
 	box_close.id = "chat_layer_box_close";
 	box_close.onclick = layer_close.onclick;
 	box.appendChild(box_close);
 
-	var title = document.createElement("div");
+	var title = $("div");
 	title.id = "chat_layer_title"
 	if( type == "group" ){
 		title.innerText = "새 그룹";
@@ -805,10 +774,10 @@ function showChatLayer( boolean, type ){
 	}
 	box.appendChild(title);
 
-	var input_div = document.createElement("div");
+	var input_div = $("div");
 	input_div.id = "chat_layer_input_box";
 
-	var input = document.createElement("input");
+	var input = $("input");
 	input.id = "chat_layer_input"
 	input.className = "chat_search"
 	input.placeholder = "검색";
@@ -822,46 +791,46 @@ function showChatLayer( boolean, type ){
 
 	box.appendChild(input_div);
 
-	var list = document.createElement("div");
+	var list = $("div");
 	list.id = "chat_layer_list";
 	list.className = "chat_layer_div";
 	box.appendChild(list);
 
 
 	if( type == "group" ){
-		var menu = document.createElement("div");
+		var menu = $("div");
 		menu.id = "chat_layer_menu";
 
-		var group = document.createElement("div");
+		var group = $("div");
 		group.id = "chat_layer_group";
 		group.className = "chat_layer_div";
 
-		var group_file = document.createElement("input");
+		var group_file = $("input");
 		group_file.type = "file";
 		group_file.id = "chat_layer_group_file";
 		group_file.onchange = openfile_group;
 		group.appendChild(group_file);
 		
-		var group_label = document.createElement("label");
+		var group_label = $("label");
 		group_label.htmlFor = "chat_layer_group_file";
 		group_label.id = "chat_layer_group_label";
 		group.appendChild(group_label);
 
-		var group_name = document.createElement("input");
+		var group_name = $("input");
 		group_name.id = "chat_layer_group_name";
 		group_name.autocomplete = "off";
 		group_name.placeholder = "그룹명을 입력하세요";
 		group_name.onkeyup = function(){
 			if( this.value.length ){
-				var next = document.getElementById("chat_layer_menu_next");
+				var next = $("#chat_layer_menu_next");
 				next.className = "chat_layer_menu_active";
 				next.onclick = function(){
 					var formdata = new FormData();
-					var file_input = document.getElementById("chat_layer_group_file");
-					var name = document.getElementById("chat_layer_group_name");
+					var file_input = $("#chat_layer_group_file");
+					var name = $("#chat_layer_group_name");
 
 					formdata.append("file",file_input.files[0]);
-					formdata.append("user",make_group_arr.toString());
+					formdata.append("uids",make_group_arr);
 					formdata.append("name",name.value);
 
 					var xhr = new XMLHttpRequest();
@@ -869,10 +838,11 @@ function showChatLayer( boolean, type ){
 						if( xhr.responseText ){
 							var gid = xhr.responseText;
 							location.hash = "#g?" + gid;
+							showChatLayer(false);
 							openDialog();
 						}
 					}}
-					xhr.open("POST", "/api/chat/makegroup", false); xhr.send();
+					xhr.open("POST", "/api/chat/makegroup", false); xhr.send(formdata);
 				}
 			}
 		}
@@ -882,7 +852,17 @@ function showChatLayer( boolean, type ){
 
 		box.appendChild(group);
 
-		var next = document.createElement("span");
+		var cancle = $("span");
+		cancle.id = "chat_layer_menu_cancle";
+		cancle.innerText = "취소";
+		cancle.className = "chat_layer_menu_active";
+		cancle.onclick = function(){
+			showChatLayer(false);
+		}
+
+		menu.appendChild(cancle);
+
+		var next = $("span");
 		next.id = "chat_layer_menu_next";
 		next.innerText = "그룹생성";
 		menu.appendChild(next);
@@ -903,7 +883,7 @@ function updateList( query ){
 	xhr.onreadystatechange = function(event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		if( xhr.responseText != "" ){
 			var results = JSON.parse(xhr.responseText);
-			var list = document.getElementById("chat_layer_list");
+			var list = $("#chat_layer_list");
 			while( list.firstChild ){
 				list.removeChild(list.firstChild);
 			}
@@ -911,7 +891,7 @@ function updateList( query ){
 				if( results[i].uid ){
 					if( results[i].uid == session.uid && results.length == 1 ){
 						makeList();
-					} else {
+					} else if( results[i].uid != session.uid ){
 						list.appendChild(makeList(results[i]));
 					}
 				} else {
@@ -938,28 +918,28 @@ function makeList( user ){
 		return;
 	}
 		
-	var dialog = document.createElement("div");
+	var dialog = $("div");
 	dialog.className = "chat_dialogs";
 
-	var img = document.createElement("img");
+	var img = $("img");
 	dialog.appendChild(img);
 
-	var dialog_message_wrap = document.createElement("div");
+	var dialog_message_wrap = $("div");
 	dialog_message_wrap.className = "chat_dialogs_message_wrap"
 
 	dialog.id = "chat_dialogs_u_" + user.uid;
-	img.src = "/files/profile/" + user.uid;
+	img.src = "/files/profile/" + user.uid + '?' + new Date();
 	dialog_message_wrap.innerHTML = "<div>" + user.name + "</div><span>@" + user.uid + "</span>";
 
 //	dialog_message_wrap.innerHTML += "chat";
 
 	dialog.appendChild(dialog_message_wrap);
 
-	var title = document.getElementById("chat_layer_title");
-	if( title.innerText.indexOf("새 그룹") >= 0 || title.innerText.indexOf("명") ){
+	var title = $("#chat_layer_title");
+	if( title.innerText.indexOf("새 그룹") >= 0 || title.innerText.indexOf("명") >= 0 ){
 		dialog.onclick = function(){
 			var id = this.id.split('_').pop();
-			var title = document.getElementById("chat_layer_title");
+			var title = $("#chat_layer_title");
 			if( this.className.indexOf("chat_dialogs_selected") == -1 ){
 				this.className = "chat_dialogs chat_dialogs_selected group_selected";
 				make_group_arr.push(id);
@@ -967,12 +947,12 @@ function makeList( user ){
 				this.className = "chat_dialogs";
 				make_group_arr.splice(make_group_arr.indexOf(id),1);
 			}
-			var next = document.getElementById("chat_layer_menu_next");
+			var next = $("#chat_layer_menu_next");
 			var cnt = make_group_arr.length;
 			if( cnt ){
 				title.innerText = cnt + " 명과 대화하기";
 				next.className = "chat_layer_menu_active";
-			
+				next.onclick = makeGroup;
 			} else {
 				title.innerText = "새 그룹";
 				next.className = "";
@@ -990,9 +970,9 @@ function makeList( user ){
 }
 
 function filterDialogs(){
-	var value = document.getElementById("chat_dialog_search_input").value;
-	var dialogs = document.getElementById("chat_dialog_box").childNodes;
-	var names = document.getElementsByClassName("chat_dialogs_name");
+	var value = $("#chat_dialog_search_input").value;
+	var dialogs = $("#chat_dialog_box").childNodes;
+	var names = $(".chat_dialogs_name");
 	if( value != "" ){
 		for( var i = 0; i < names.length; ++i ){
 			if( names[i].innerText.indexOf(value) < 0 ){
@@ -1009,12 +989,12 @@ function filterDialogs(){
 }
 
 function viewimg(url){
-	var imglayer = document.getElementById("imglayer");
-	var imgbox = document.getElementById("imgbox");
-	var imgmenu = document.getElementById("imgmenu");
-	var imgmenuhover = document.getElementById("imgmenuhover");
-	var lefthover = document.getElementById("lefthover");
-	var righthover = document.getElementById("righthover");
+	var imglayer = $("#imglayer");
+	var imgbox = $("#imgbox");
+	var imgmenu = $("#imgmenu");
+	var imgmenuhover = $("#imgmenuhover");
+	var lefthover = $("#lefthover");
+	var righthover = $("#righthover");
 
 	imglayer.style.zIndex = "300";
 	imglayer.style.visibility = "visible";
@@ -1029,7 +1009,7 @@ function viewimg(url){
 		lefthover.style.display="block";
 		righthover.style.display="block";
 	}
-	var img = document.createElement("img");
+	var img = $("img");
 	img.id = "imglayer_img";
 	img.src = url;
 	imgdownload.href = img.src;
@@ -1037,7 +1017,7 @@ function viewimg(url){
 	img.onclick = function(){
 		event.stopPropagation();
 		event.preventDefault();
-		var rightbtn = document.getElementById("rightbtn");
+		var rightbtn = $("#rightbtn");
 		rightbtn.click();
 	}
 	imgbox.appendChild(img);
@@ -1058,10 +1038,10 @@ function imgmenu_resize(){
 
 
 function imgmenu_keydown(e){
-	var imglayer = document.getElementById("imglayer");
-	var imgmenuhover = document.getElementById("imgmenuhover");
-	var lefthover = document.getElementById("lefthover");
-	var righthover = document.getElementById("righthover");
+	var imglayer = $("#imglayer");
+	var imgmenuhover = $("#imgmenuhover");
+	var lefthover = $("#lefthover");
+	var righthover = $("#righthover");
 
 	if(imglayer.style.opacity == "1"){
 		event.stopPropagation();
@@ -1082,7 +1062,7 @@ function imgmenu_keydown(e){
 }
 
 function updateTitle(){
-	var title = document.getElementById("chat_title");
+	var title = $("#chat_title");
 	var params = {
 		type : location.hash.substr(1,1),
 		dialog_id : location.hash.split('?')[1]
@@ -1097,16 +1077,21 @@ function updateTitle(){
 		if( xhr.responseText != "" ){
 			var info = JSON.parse(xhr.responseText);
 			title.innerText = info.name;
-			var span = document.createElement("span");
+			var span = $("span");
 			if( params.type == "g" ){
 				span.innerText = info.users.length + "명이 참여중입니다";
 			} else {
-				span.innerText = "최근 접속 " + getLastDateString(info.last);
+				span.innerText = info.last;
 			}
 			title.appendChild(span);
 		}
 	}}
-	xhr.open("POST", "/api/chat/getinfo", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
+	if( params.type == "g" ){
+		xhr.open("POST", "/api/chat/getinfo", false); 
+	} else {
+		xhr.open("POST", "/@" + params.dialog_id, false); 
+	}
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
 }
 
 var make_group_arr = [];
@@ -1115,10 +1100,23 @@ function makeGroup(){
 		location.hash = "#u?" + make_group_arr[0];
 		return openDialog();
 	}
-	document.getElementById("chat_layer_list").style.display = "none";
-	var div = document.getElementById("chat_layer_group");
-	div.style.display = "block";
-	
+
+	$("#chat_layer_menu_cancle").onclick = function(){
+		$("#chat_layer_list").style.display = "block";
+		$("#chat_layer_group").style.display = "none";
+		$("#chat_layer_menu_next").className = "chat_layer_menu_active";
+		$("#chat_layer_menu_next").onclick = makeGroup;
+		$("#chat_layer_group_name").value = "";
+		$("#chat_layer_group_file").value = "";
+		$("#chat_layer_group_label").style.backgroundImage = "";
+		this.onclick = function(){
+			showChatLayer(false);
+		}
+	}
+
+	$("#chat_layer_input").value = "";
+	$("#chat_layer_list").style.display = "none";
+	$("#chat_layer_group").style.display = "block";
 	this.className = "";
 }
 
@@ -1127,7 +1125,7 @@ function openfile_group(event){
 	event.preventDefault();
 	var input = event.target;
 	var files = input.files;
-	var label = document.getElementById("chat_layer_group_label");
+	var label = $("#chat_layer_group_label");
 
 	var reader = new FileReader();
 	reader.addEventListener("load",function(event){
@@ -1139,7 +1137,7 @@ function openfile_group(event){
 function openfile_chat(event){
 	event.stopPropagation();
 	event.preventDefault();
-	var file_input = document.getElementById("chat_file_input");
+	var file_input = $("#chat_file_input");
 	file_input.files = event.dataTransfer.files;
 	DragOut();
 }
@@ -1149,7 +1147,7 @@ function DragOut(evt){
 		evt.stopPropagation();
 		evt.preventDefault();
 	}
-	var obj = document.getElementById("chat_input").style;
+	var obj = $("#chat_input").style;
 	obj.border = "";
 	obj.marginLeft = "";
 	obj.marginTop = "";
@@ -1160,7 +1158,7 @@ function DragOver(evt){
 	evt.stopPropagation();
 	evt.preventDefault();
 	evt.dataTransfer.dropEffect = 'copy';
-	var obj = document.getElementById("chat_input").style;
+	var obj = $("#chat_input").style;
 	obj.border = "2px dashed #bbb";
 	obj.marginLeft = "5px";
 	obj.marginTop = "5px";

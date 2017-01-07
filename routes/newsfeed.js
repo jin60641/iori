@@ -7,8 +7,6 @@ var busboy = require('connect-busboy');
 var async = require("async");
 var request = require("request");
 var socketjs = require("./socket.js");
-var io = global.io;
-var socket_ids = global.socket_ids;
 
 router.use(require('body-parser').urlencoded());
 router.use(busboy())
@@ -296,6 +294,18 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 					if( error ){
 						throw error;
 					}
+					db.Follows.find({ "to.id" : req.user.id }, function( err, followers ){
+						if( err ){
+							throw err;
+						} else if( followers.length >= 1 ) {
+							for( var i = 0; i < followers.length; ++i ){
+								var socket_id = socket_ids[followers[i].from.id];
+								if( socket_id != undefined ){
+									io.sockets.connected[socket_id].emit( 'reply_new', current );
+								}
+							}
+						}
+					});
 					res.send( replyid.toString() );
 				});
 			}
@@ -456,7 +466,7 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 								throw err;
 							} else if( followers.length >= 1 ) {
 								for( var i = 0; i < followers.length; ++i ){
-									var socket_id = socket_ids[followers[i].from_id];
+									var socket_id = socket_ids[followers[i].from.id];
 									if( socket_id != undefined ){
 										io.sockets.connected[socket_id].emit( 'post_new' );
 									}

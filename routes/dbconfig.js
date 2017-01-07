@@ -119,17 +119,6 @@ var NoticeSchema = new mongoose.Schema({
     date : { type : Date, default : Date.now }
 });
 
-var GroupSchema = new mongoose.Schema({
-    id : { type : Number },
-    members : [{
-        id : Number,
-        permission : Number, // 0은 일반멤버 1은 관리자멤버
-        date : { type : Date, default : Date.now }
-    }],
-    name : String,
-    date : { type : Date, default : Date.now }
-});
-
 var LinkSchema = new mongoose.Schema({
     url : { type : String },
     title : { type : String },

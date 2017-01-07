@@ -28,30 +28,104 @@ String.prototype.xssFilter = function() {
 
 router.get('/chat', checkSession, function( req, res ){
 	var dialogs = {};
-	db.Chats.find({ type : "u", $or : [ { "from.uid" : req.user.uid }, { "to.uid" : req.user.uid } ] }).sort({ id : -1 }).exec( function( err, chats ){
-		if( err ){
-			throw err;
-		} else {
-			async.map(chats, function( chat, callback ){
-				if( chat.from.id == req.user.id && dialogs[chat.to.uid] == undefined ){
-					dialogs[chat.to.uid] = chat;
-				} else if ( chat.to.id == req.user.id && dialogs[chat.from.uid] == undefined ){
-					dialogs[chat.from.uid] = chat;
+	var result = [];
+	var group_ids = [];
+	async.waterfall([
+		function( callback ){
+			db.Groups.find({ "users.id" : { $in : [ req.user.id ] } }, function( err, groups ){
+				if( err ){
+					throw err;
+				} else {
+					for( var i = groups.length - 1; i >= 0; --i ){
+						group_ids.push( groups[i].id );
+						if( !i ){
+							callback( null );
+						}
+					}
 				}
-				callback(null);
-			}, function( error ){
-				if( error ){
-					throw error;
+			});
+		}, function( callback ){
+			db.Chats.find({ $or : [{ "from.uid" : req.user.uid },{ type : "g", "to.id" : { $in : group_ids } }, { type : "u", "to.uid" : req.user.uid }] }).sort({ id : -1 }).exec( function( err, chats ){
+				if( err ){
+					throw err;
+				} else {
+					callback( null, chats );
 				}
-				makeObj( req, res, "chat", { dialogs : JSON.stringify(dialogs) });
-//				makeObj( req, res, "chat" );
 			});
 		}
+	], function( err, chats ){
+		async.map(chats, function( chat, callback ){
+			if( chat.type == "u" ){
+				if( chat.from.id == req.user.id && dialogs[chat.to.uid] == undefined ){
+					result.push(chat);
+					dialogs[chat.to.uid] = chat;
+				} else if ( chat.to.id == req.user.id && dialogs[chat.from.uid] == undefined ){
+					result.push(chat);
+					dialogs[chat.from.uid] = chat;
+				}
+			} else if( chat.type == "g" ){ 
+				if( dialogs[chat.to.id] == undefined ){
+					dialogs[chat.to.id] = chat;
+					result.push(chat);
+				}
+			}
+			callback(null);
+		}, function( error ){
+			if( error ){
+				throw error;
+			}
+			makeObj( req, res, "chat", { dialogs : JSON.stringify(result) });
+		});
 	});
 });
 
-router.post('/api/chat/writechat', checkSession, function( req, res ){
-	
+router.post('/api/chat/makegroup', checkSession, function( req, res ){
+	var uids = [];
+	var name = "";
+	db.Groups.findOne().sort({id:-1}).exec( function( err, group ){
+		var gid;
+		if( !group ){
+			gid = 1;
+		} else {
+			gid = group.id + 1;
+		}
+		req.pipe( req.busboy );
+		req.busboy.on( 'file', function( fieldname, file, filename ){
+			var uploadedFile = __dirname + '/../files/group/' + gid;
+			var fstream;
+			fstream = fs.createWriteStream( uploadedFile );
+			file.pipe( fstream );
+			fstream.on( 'close' , function(){
+			});
+		});
+		req.busboy.on( 'field', function( fieldname, val ){
+			if( fieldname == "name" ){
+				name = val.trim().xssFilter();
+			} else if( fieldname == "uids" ){
+				uids = val.split(',');
+			}
+		});
+		req.busboy.on( 'finish', function(){
+			db.Users.find({ uid : { $in : uids } }, function ( err, users ){
+				if( err ){
+					throw err;
+				} 
+				var current = new db.Groups({
+					id : gid,
+					name : name,
+					users : users
+				});
+				current.users.push(req.user);
+				current.save( function( err ){
+					if( err ){
+						throw err;
+					} else {
+						res.send( gid.toString() );
+					}
+				});
+			});
+		});
+	});
 });
 
 router.post('/api/chat/writechat', checkSession, function( req, res ){
@@ -60,15 +134,15 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 	var type = "";
 	var to_id = "";
 	db.Chats.findOne().sort({id:-1}).exec( function( err, result ){
-		var chatid;
+		var cid;
 		if( !result ){
-			chatid = 1;
+			cid = 1;
 		} else {
-			chatid = result.id + 1;
+			cid = result.id + 1;
 		}
 		req.pipe( req.busboy );
 		req.busboy.on( 'file', function( fieldname, file, filename ){
-			var uploadedFile = __dirname + '/../files/chat/' + chatid;
+			var uploadedFile = __dirname + '/../files/chat/' + cid;
 			var fstream;
 			file_flag = true;
 			fstream = fs.createWriteStream( uploadedFile );
@@ -87,7 +161,7 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 		});
 		req.busboy.on( 'finish', function(){
 			var current = new db.Chats({
-				id : chatid,
+				id : cid,
 				from : { 
 					id : req.user.id,
 					name : req.user.name,
@@ -128,7 +202,7 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 							} else {
 								for( var i = 0; i < group.users.length; ++i ){
 				   					var socket_id = socket_ids[group.users[i].id];
-									if( socket_id != undefined ){
+									if( socket_id != undefined && group.users[i].id != req.user.id ){
 										io.sockets.connected[socket_id].emit( 'chat_new', { type : current.type, dialog_id : current.to.id } );
 				   					}
 								}
@@ -140,32 +214,6 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 			}
 		});
 	});
-});
-
-router.post('/api/chat/getinfo', checkSession, function( req, res ){
-	var type = req.body['type'];
-	var dialog_id = req.body['dialog_id'];
-	if( type == "g" ){
-		db.Groups.findOne({ id : dialog_id, "users.id" : { $in : [ req.user.id ] } }, function( error, group ){
-			if( error ){
-				throw error;
-			} else if( group ){
-				res.send(group);
-			} else {
-				res.send("존재하지 않는 그룹");
-			}
-		});
-	} else if( type == "u" ){
-		db.Users.findOne({ uid : dialog_id, signUp : true }, { name : 1, uid : 1, last : 1 }, function( err, user ){
-			if( err ){
-				throw err;
-			} else if( user ){
-				res.send(user);
-			} else {
-				res.send("존재하지 않는 유저");
-			}
-		});
-	}
 });
 
 router.post('/api/chat/getfile', checkSession, function( req, res ){
@@ -269,6 +317,19 @@ router.post('/api/chat/getchats', checkSession, function( req, res ){
 			}
 		});
 	}
+});
+
+router.post('/api/chat/getinfo', checkSession, function( req, res ){
+	var dialog_id = req.body['dialog_id'];
+	db.Groups.findOne({ id : dialog_id, "users.id" : { $in : [ req.user.id ] } }, function( error, group ){
+		if( error ){
+			throw error;
+		} else if( group ){
+			res.send(group);
+		} else {
+			res.send("존재하지 않는 그룹입니다.");
+		}
+	});
 });
 
 module.exports = router;

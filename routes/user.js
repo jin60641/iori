@@ -113,6 +113,51 @@ router.get('/@:uid(*)', function( req, res ){
 	});
 });
 
+router.post('/@:uid(*)', function( req, res ){
+	db.Users.findOne({ uid : req.params['uid'], signUp : true }, function( err, user ){
+		if( err ){
+			throw err;
+		} else if( user ){
+			var obj = {
+				name : user.name,
+				uid : user.uid
+			}
+
+			var socket_id = socket_ids[user.id];
+			if( io.sockets.connected[socket_id] ){
+				obj.last = "접속중";
+			} else {
+				var date = new Date(user.last);
+				var now = new Date();
+				var date_time = Math.floor(date.getTime()/1000)
+				var now_time = Math.floor(now.getTime()/1000)
+				var gap = now_time - date_time;
+				if( gap < 120 ){
+					obj.last = "마지막 접속 1분 전";
+				} else if( gap < 3600 ){
+					obj.last = "마지막 접속 " + Math.floor(gap/60)+"분 전";
+				} else if( gap < 86400 ){
+					obj.last = "마지막 접속 " + Math.floor(gap/3600)+"시간 전";
+				} else if( gap >= 86400 ){
+					if(Math.floor(gap/86400) == 1){
+						obj.last = "마지막 접속 어제 " + date.getHours() + ":" + date.getMinutes();
+					} else {
+						var b = new Date();
+						b.setHours(0);
+						b.setMinutes(0);
+						b.setSeconds(0);
+						b.setMilliseconds(0);
+						obj.last = "마지막 접속 " + Math.floor((b.getTime()/1000 - date_time)/86400) + "일 전";
+					}
+				}
+			}
+			res.send(obj);
+		} else {
+			res.send("존재하지 않는 사용자입니다.");
+		}
+	});
+});
+
 router.post( '/api/user/search', function( req, res){
 	query = req.body['query'];
 	if(query){
@@ -129,7 +174,6 @@ router.post( '/api/user/search', function( req, res){
 });
 
 router.post( '/api/user/headerimg', checkSession, function( req, res ){
-	console.log("12313");
 	var fstream;
 	req.pipe( req.busboy );
 	req.busboy.on( 'file' , function( fieldname, file, filename ){
@@ -144,7 +188,6 @@ router.post( '/api/user/headerimg', checkSession, function( req, res ){
 
 
 router.post( '/api/user/profileimg', checkSession, function( req, res ){
-	console.log("why");
 	var fstream;
 	req.pipe( req.busboy );
 	req.busboy.on( 'file' , function( fieldname, file, filename ){

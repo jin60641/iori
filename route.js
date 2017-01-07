@@ -71,38 +71,50 @@ router.get('/findpw', function( req, res ){
 });
 
 router.get( '/profile_header/:uid', function( req, res ){
-    var uid = req.params['uid'];
-    fs.exists( __dirname + '/files/header/' + parseInt(uid), function( exists ){
-        if( exists ){
-            res.sendfile(__dirname + '/files/header/' + parseInt(uid) );
-        } else {
-            res.sendfile(__dirname + '/img/profile_back.png' );
-        }
-    });
+	var uid = req.params['uid'];
+	fs.exists( __dirname + '/files/header/' + parseInt(uid), function( exists ){
+		if( exists ){
+			res.sendfile(__dirname + '/files/header/' + parseInt(uid) );
+		} else {
+			res.sendfile(__dirname + '/img/profile_back.png' );
+		}
+	});
 });
+
+router.get( '/files/group/:gid', function( req, res ){
+	var gid = req.params['gid'];
+	fs.exists( __dirname + '/files/group/' + parseInt(gid), function( exists ){
+		if( exists ){
+			res.sendfile(__dirname + '/files/profile/' + parseInt(gid) );
+		} else {
+			res.sendfile(__dirname + '/img/profile.jpg' );
+		}
+	});
+});
+
 router.get( '/files/profile/:uid', function( req, res ){
-    var uid = req.params['uid'];
-    fs.exists( __dirname + '/files/profile/' + parseInt(uid), function( exists ){
-        if( exists ){
-            res.sendfile(__dirname + '/files/profile/' + parseInt(uid) );
-        } else {
+	var uid = req.params['uid'];
+	fs.exists( __dirname + '/files/profile/' + parseInt(uid), function( exists ){
+		if( exists ){
+			res.sendfile(__dirname + '/files/profile/' + parseInt(uid) );
+		} else {
 			db.Users.findOne({ uid : uid }, function( err, user ){
 				if( err ){
 					throw err;
 				} else if( user ){
-				    fs.exists( __dirname + '/files/profile/' + user.id, function( exists ){
-				        if( exists ){
-				            res.sendfile(__dirname + '/files/profile/' + user.id );
+					fs.exists( __dirname + '/files/profile/' + user.id, function( exists ){
+						if( exists ){
+							res.sendfile(__dirname + '/files/profile/' + user.id );
 						} else {
-		            		res.sendfile(__dirname + '/img/profile.jpg' );
+							res.sendfile(__dirname + '/img/profile.jpg' );
 						}
 					});
 				} else {
-		            res.sendfile(__dirname + '/img/profile.jpg' );
+					res.sendfile(__dirname + '/img/profile.jpg' );
 				}
 			});
-        }
-    });
+		}
+	});
 });
 
 //router.use(require('../ujujuju/ujujuju.js'));

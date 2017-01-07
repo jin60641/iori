@@ -548,7 +548,7 @@ input.chat_search:focus {
 
 #chat_layer_box #chat_layer_menu span {
 	padding : 8px;
-	cursor : normal;
+	cursor : default;
 }
 
 #chat_layer_box #chat_layer_menu span.chat_layer_menu_active {

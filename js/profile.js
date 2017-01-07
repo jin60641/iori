@@ -1,26 +1,26 @@
 postOption.uid = user.id;
 
 window.addEventListener('load', function(){
-	body = document.createElement("div");
+	body = $("div");
 	body.id = "body";
 	document.body.insertBefore(body,document.body.firstChild);
 
-	container = document.createElement("div");
+	container = $("div");
 	container.id = "container";
 	body.appendChild(container);
 
 
-	var headerimg_form = document.createElement("form");
+	var headerimg_form = $("form");
 	headerimg_form.action="/api/user/headerimg";
 	headerimg_form.id = "headerimg_form";
 	headerimg_form.method="post";
 	headerimg_form.enctype="multipart/form-data";
 
-	var headerimg_label = document.createElement("label")
+	var headerimg_label = $("label")
 	headerimg_label.style.background = "url('/profile_header/" + user.id + "')";
 	headerimg_form.appendChild(headerimg_label);
 
-	var headerimg_file = document.createElement("input");
+	var headerimg_file = $("input");
 	headerimg_file.type = "file";
 	headerimg_file.accept = "image/*";
 	headerimg_file.id = "headerimg_file";
@@ -28,16 +28,16 @@ window.addEventListener('load', function(){
 	headerimg_file.style.display = "none";
 	headerimg_form.appendChild(headerimg_file);
 
-	var profileimg_form = document.createElement("form");
+	var profileimg_form = $("form");
 	profileimg_form.action="/api/user/profileimg";
 	profileimg_form.id = "profileimg_form";
 	profileimg_form.method="post";
 	profileimg_form.enctype="multipart/form-data";
 
-	var profileimg_label = document.createElement("label")
+	var profileimg_label = $("label")
 	profileimg_form.appendChild(profileimg_label);
 
-	var profileimg_file = document.createElement("input");
+	var profileimg_file = $("input");
 	profileimg_file.type = "file";
 	profileimg_file.accept = "image/*";
 	profileimg_file.id = "profileimg_file";
@@ -45,7 +45,7 @@ window.addEventListener('load', function(){
 	profileimg_file.style.display = "none";
 	profileimg_form.appendChild(profileimg_file);
 
-	var user_img = document.createElement("img");
+	var user_img = $("img");
 	user_img.id = "user_img";
 	user_img.src = "/files/profile/" + user.id;
 	profileimg_label.appendChild(user_img);	
@@ -68,7 +68,7 @@ window.addEventListener('load', function(){
 			event.cancleBubble = true;
 		}
 
-		var user_chat = document.createElement("div");
+		var user_chat = $("div");
 		user_chat.id = "user_chat";
 		user_chat.innerText = "ㅁ";
 		user_chat.onclick = function(){
@@ -76,7 +76,7 @@ window.addEventListener('load', function(){
 		}
 		container.appendChild(user_chat);
 		
-		var user_follow = document.createElement("div");
+		var user_follow = $("div");
 		user_follow.id = "user_follow";
 		if( user.following ){
 			user_follow.innerText = "언팔로우"
@@ -100,19 +100,19 @@ window.addEventListener('load', function(){
 		container.appendChild(user_follow);
 	}
 
-	user_name = document.createElement("div");
+	user_name = $("div");
 	user_name.id = "user_name";
 	user_name.innerHTML = user.name;
 	container.appendChild(user_name);
 
-	user_userid = document.createElement("div");
+	user_userid = $("div");
 	user_userid.id = "user_userid";
 	user_userid.innerHTML = "@" + user.uid;
 	container.appendChild(user_userid);
 
 
 /*
-	friend_obj = document.createElement("div");
+	friend_obj = $("div");
 	body.appendChild(friend_obj);
 */
 //	makeFriendList(friend_obj,user.id);

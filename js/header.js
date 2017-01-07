@@ -1,4 +1,3 @@
-
 function getCookie(cname) {
 	var cookie_array = document.cookie.split(', ');
 	for(var i = 0; i < cookie_array.length; ++i ){
@@ -54,7 +53,7 @@ function sendData_search( query ){
 	if( query ){
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-			var result = document.getElementById("head_search_result");
+			var result = $("#head_search_result");
 	console.log(xhr.responseText);
 			if( xhr.responseText != "[]" ){
 				result.innerHTML="";
@@ -130,11 +129,11 @@ function goTop( orix, oriy, desx, desy ){
 
 function head_menu_show( boolean ){
 	event.stopPropagation();
-	var head_menu = document.getElementById("head_menu");
+	var head_menu = $("#head_menu");
 	if( boolean != undefined ){
 		if( boolean ){
 			search_result_show( false );
-			document.getElementById("navi_profile").firstElementChild.style.borderRadius = "2px";
+			$("#navi_profile").firstElementChild.style.borderRadius = "2px";
 			head_menu.style.display = "block";
 		} else {
 			head_menu.style.display = "none";
@@ -147,7 +146,7 @@ function head_menu_show( boolean ){
 }
 
 function search_result_show( boolean ){
-	var search_result = document.getElementById("head_search_result");
+	var search_result = $("#head_search_result");
 	if( boolean != undefined ){
 		if( boolean ){
 			head_menu_show( false );
@@ -163,39 +162,39 @@ function search_result_show( boolean ){
 }
 
 function close_all(){
-	document.getElementById("navi_profile").firstElementChild.style.borderRadius = "";
+	$("#navi_profile").firstElementChild.style.borderRadius = "";
 	search_result_show(false);
 	head_menu_show(false);
 }
 
 window.addEventListener('load',function(){
-	var head = document.createElement("div");
+	var head = $("div");
 	document.body.insertBefore( head, document.body.firstChild );
 	head.id = "head";
 
-	var navi_tab = document.createElement("div");
+	var navi_tab = $("div");
 	navi_tab.id = "navi_tab";
 
-	var navi_tab_home = document.createElement("a");
+	var navi_tab_home = $("a");
 	navi_tab_home.href = '/';
 	navi_tab_home.id = "navi_tab_home";
 	navi_tab_home.innerText = "홈";
 	navi_tab.appendChild(navi_tab_home);
 	
-	var navi_tab_notice = document.createElement("a");
+	var navi_tab_notice = $("a");
 	navi_tab_notice.href = '/notice';
 	navi_tab_notice.id = "navi_tab_notice";
 	navi_tab_notice.innerText = "알림";
 	navi_tab.appendChild(navi_tab_notice);
 	
-	var navi_tab_chat = document.createElement("a");
+	var navi_tab_chat = $("a");
 	navi_tab_chat.href = '/chat';
 	navi_tab_chat.id = "navi_tab_chat";
 	navi_tab_chat.innerText = "쪽지";
 	navi_tab.appendChild(navi_tab_chat);
 	
 	head.appendChild(navi_tab);
-	var navi_tab_now = document.getElementById("navi_tab_" + location.pathname.substr(1));
+	var navi_tab_now = $("#navi_tab_" + location.pathname.substr(1));
 	if( navi_tab_now ){
 		navi_tab_now.style.color = "#ff5c3e";
 		navi_tab_now.style.height = "24px";
@@ -208,7 +207,7 @@ window.addEventListener('load',function(){
 	
 		
 
-	var search = document.createElement("input");
+	var search = $("input");
 	search.id = "head_search";
 	search.type = "text";
 	search.name = "query";
@@ -229,7 +228,7 @@ window.addEventListener('load',function(){
 	search.autocomplete = "off";
 	head.appendChild(search);
 
-	var search_result = document.createElement("div");
+	var search_result = $("div");
 	search_result.id = "head_search_result";
 	search_result.onmouseover = function(){
 		searchResultView = 1;
@@ -237,13 +236,13 @@ window.addEventListener('load',function(){
 	search_result.onmouseout = function(){
 		searchResultView = 0;
 	}
-	var search_none = document.createElement("div");
+	var search_none = $("div");
 	search_none.id = "head_search_none";
 	search_none.innerText = "표시할 검색 결과가 없습니다.";
 	search_result.appendChild(search_none);
 	head.appendChild(search_result);
 
-	var head_logo = document.createElement("img");
+	var head_logo = $("img");
 	head_logo.id = "head_logo";
 	head_logo.src = "/img/logo_orange.png";
 	head_logo.onclick = function(){ 
@@ -256,13 +255,13 @@ window.addEventListener('load',function(){
 	window.addEventListener('touchstart', close_all );
 	window.addEventListener('touch', close_all );
 
-	var navi_search = document.createElement("div");
+	var navi_search = $("div");
 	navi_search.id = "navi_search";
 	navi_search.className = "navi_menu";
 	navi_search.innerHTML = "<a href='/search' ><img src='/img/navi_search.jpg'></a>";
 	head.appendChild(navi_search);
 
-	var navi_profile = document.createElement("div");
+	var navi_profile = $("div");
 	navi_profile.id = "navi_profile";
 	navi_profile.className = "navi_menu";
 	navi_profile.innerHTML = "<img src='/files/profile/" + session.id + "'>";
@@ -275,7 +274,7 @@ window.addEventListener('load',function(){
 	}
 	head.appendChild(navi_profile);
 
-	var head_menu = document.createElement("div");
+	var head_menu = $("div");
 	head_menu.id = "head_menu";
 	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
 	head_menu.innerHTML += "<a href='/@" + session.uid + "'><img src='/img/menu_home.png'>| 프로필</a>";
@@ -289,7 +288,7 @@ window.addEventListener('load',function(){
 	head_menu.style.display = "none";
 	head.appendChild(head_menu);
 	//<span onclick='sessionLogOut()'>로그아웃</span>";
-	search_result = document.getElementById("head_search_result");
+	search_result = $("#head_search_result");
 
 	//getNotices(0);
 	/*
@@ -312,6 +311,5 @@ window.addEventListener('load',function(){
 socket.on( 'notice_reply_new', function( data ){
 	makeToast(data.from.name + "님의 답글 : " + data.text);
 });
-
 
 

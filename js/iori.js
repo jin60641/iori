@@ -1,3 +1,16 @@
+function $(query){
+	switch( query[0] ){
+		case '#' :
+			return document.getElementById(query.substr(1));
+		case '.' :
+			return document.getElementsByClassName(query.substr(1));
+		default :
+			return document.createElement(query);
+	}
+}
+
+
+
 //브라우저가 무엇인지 판단
 function getBrowser(){
 	if( /webkit/i.test( navigator.userAgent ) ){
@@ -11,12 +24,13 @@ function getBrowser(){
 	}
 }
 
+
 var searchResultView=0;
 function searchResultNone(){
 	if(searchResultView){
 		return 0;
 	} else {
-		document.getElementById("search_result").style.display="none";
+		$("#search_result").style.display="none";
 	}
 }
 
@@ -75,7 +89,7 @@ function fade(obj, start, end, time ) {
 }
 
 function makeToast(text){
-	var toast = document.createElement("div");
+	var toast = $("div");
 	toast.id = "toast";
 	document.body.appendChild(toast);
 	toast.innerHTML = text;

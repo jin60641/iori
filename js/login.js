@@ -1,12 +1,12 @@
 window.addEventListener('load', function(){
-	var form = document.createElement("form");
+	var form = $("form");
 	form.id = "form";
 	
-	var form_uid_label = document.createElement("label");
+	var form_uid_label = $("label");
 	form_uid_label.innerText = "아이디";
 	form_uid_label.htmlFor = "form_uid";
 	form.appendChild(form_uid_label);
-	var form_uid = document.createElement("input");
+	var form_uid = $("input");
 	form_uid.onkeydown = enterLogin;
 	form_uid.placeholder = "이메일로도 로그인 가능합니다.";
 	form_uid.id = "form_uid";
@@ -14,17 +14,17 @@ window.addEventListener('load', function(){
 	form_uid.name = "uid";
 	form.appendChild(form_uid);
 
-	var form_password_label = document.createElement("label");
+	var form_password_label = $("label");
 	form_password_label.innerText = "비밀번호";
 	form_password_label.htmlFor = "form_password";
 	form.appendChild(form_password_label);
-	var form_password = document.createElement("input");
+	var form_password = $("input");
 	form_password.onkeydown = enterLogin;
 	form_password.id = "form_password";
 	form_password.type = "password"
 	form.appendChild(form_password);
 
-	var form_auto_login = document.createElement("div");
+	var form_auto_login = $("div");
 	form_auto_login.innerText = "로그인 유지";
 	form_auto_login.style.backgroundImage = 'url("/img/login/btn_checkbox_pressed.png")';
 	form_auto_login.onclick = function(){
@@ -36,14 +36,14 @@ window.addEventListener('load', function(){
 	}
 	form_auto_login.id = "form_auto_login";
 	form.appendChild(form_auto_login);
-	var form_login_btn = document.createElement("div");
+	var form_login_btn = $("div");
 	form_login_btn.id = "form_login_btn";
 	form_login_btn.onclick = send_login;
 	form_login_btn.className = "form_btn";
 	form_login_btn.innerText = "로그인";
 	form.appendChild(form_login_btn);
 
-	var form_alert = document.createElement("div");
+	var form_alert = $("div");
 	form_alert.id = "form_alert";
 	form_alert.innerText = "'";
 	form.appendChild(form_alert);
@@ -53,14 +53,14 @@ window.addEventListener('load', function(){
 			form_uid.value =  session.uid;
 		}
 	} else {
-		var form_facebook_btn = document.createElement("div");
+		var form_facebook_btn = $("div");
 		form_facebook_btn.id = "form_facebook_btn";
 		form_facebook_btn.className = "form_btn";
 		form_facebook_btn.onclick = function(){
 			var now = new Date();
 			now.setTime(now.getTime() + (7*24*60*60*1000));
 			var returnTo = document.URL.split('/').slice(4).toString();
-			var auto = document.getElementById("form_auto_login");
+			var auto = $("#form_auto_login");
 			if( auto.style.backgroundImage == 'url("/img/login/btn_checkbox_pressed.png")' ){
 //				document.cookie = "facebook=true;expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
 			}
@@ -71,9 +71,9 @@ window.addEventListener('load', function(){
 	}
 
 
-	var form_findpw = document.createElement("text");
+	var form_findpw = $("text");
 	form_findpw.innerHTML = "비밀번호를 잊으셨나요?<a href='/findpw'>비밀번호 찾기</a>"
-	var form_register = document.createElement("text");
+	var form_register = $("text");
 	form_register.innerHTML = "아직 회원이 아니신가요?<a href='/register'>회원가입</a>"
 	form.appendChild(form_findpw);
 	form.appendChild(form_register);
@@ -81,21 +81,21 @@ window.addEventListener('load', function(){
 });
 
 function show_alert(msg){
-	var form_alert = document.getElementById("form_alert");
+	var form_alert = $("#form_alert");
 	form_alert.innerText = msg;
 	form_alert.style.opacity = 1;
 }
 
 function send_login(){
-	var uid = document.getElementById("form_uid").value;
-	var password = document.getElementById("form_password").value;
-	var auto = document.getElementById("form_auto_login");
+	var uid = $("#form_uid").value;
+	var password = $("#form_password").value;
+	var auto = $("#form_auto_login");
 	if( uid.length == 0 ){
 		show_alert("이메일을 입력해 주세요.");
-		document.getElementById("form_uid").focus();
+		$("#form_uid").focus();
 	} else if( password.length == 0 ){
 		show_alert("비밀번호 입력해 주세요.");
-		document.getElementById("form_password").focus();
+		$("#form_password").focus();
 	} else {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function(event){
