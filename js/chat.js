@@ -44,9 +44,6 @@ window.addEventListener('load', function(){
 
 	var chat_title = $("div");
 	chat_title.id = "chat_title";
-	chat_title.onclick = function(){
-		showChatLayer("true","info");
-	}
 	chat_header.appendChild(chat_title);
 
 	chat_wrap.appendChild(chat_header);
@@ -173,9 +170,7 @@ window.addEventListener('load', function(){
 	
 	document.body.appendChild(chat_wrap);	
 
-	socket.on('update_last', function(){
-		updateTitle();
-	});
+	socket.on('update_last', updateTitle );
 
 	socket.on('chat_new', function( data ){
 		getChats( 0, data.type, data.dialog_id, true, true );
@@ -412,6 +407,12 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			chat.id = "chat_" + chats[i].id;
 			chat.className = "chat";
 		
+			if( chats[i].html ){
+				chat.className = "chat_system";
+				chat.innerHTML = chats[i].html;
+				chat_panel.appendChild(chat);
+				continue;
+			}
 			var chat_profileimg = $("img");
 			chat_profileimg.src = "/files/profile/" + chats[i].from.uid + '?' + new Date();
 			chat_profileimg.className = "chat_profileimg";
@@ -581,6 +582,13 @@ function openDialog(text){
 	if( dialog != undefined ){
 		var type = dialog.id.split('_')[2];
 		var dialog_id = dialog.id.split('_').slice(3).join('_')
+		/*
+		if( dialog_id == session.uid ){
+			alert("잘못된 접근입니다");
+			return location.href = "/chat";
+			
+		}
+		*/
 		location.hash = "#" + type + "?" + dialog_id;
 
 		var dialog_id = dialog.id
@@ -694,8 +702,8 @@ function chatWrite(){
 			formdata.append("file",file_input.files[i]);
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
-				var to_id = parseInt(xhr.responseText);
-				if( to_id != NaN ){
+				var to = JSON.parse(xhr.responseText);
+				if( to.uid != session.uid ){
 					getChats(0,null,null,true,true);
 				}
 			}}
@@ -710,8 +718,8 @@ function chatWrite(){
 
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
-			var to_id = parseInt(xhr.responseText);
-			if( to_id != NaN ){
+			var to = JSON.parse(xhr.responseText);
+			if( to.uid != session.uid ){
 				getChats(0,null,null,true,true);
 			}
 		}}
@@ -733,12 +741,19 @@ function showChatMenu( boolean ){
 
 function showChatLayer( boolean, type ){
 	make_group_arr = [];
+	var uids = [];
 	if( boolean == false ){
 		var layer = $("#chat_layer");
 		if( layer ){
 			document.body.removeChild(layer);
 		}
 		return;
+	} else if( type == "invite" ){
+		var list = $('#chat_layer_list').childNodes;
+		for( var i = 0; i < list.length; ++i ){
+			uids.push(list[i].id.split('_').pop());
+		}
+		showChatLayer(false);
 	}
 
 	var layer = $("div");
@@ -767,35 +782,101 @@ function showChatLayer( boolean, type ){
 
 	var title = $("div");
 	title.id = "chat_layer_title"
-	if( type == "group" ){
-		title.innerText = "새 그룹";
-	} else {
-		title.innerText = "새 메시지";
-	}
 	box.appendChild(title);
+	if( type == "info" ){
+		title.innerText = "그룹 정보";
+		
+		var info_div = $("div");
+		info_div.id = "info_div";
+		
+		var info_img = $("div");
+		info_img.id = "info_img";
+		info_img.style.backgroundImage = "url('/files/group/" + location.hash.split('?')[1] + "')";
+		info_div.appendChild(info_img);
+	
+		var info_text = $("div");
+		info_text.id = "info_text";
+		
+		var chat_title = $("#chat_title");
 
-	var input_div = $("div");
-	input_div.id = "chat_layer_input_box";
+		var info_name = $("div");
+		info_name.id = "info_name";
+		info_name.innerText = chat_title.firstChild.wholeText;
+		info_text.appendChild(info_name);
 
-	var input = $("input");
-	input.id = "chat_layer_input"
-	input.className = "chat_search"
-	input.placeholder = "검색";
-	input.onfocus = function(){
-		updateList(this.value);
+		var info_cnt = $("div");
+		info_cnt.id = "info_cnt";
+		info_cnt.innerText = chat_title.lastChild.innerText;
+		info_text.appendChild(info_cnt);
+
+		info_div.appendChild(info_text);
+	
+		box.appendChild(info_div);
+		
+		var info_menu = $("div");
+		info_menu.id = "info_menu";
+
+		var info_invite = $("div");
+		info_invite.id = "info_menu_invite";
+		info_invite.innerText = "초대";
+		info_invite.onclick = function(){
+			showChatLayer(true,"invite");
+		}
+		info_menu.appendChild(info_invite);
+
+		var info_exit = $("div");
+		info_exit.id = "info_menu_exit";
+		info_exit.innerText = "나가기";
+		info_exit.onclick = groupExit;
+
+		info_menu.appendChild(info_exit);
+	
+		box.appendChild(info_menu)
+		
+	} else {
+		var input_div = $("div");
+		input_div.id = "chat_layer_input_box";
+
+		var input = $("input");
+		input.id = "chat_layer_input"
+		input.className = "chat_search"
+		input.placeholder = "검색";
+		input.onfocus = function(){
+			updateList(type);
+		}
+
+		input_div.appendChild(input);
+
+		box.appendChild(input_div);
+		if( type == "group" ){
+			title.innerText = "새 그룹";
+		} else if ( type == "invite" ){
+			title.innerText = "초대하기";
+			input.onfocus = function(){
+				updateList(type,uids);
+			}
+		} else {
+			title.innerText = "새 메시지";
+		}
+
+		input.onkeyup = input.onfocus;
+		input.onfoucsout = input.onfocus;
 	}
-	input.onkeyup = input.onfocus;
-	input.onfoucsout = input.onfocus;
-
-	input_div.appendChild(input);
-
-	box.appendChild(input_div);
 
 	var list = $("div");
 	list.id = "chat_layer_list";
 	list.className = "chat_layer_div";
 	box.appendChild(list);
+	layer.appendChild(box);
+	document.body.appendChild(layer);
 
+	if( type == "info" ){
+		updateList("info",location.hash.split('?')[1]);
+	} else if( type == "invite" ){
+		updateList("invite",uids);
+	} else {
+		updateList(type);
+	}
 
 	if( type == "group" ){
 		var menu = $("div");
@@ -868,17 +949,33 @@ function showChatLayer( boolean, type ){
 		menu.appendChild(next);
 
 		box.appendChild(menu);
+	} else if( type == "invite" ){
+		var menu = $("div");
+		menu.id = "chat_layer_menu";
+
+		var cancle = $("span");
+		cancle.id = "chat_layer_menu_cancle";
+		cancle.innerText = "취소";
+		cancle.className = "chat_layer_menu_active";
+		cancle.onclick = function(){
+			showChatLayer(false);
+		}
+		menu.appendChild(cancle);
+
+		var next = $("span");
+		next.id = "chat_layer_menu_next";
+		next.innerText = "초대하기";
+		menu.appendChild(next);
+
+		box.appendChild(menu);
+		
 	} else {
 		list.style.height = "calc( 100% - 118px )";
 	}
 
-	layer.appendChild(box);
-
-	document.body.appendChild(layer);
-	updateList();
 }
 
-function updateList( query ){
+function updateList( type, param ){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function(event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		if( xhr.responseText != "" ){
@@ -887,29 +984,44 @@ function updateList( query ){
 			while( list.firstChild ){
 				list.removeChild(list.firstChild);
 			}
+			if( type == "info" ){
+				results = results.users;
+			}
 			for( var i = 0; i < results.length; ++i ){
-				if( results[i].uid ){
-					if( results[i].uid == session.uid && results.length == 1 ){
-						makeList();
-					} else if( results[i].uid != session.uid ){
-						list.appendChild(makeList(results[i]));
+				if( results[i].to ){
+					results[i] = results[i].to;
+				}
+				if( type == "invite" && param.indexOf(results[i].uid) >= 0 ){
+					continue;
+				}
+				if( results[i].uid == session.uid ){
+					if( list.firstElementChild ){
+						list.insertBefore(makeList(results[i]),list.firstElementChild);	
+					} else {
+						list.insertBefore(makeList(results[i]),list.firstElementChild);	
 					}
 				} else {
-					list.appendChild(makeList(results[i].to));
+					list.appendChild(makeList(results[i]));	
 				}
 			}
 		} else {
 			makeList();
 		}
 	}}
-	if( query == "" || query == undefined ){
+
+	var input = $("#chat_layer_input");
+	if( type == "info" ){
+		xhr.open("POST", "/api/chat/getinfo", false);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+		xhr.send('dialog_id='+param);
+	} else if( input.value.length >= 1 ){
+		xhr.open("POST", "/api/user/search", false); 
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.send('query='+input.value);
+	} else {
 		xhr.open("POST", "/@" + session.uid + "/following", false);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 		xhr.send();
-	} else {
-		xhr.open("POST", "/api/user/search", false); 
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-		xhr.send('query='+query);
 	}
 }
 
@@ -936,7 +1048,15 @@ function makeList( user ){
 	dialog.appendChild(dialog_message_wrap);
 
 	var title = $("#chat_layer_title");
-	if( title.innerText.indexOf("새 그룹") >= 0 || title.innerText.indexOf("명") >= 0 ){
+	var group_flag = false;
+	if( title.innerText.indexOf("새 그룹") >= 0 || title.innerText.indexOf("대화") >= 0 ){
+		group_flag = true;
+	}
+	var invite_flag = false;
+	if( title.innerText.indexOf("초대") >= 0 ){
+		invite_flag = true;
+	}
+	if( group_flag || invite_flag ){
 		dialog.onclick = function(){
 			var id = this.id.split('_').pop();
 			var title = $("#chat_layer_title");
@@ -950,11 +1070,20 @@ function makeList( user ){
 			var next = $("#chat_layer_menu_next");
 			var cnt = make_group_arr.length;
 			if( cnt ){
-				title.innerText = cnt + " 명과 대화하기";
+				if( group_flag ){
+					title.innerText = cnt + " 명과 대화하기";
+					next.onclick = makeGroup;
+				} else {
+					title.innerText = cnt + " 명을 초대하기";
+					next.onclick = groupInvite;
+				}
 				next.className = "chat_layer_menu_active";
-				next.onclick = makeGroup;
 			} else {
-				title.innerText = "새 그룹";
+				if( group_flag ){
+					title.innerText = "새 그룹";
+				} else {
+					title.innerText = "초대하기";
+				}
 				next.className = "";
 				next.onclick = "";
 			}
@@ -1080,8 +1209,14 @@ function updateTitle(){
 			var span = $("span");
 			if( params.type == "g" ){
 				span.innerText = info.users.length + "명이 참여중입니다";
+				title.onclick = function(){
+					showChatLayer("true","info");
+				}
 			} else {
 				span.innerText = info.last;
+				title.onclick = function(){
+					location.href = "/@" + info.uid;
+				}
 			}
 			title.appendChild(span);
 		}
@@ -1094,7 +1229,31 @@ function updateTitle(){
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
 }
 
+function groupExit(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		if( xhr.responseText == "success" ){
+			location.href = "/chat";
+		}
+	}}
+	xhr.open("POST", "/api/chat/exit", false); 
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+	xhr.send('gid='+location.hash.split('?')[1]);
+}
+
 var make_group_arr = [];
+function groupInvite(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		if( xhr.responseText == "success" ){
+			showChatLayer(false);
+		}
+	}}
+	xhr.open("POST", "/api/chat/invite", false); 
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+	xhr.send('uids='+make_group_arr.toString()+'&gid='+location.hash.split('?')[1]);
+}
+
 function makeGroup(){
 	if( make_group_arr.length == 1){
 		location.hash = "#u?" + make_group_arr[0];

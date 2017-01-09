@@ -506,7 +506,7 @@ function changeReply(pid,id){
 	reply.onkeydown = function(event){ capturekey_replychange(event,pid,id)}
 	reply.lastElementChild.style.display="none";
 	reply.innerHTML += "<textarea type='text' style='margin-left:7px;' id='replychange_" + id + "' class='writereply' onkeyup='reply_resize(this)' onkeydown='reply_resize(this)' onkeypress='reply_resize(this)' placeholder='댓글을 입력하세요...' ></textarea><label for='replyinput_change_" + id + "' class='replyinput_label'></label>";
-	var replywrite = $("#replychange_'+id);
+	var replywrite = $("#replychange_"+id);
 	replywrite.value = reply.childNodes[1].childNodes[2].data;
 	reply_resize(replywrite);
 	var cancle = $("div");
@@ -572,7 +572,7 @@ function changeReply_apply(pid,id){
 	var tmp = event.target.value.toString();
 	event.stopPropagation();
 	event.preventDefault();
-	$("#replychange_'+id).value = "";
+	$("#replychange_"+id).value = "";
 	var formdata = new FormData();
 	var input = $("#replyinput_change_"+id);
 	var reply = event.target.parentNode;

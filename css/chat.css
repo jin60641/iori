@@ -242,6 +242,10 @@ input.chat_search:focus {
 	overflow-y : scroll;
 }
 
+#chat_wrap #chat_box #chat_panel .chat_system {
+	text-align : center;
+}
+
 #chat_wrap #chat_box #chat_panel .chat {
 	margin : 10px;
 }

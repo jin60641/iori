@@ -41,6 +41,7 @@ var ChatSchema = new mongoose.Schema({
 		name : { type : String }
 	},
 	type : { type : String },
+	html : { type : String },
 	text : { type : String },
 	file : { type : Boolean, default : false },
 	date : { type : Date, default : Date.now }
