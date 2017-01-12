@@ -106,6 +106,8 @@ var UserSchema = new mongoose.Schema({
     password : String,
     signUp : { type : Boolean, default : false },
 	uid : String,
+	profile : { type : Boolean, default : false },
+	header : { type : Boolean, default : false },
 	last : { type : Date },
 	date : { type : Date, default : Date.now }
 });

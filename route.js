@@ -70,13 +70,27 @@ router.get('/findpw', function( req, res ){
 	}
 });
 
-router.get( '/profile_header/:uid', function( req, res ){
+router.get( '/files/header/:uid', function( req, res ){
 	var uid = req.params['uid'];
 	fs.exists( __dirname + '/files/header/' + parseInt(uid), function( exists ){
 		if( exists ){
 			res.sendfile(__dirname + '/files/header/' + parseInt(uid) );
 		} else {
-			res.sendfile(__dirname + '/img/profile_back.png' );
+			db.Users.findOne({ uid : uid }, function( err, user ){
+				if( err ){
+					throw err;
+				} else if( user ){
+					fs.exists( __dirname + '/files/header/' + user.id, function( exists ){
+						if( exists ){
+							res.sendfile(__dirname + '/files/header/' + user.id );
+						} else {
+							res.sendfile(__dirname + '/img/profile.jpg' );
+						}
+					});
+				} else {
+					res.sendfile(__dirname + '/img/profile_back.png' );
+				}
+			});
 		}
 	});
 });

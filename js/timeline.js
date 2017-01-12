@@ -661,11 +661,14 @@ function getDateString(date,reply,change){
 		return Math.floor(gap/3600)+"시간 전";
 	} else if( gap >= 86400 ){
 		if(Math.floor(gap/86400) == 1){
+			return "어제 " + timeString;
+			/*
 			if( reply ){
 				return "어제 " + timeString;
 			} else {
 				return "<span style='padding-right:25px;'>어제</span><img src='/img/postdate.jpg' onclick='alert(\"" + dateString + "\")' style='cursor:pointer'>";
 			}
+			*/
 		} else if( reply ){
 			return dateString;
 		} else {
@@ -674,7 +677,10 @@ function getDateString(date,reply,change){
 			b.setMinutes(0);
 			b.setSeconds(0);
 			b.setMilliseconds(0);
+			return Math.floor((b.getTime()/1000 - postdate_time)/86400) + "일 전";
+			/*
 			return "<span style='padding-right:25px;'>" + Math.floor((b.getTime()/1000 - postdate_time)/86400) + "일 전</span><img src='/img/postdate.jpg' onclick='alert(\"" + dateString + "\")' style='cursor:pointer'>";
+			*/
 		}
 	}
 	return date;
@@ -1378,6 +1384,8 @@ function viewfull(obj){
 
 // 이미지 자세히보기
 function viewimg(postid,filecount,date,url){
+	document.body.style.overflowY = "scroll";
+	document.body.style.position = "fixed";
 	imgviewing = 1;
 	imglayer.style.zIndex="300";
 	imglayer.style.visibility="visible";
@@ -1409,7 +1417,7 @@ function viewimg(postid,filecount,date,url){
 		var img = $("img");
 		img.src="/files/post/" + postid + "/" + i + "?" + date;
 		if( url ){
-			img.src = url;
+			img.src = url + '?' + date;
 		}
 		imgdownload.href=img.src;
 		imgdownload.download=postid+'_'+1+'';
@@ -1502,6 +1510,8 @@ window.addEventListener('load',function(){
 			lefthover.style.display="none";
 			righthover.style.display="none";
 			imgmenuhover.style.display="none";
+			document.body.style.overflowY = "";
+			document.body.style.position = "";
 		}
 	}
 	rightbtn = $("div");

@@ -17,7 +17,7 @@ if( location.hash && location.hash == "#_=_" ){
 
 if( session == "" && document.cookie ){
 	if ( getCookie("facebook") == "true" ){
-		if( document.URL.indexOf("login") ){
+		if( document.URL.indexOf("login") >= 0 ){
 			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(4).join('-');
 		} else {
 			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(3).join('-');
@@ -305,6 +305,8 @@ window.addEventListener('load',function(){
 		}
 	});
 	*/
+
+
 });
 
 

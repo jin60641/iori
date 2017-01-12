@@ -322,12 +322,40 @@
 		display : none;
 	}
 	#head #navi_search {
+		right : 60px;
 		display : block;
 	}
 	#head #head_search_result {
 //		top : 42px;
 //		width : calc( 100vw );
 //		margin : 0px;
+	}
+	#head #navi_profile {
+		right : 20px;
+	}
+}
+
+@media screen and ( max-width : 470px ) {
+	#head #navi_tab a{
+		width : 45px;
+	}
+}
+
+@media screen and ( max-width : 360px ) {
+	#head #navi_tab a {
+		width : 45px;
+	}
+	#head #head_logo {
+		left : 165px;
+	}
+}
+
+@media screen and ( max-width : 320px ) {
+	#navi_search {
+		left : 230px;
+	}
+	#navi_profile {
+		left : 270px;
 	}
 }
 

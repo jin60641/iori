@@ -3,6 +3,7 @@ var router = express.Router();
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');
+var im = require('imagemagick');
 
 router.use(require('body-parser').urlencoded());
 router.use(busboy())
@@ -90,6 +91,8 @@ router.get('/@:uid(*)', function( req, res ){
 				id : user.id,
 				name : user.name,
 				uid : user.uid,
+				profile : user.profile,
+				header : user.header,
 				following : false
 			}
 			if( req.user && req.user.id ){
@@ -173,31 +176,64 @@ router.post( '/api/user/search', function( req, res){
 	}
 });
 
-router.post( '/api/user/headerimg', checkSession, function( req, res ){
-	var fstream;
-	req.pipe( req.busboy );
-	req.busboy.on( 'file' , function( fieldname, file, filename ){
-		var uploadedFile = __dirname + '/../files/header/' + req.user.id;
-		fstream = fs.createWriteStream( uploadedFile );
-		file.pipe( fstream );
-		fstream.on( 'close' , function(){
-			res.redirect(req.get('referer'));
-		});
-	});
+router.post( '/api/user/removeimg', checkSession, function( req, res ){
+	var type = req.body['imgtype'];
+	if( type != "profile" && type != "header" ){
+		res.end();
+	} else {
+		var file = __dirname + '/../files/' + type + '/' + req.user.id;
+		var exist = fs.existsSync( file );
+		if( exist ){
+			fs.unlink( file, function( err ){
+				if( err ){
+					throw err;
+				}
+				res.send("success")
+				var query = {};
+				query[type] = false;
+				db.Users.update({ id : req.user.id }, query ).exec();
+			});
+		}
+	}
 });
 
+router.post( '/api/user/:imgtype(*)img', checkSession, function( req, res ){
+	var type = req.params['imgtype'];
+	var point = {};
+	if( type != "profile" && type != "header" ){
+		res.end();
+	} else {
+		var point = {};
+		var uploadedFile = __dirname + '/../files/' + type + '/' + req.user.id;
+		var fstream = fs.createWriteStream( uploadedFile );
+		var origin;
 
-router.post( '/api/user/profileimg', checkSession, function( req, res ){
-	var fstream;
-	req.pipe( req.busboy );
-	req.busboy.on( 'file' , function( fieldname, file, filename ){
-		var uploadedFile = __dirname + '/../files/profile/' + req.user.id;
-		fstream = fs.createWriteStream( uploadedFile );
-		file.pipe( fstream );
-		fstream.on( 'close' , function(){
-			res.redirect(req.get('referer'));
+		req.pipe( req.busboy );
+		req.busboy.on( 'file', function( fieldname, file, filename ){
+			fstream.on( 'close' , function(){
+				if( point.x >= 0 && point.y >= 0 && point.width >= 1 && point.height >= 1 && fstream != null ){
+					var query = point.width + 'x' + point.height + '+' + point.x + '+' + point.y;
+					im.convert([ uploadedFile, '-crop', query, uploadedFile ] , function( err ){
+						if( err ){
+							throw err;
+						}
+						res.end();
+						var obj = {};
+						obj[type] = true;
+						db.Users.update({ id : req.user.id }, obj ).exec();
+					});
+				} else {
+					res.end();
+				}
+			});
+			file.pipe( fstream );
 		});
-	});
+
+		req.busboy.on( 'field', function( fieldname, val ){
+			point[fieldname] = val;
+		});
+
+	}
 });
 
 router.post( '/api/user/follow', checkSession, function( req, res ){
