@@ -399,10 +399,23 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			}
 			location.href = "/chat";
 		}
-		var chat_panel = $("#chat_panel");
+	
+
 		skip_obj[params.dialog_id] += ( chats.length - params.limit );
 		var chat_dialog_box = $("#chat_dialog_box");
 		for( var i = chats.length - 1; i >= 0; --i ){
+			var chat_panel;
+			var current_panel = $("#chat_panel");
+			var current_id = current_panel.className.split('_').pop();
+			if( current_id == session.id && chats[i].from.id == session.id ){
+				chat_panel = current_panel;
+			} else if( chats[i].type == "g" && current_id != chats[i].to.id ){
+				chat_panel = chat_panel_obj[ "chat_dialogs_g_" + chats[i].to.id ];
+			} else if( chats[i].type == "u" &&  chats[i].to.id == session.id && current_id != chats[i].from.id ){
+				chat_panel = chat_panel_obj[ "chat_dialogs_u_" + chats[i].to.id ];
+			} else {
+				chat_panel = current_panel;
+			}
 			var chat = $("div");
 			chat.id = "chat_" + chats[i].id;
 			chat.className = "chat";
@@ -410,9 +423,15 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			if( chats[i].html ){
 				chat.className = "chat_system";
 				chat.innerHTML = chats[i].html;
-				chat_panel.appendChild(chat);
+				if( scroll ){
+					chat_panel.appendChild(chat);
+					chat_panel.scrollTop += chat.clientHeight
+				} else {	
+					chat_panel.insertBefore(chat,chat_panel.firstElementChild);
+				}
 				continue;
 			}
+
 			var chat_profileimg = $("img");
 			chat_profileimg.src = "/files/profile/" + chats[i].from.uid + '?' + new Date();
 			chat_profileimg.className = "chat_profileimg";
@@ -618,15 +637,26 @@ function openDialog(text){
 	if( dialog && dialog.id && chat_panel_obj[dialog.id] ){
 		chat_box.replaceChild(chat_panel_obj[dialog.id],chat_panel);
 	} else {
-		var new_panel = chat_panel.cloneNode("true");
+		var new_panel = chat_panel.cloneNode(true);
+		new_panel.addEventListener('scroll', function(e){
+			if( this.scrollTop <= 200 ){
+				getChats(10);
+			}
+		});
+
 		while( new_panel.firstChild ){
 			new_panel.removeChild(new_panel.firstChild);
 		}
 		chat_box.replaceChild(new_panel,chat_panel);
 		new_panel.className = dialog_id;
 	}
-	
-	getChats(20,null,null,true);
+
+	var new_panel = chat_panel_obj[ "chat_dialogs_" + dialog.id.split('_')[2] + '_' + dialog.id.split('_').slice(3).join('_') ];
+	if( new_panel == undefined ){
+		getChats(20,null,null,true);
+	} else {
+		new_panel.scrollTop = new_panel.scrollHeight;
+	}
 	
 	$("#default_dialog").style.display = "none";
 	$("#send_panel").style.display = "block";
@@ -787,25 +817,28 @@ function showChatLayer( boolean, type ){
 		title.innerText = "그룹 정보";
 		
 		var info_div = $("div");
-		info_div.id = "info_div";
+		info_div.id = "chat_info_div";
 		
 		var info_img = $("div");
-		info_img.id = "info_img";
+		info_img.onclick = function(){
+			viewimg(this.style.backgroundImage.replace(/url\(|\)$|"/ig, ''),false);
+		}
+		info_img.id = "chat_info_img";
 		info_img.style.backgroundImage = "url('/files/group/" + location.hash.split('?')[1] + "')";
 		info_div.appendChild(info_img);
 	
 		var info_text = $("div");
-		info_text.id = "info_text";
+		info_text.id = "chat_info_text";
 		
 		var chat_title = $("#chat_title");
 
 		var info_name = $("div");
-		info_name.id = "info_name";
+		info_name.id = "chat_info_name";
 		info_name.innerText = chat_title.firstChild.wholeText;
 		info_text.appendChild(info_name);
 
 		var info_cnt = $("div");
-		info_cnt.id = "info_cnt";
+		info_cnt.id = "chat_info_cnt";
 		info_cnt.innerText = chat_title.lastChild.innerText;
 		info_text.appendChild(info_cnt);
 
@@ -814,10 +847,10 @@ function showChatLayer( boolean, type ){
 		box.appendChild(info_div);
 		
 		var info_menu = $("div");
-		info_menu.id = "info_menu";
+		info_menu.id = "chat_info_menu";
 
 		var info_invite = $("div");
-		info_invite.id = "info_menu_invite";
+		info_invite.id = "chat_info_menu_invite";
 		info_invite.innerText = "초대";
 		info_invite.onclick = function(){
 			showChatLayer(true,"invite");
@@ -825,7 +858,7 @@ function showChatLayer( boolean, type ){
 		info_menu.appendChild(info_invite);
 
 		var info_exit = $("div");
-		info_exit.id = "info_menu_exit";
+		info_exit.id = "chat_info_menu_exit";
 		info_exit.innerText = "나가기";
 		info_exit.onclick = groupExit;
 
@@ -970,7 +1003,7 @@ function showChatLayer( boolean, type ){
 		box.appendChild(menu);
 		
 	} else {
-		list.style.height = "calc( 100% - 118px )";
+		list.style.height = "calc( 100% - 203px )";
 	}
 
 }
@@ -1117,7 +1150,7 @@ function filterDialogs(){
 	}
 }
 
-function viewimg(url){
+function viewimg(url,controller){
 	var imglayer = $("#imglayer");
 	var imgbox = $("#imgbox");
 	var imgmenu = $("#imgmenu");
@@ -1131,7 +1164,7 @@ function viewimg(url){
 	imgbox.innerHTML = "<div id='helper'></div>";
 	imgmenuhover.style.display = "block";
 	imgmenu.style.display = "block";
-	if( /(BB|iPad|iPhone|iPod|Android)/i.test( navigator.userAgent ) ){
+	if( /(BB|iPad|iPhone|iPod|Android)/i.test( navigator.userAgent ) || controller == false ){
 		lefthover.style.display = "none";
 		righthover.style.display = "none";
 	} else {
@@ -1230,6 +1263,10 @@ function updateTitle(){
 }
 
 function groupExit(){
+	if(!confirm("정말로 그룹에서 나가시겠습니까?")){
+		return;
+	}
+
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		if( xhr.responseText == "success" ){

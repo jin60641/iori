@@ -751,8 +751,8 @@ textarea {
 	z-index : 500;
 	border : 10px solid white;
 	background-color : white;
-	max-width : calc( 100% - 40px );
-	max-height : calc( 100% - 40px );
+	max-width : calc( 100% - 60px );
+	max-height : calc( 100% - 60px );
 	display : none;
 	vertical-align : middle;
 }

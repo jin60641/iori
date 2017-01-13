@@ -91,7 +91,7 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 	var results = [];
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
-	var uid = parseInt(req.body['uid']);
+	var uid = req.body['uid'];
 	var tos = new Array();
 	async.waterfall([
 		function( callback ){
@@ -114,26 +114,28 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 				}
 			});
 		}, function( callback ){
-			db.Follows.find({ "from.id" : req.user.id }, function( err, follows ){
-				if( err ){
-					throw err;
-				} else if( follows && follows.length ){
-					for( var i = follows.length - 1 ; i >= 0 ; --i ){
-						tos.push( follows[i].to.id );
-						if( !i ){
-							callback( null );
-						}
-					}
-				} else {
-					callback( null );
-				}
-			});	
-		}, function( callback ){
-			if( uid ){
+			if( uid != undefined && parseInt( uid ) >= 1 ){
+				uid = parseInt(uid);
 				tos.push( uid );
+				callback( null );
 			} else {
 				tos.push( req.user.id );
+				db.Follows.find({ "from.id" : req.user.id }, function( err, follows ){
+					if( err ){
+						throw err;
+					} else if( follows && follows.length ){
+						for( var i = follows.length - 1 ; i >= 0 ; --i ){
+							tos.push( follows[i].to.id );
+							if( !i ){
+								callback( null );
+							}
+						}
+					} else {
+						callback( null );
+					}
+				});	
 			}
+		}, function( callback ){
 			db.Posts.find({ id : { $nin : dontsee_posts }, "user.id" : { $in : tos } } ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
 				if( err ){
 					throw err;

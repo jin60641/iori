@@ -244,6 +244,7 @@ input.chat_search:focus {
 
 #chat_wrap #chat_box #chat_panel .chat_system {
 	text-align : center;
+	margin-bottom : 10px;
 }
 
 #chat_wrap #chat_box #chat_panel .chat {
@@ -481,6 +482,63 @@ input.chat_search:focus {
 	background-color : rgba(255,92,62,1);
 	padding : 18px 0 18px 26px;
 	box-sizing : border-box;
+}
+
+#chat_layer_box #chat_info_div {
+	padding : 20px 0px 20px 23px;
+	border-bottom : 1px solid #dfdfdf;
+}
+
+#chat_layer_box #chat_info_img {
+	cursor : pointer;
+	display : inline-block;
+	width : 60px;
+	height : 60px;
+	background-size : cover;
+	border-radius : 50%;
+	vertical-align : middle;
+}
+
+#chat_layer_box #chat_info_text {
+	margin-left : 10px;
+	display : inline-block;
+	line-height : 25px;
+	vertical-align : middle;
+}
+
+#chat_layer_box #chat_info_text #chat_info_name {
+	font-weight : bold;
+	color : rgba(255,92,62,1);
+}
+
+#chat_layer_box #chat_info_text #chat_info_cnt {
+	font-size : 0.9em;
+	color : rgba(0,0,0,.7);
+}
+
+#chat_layer_box #chat_info_menu {
+	border-bottom : 1px solid #dfdfdf;
+	padding-top : 7px;
+	padding-bottom : 7px;
+}
+
+#chat_layer_box #chat_info_menu div {
+	border-right : 1px solid #ebebeb;
+	display : inline-block;
+	cursor : pointer;
+	width : 50%;
+	text-align : center;
+	padding-top : 3px;
+	padding-bottom : 3px;
+	box-sizing : border-box;
+}
+
+#chat_layer_box #chat_info_menu div:last-child {
+	border-right : 0px;
+}
+
+#chat_layer_box #chat_info_menu div:hover {
+	color : rgba(255,92,62,1);
 }
 
 #chat_layer_box #chat_layer_list {

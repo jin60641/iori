@@ -21,6 +21,7 @@ window.addEventListener('load', function(){
 	var headerimg_back = $("div");
 	headerimg_back.id = "headerimg_back";
 	if( user.header ){
+		headerimg_back.style.cursor = "pointer";
 		headerimg_back.style.backgroundImage = "url('/files/header/" + user.id + "?" + new Date().getTime() + "')";
 		headerimg_back.onclick = function(){
 			viewimg(0,1,new Date(),"/files/header/" + user.id);
@@ -43,8 +44,11 @@ window.addEventListener('load', function(){
 
 	var profileimg_back = $("div");
 	profileimg_back.id = "profileimg_back";
-	profileimg_back.onclick = function( event ){
-		viewimg(0,1,new Date(),"/files/profile/" + user.id);
+	if( user.profile ){
+		profileimg_back.style.cursor = "pointer";
+		profileimg_back.onclick = function( event ){
+			viewimg(0,1,new Date(),"/files/profile/" + user.id);
+		}
 	}
 	profileimg_back.style.backgroundImage = "url('/files/profile/" + user.id + "')";
 	profileimg_form.appendChild(profileimg_back);

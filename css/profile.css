@@ -36,7 +36,6 @@
 	background-color : white;
 	border : 5px white solid;
 	position : absolute;
-	cursor : pointer;
 	transition : top .7s ease;
 }
 
@@ -114,7 +113,6 @@
 	width : 100%;
 	height : calc( 100% - 50px );
 	min-height : 32px;
-	cursor : pointer;
 }
 
 #body #headerimg_form label {

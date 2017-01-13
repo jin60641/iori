@@ -265,9 +265,13 @@ window.addEventListener('load',function(){
 	navi_profile.id = "navi_profile";
 	navi_profile.className = "navi_menu";
 	navi_profile.innerHTML = "<img src='/files/profile/" + session.id + "'>";
-	if( session == "" || session.signUp != 1 ){
+	if( session == "" || session.signUp == false ){
 		navi_profile.onclick = function(){
-			location.href = "/login/" + document.URL.split('/').slice(3).join("-");
+			if( document.URL.indexOf("login") >= 0 ){
+				location.href = "/login/" + document.URL.split('/').slice(4).join("-");
+			} else {
+				location.href = "/login/" + document.URL.split('/').slice(3).join("-");
+			}
 		}
 	} else {
 		navi_profile.onclick = head_menu_show;
