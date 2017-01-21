@@ -51,11 +51,11 @@
 }
 
 #form #form_submit_btn {
-	background-color : #4c0e25;
+	background-color : rgba(255,92,62,0.9);
 }
 
 #form #form_submit_btn:hover {
-	background-color : #8d3958;
+	background-color : rgba(255,92,62,1);
 }
 
 #form #form_facebook_btn {

@@ -9,7 +9,10 @@ var request = require("request");
 var socketjs = require("./socket.js");
 
 router.use(require('body-parser').urlencoded());
-router.use(busboy())
+router.use(busboy());
+
+var makeObj = require('./makeObj.js');
+
 
 function checkSession( req, res, next ){
 	if( req.user && req.user.signUp ){
@@ -26,7 +29,6 @@ String.prototype.trim = function() {
 String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
-
 
 router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 	var type = req.body['type'];
@@ -80,8 +82,19 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res){
 	}
 });
 
+router.get( '/post/:pid', function( req, res ){
+	getPost( req, function( post ){
+		makeObj( req, res, "post", { "post" : JSON.stringify(post) });
+	});
+});
 
 router.post( '/api/newsfeed/getposts', function( req, res ){
+	getPost( req, function( posts ){
+		res.send( posts );
+	});
+});
+
+function getPost( req, cb ){
 	if( req.user && req.user.id ){
 	} else {
 		req.user = { id : 0 };
@@ -92,7 +105,15 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
 	var uid = req.body['uid'];
+	var pid = parseInt(req.body['pid']);
 	var tos = new Array();
+	console.log(skip,limit);
+	if( skip >= 0 == false ){
+		skip = 0;
+	}
+	if( limit >= 0 == false ){
+		limit = 1;
+	}
 	async.waterfall([
 		function( callback ){
 			db.Dontsees.find({ uid : req.user.id }, function( err, dontsees ){
@@ -136,11 +157,15 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 				});	
 			}
 		}, function( callback ){
-			db.Posts.find({ id : { $nin : dontsee_posts }, "user.id" : { $in : tos } } ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
+			var query;
+			if( pid > 0 ){
+				query = { id : pid };
+			} else {
+				query = { id : { $nin : dontsee_posts }, "user.id" : { $in : tos } };
+			}
+			db.Posts.find( query ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
 				if( err ){
 					throw err;
-				} else if( posts.length <= 0 ){
-					res.send("[]")
 				} else {
 					callback( null, posts );
 				}
@@ -149,40 +174,43 @@ router.post( '/api/newsfeed/getposts', function( req, res ){
 	],function( err, posts ){
 		if( err ){
 			throw err;
-		}
-		async.forEach( posts , function( post, key, callback ){
-			db.Replys.find({ id : { $nin : dontsee_replys }, pid : post.id }).sort({ id : -1 }).exec( function( err, reply ){
-				var replys;
-				if( reply.length > 4 ){
-					replys = reply.slice(0,4)
-					replys.push("더있어요");
-				} else {
-					replys = reply;
-				}
-				db.Favorites.findOne({ pid : post.id, uid : req.user.id }, function( err, favorite ){
-					var isfavorite = false;
-					if( favorite ){
-						isfavorite = true;
+		} else if( posts.length > 0 ){
+			async.forEach( posts , function( post, key, callback ){
+				db.Replys.find({ id : { $nin : dontsee_replys }, pid : post.id }).sort({ id : -1 }).exec( function( err, reply ){
+					var replys;
+					if( reply.length > 4 ){
+						replys = reply.slice(0,4)
+						replys.push("더있어요");
+					} else {
+						replys = reply;
 					}
-					var result = {
-						id : post.id,
-						user : post.user,
-						text : post.text,
-						html : post.html,
-						file : post.file,
-						date : post.date,
-						reply : replys,
-						isfavorite : isfavorite
-					};
-					results.push( result );
-					if( results.length == posts.length ){
-						res.send({ post : results });
-					}
+					db.Favorites.findOne({ pid : post.id, uid : req.user.id }, function( err, favorite ){
+						var isfavorite = false;
+						if( favorite ){
+							isfavorite = true;
+						}
+						var result = {
+							id : post.id,
+							user : post.user,
+							text : post.text,
+							html : post.html,
+							file : post.file,
+							date : post.date,
+							reply : replys,
+							isfavorite : isfavorite
+						};
+						results.push( result );
+						if( results.length == posts.length ){
+							cb( results );
+						}
+					});
 				});
 			});
-		});
+		} else {
+			cb([]);
+		}
 	});
-});
+};
 
 router.post( '/api/newsfeed/getreplys' , checkSession, function( req, res ){
 	var postid = parseInt(req.body['postid']);
@@ -255,21 +283,42 @@ router.post( '/api/newsfeed/removepost' , checkSession, function( req, res){
 
 router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, res ){
 	var replyid;
-	var postid = parseInt(req.params['postid']);
+	var pid = parseInt(req.params['postid']);
 	var filecount = 0;
 	var text = "";
-	db.Replys.findOne().sort({id:-1}).exec(	function( err, result ){
-		var replyid;
-		if( !result ){
-			replyid = 1;
-		} else {
-			replyid = result.id + 1;
+	var post;
+	async.waterfall([
+		function( callback ){
+			db.Posts.findOne({ id : pid }, function( err, result ){
+				if( err ){
+					throw err;
+				} else if( result ){
+					post = result;
+					callback( null );
+				} else {
+					res.end();
+				}
+			});
+		}, function( callback ){
+			db.Replys.findOne().sort({id:-1}).exec(	function( err, result ){
+				if( err ){
+					throw err;
+				} else {
+					if( result ){
+						replyid = result.id + 1;
+					} else {
+						replyid = 1;
+					}
+					callback( null );
+				}
+			});
 		}
+	], function( err ){
 		req.pipe( req.busboy );
 		req.busboy.on( 'file', function( fieldname, file, filename ){
 			var fstream;
 			filecount++;
-			var uploadedFile = __dirname + '/../files/post/' + postid  + '/reply' ;
+			var uploadedFile = __dirname + '/../files/post/' + pid  + '/reply' ;
 			fstream = fs.createWriteStream( uploadedFile + '/' + replyid );
 			file.pipe( fstream );
 			fstream.on( 'close' , function(){	});
@@ -288,13 +337,17 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 						name : req.user.name,
 						uid : req.user.uid
 					},
-					pid : postid,
+					pid : pid,
 					text : text,
 					file : filecount
 				});
 				current.save( function( error ){
 					if( error ){
 						throw error;
+					}
+					if( post.user.id != req.user.id ){
+					//	makeNotice( post.user, req.user, "reply", current.id );
+						io.sockets.connected[socket_ids[post.uid]].emit( 'reply_new', current );
 					}
 					db.Follows.find({ "to.id" : req.user.id }, function( err, followers ){
 						if( err ){

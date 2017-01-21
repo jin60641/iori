@@ -2,18 +2,17 @@
 <html>
 	<head>
 		<% include ./header %>
-		<script>
+		<script async>
 		user = "<%= user %>".replace(/&#34;/g,'"');
 		if( user.length > 0 ){
 	    	user = JSON.parse(user)
 		}
 		</script>
-		<script src="/js/iori.js"></script>
-		<link rel="stylesheet" type="text/css" href="/css/style.css">
-		<link rel="stylesheet" type="text/css" href="/css/profile.css">
-		<link rel="stylesheet" type="text/css" href="/css/timeline.css">
-		<script src="/js/timeline.js"></script>
-		<script src="/js/profile.js"></script>
+		<script async src="/js/iori.js"></script>
+		<link async rel="stylesheet" type="text/css" href="/css/profile.css">
+		<link async rel="stylesheet" type="text/css" href="/css/timeline.css">
+		<script async src="/js/timeline.js"></script>
+		<script async src="/js/profile.js"></script>
 		<% include ./footer %>
 	</head>
 	<body>

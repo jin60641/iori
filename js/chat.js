@@ -403,6 +403,9 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 
 		skip_obj[params.dialog_id] += ( chats.length - params.limit );
 		var chat_dialog_box = $("#chat_dialog_box");
+		if( !scroll ){
+			chats.reverse();
+		}
 		for( var i = chats.length - 1; i >= 0; --i ){
 			var chat_panel;
 			var current_panel = $("#chat_panel");

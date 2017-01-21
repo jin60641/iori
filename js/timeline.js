@@ -762,10 +762,10 @@ function getReplys(obj,limit){
 	var replywrap = obj.parentNode;
 	var reply_skip = 0;
 	if(obj.id.substr(10,1) == '_'){
-		var postid = obj.id.substr(11);
+		var pid = obj.id.substr(11);
 		reply_skip = 0;
 	} else {
-		var postid = obj.id.substr(10);
+		var pid = obj.id.substr(10);
 		reply_skip = replywrap.childElementCount-4;
 	}
 	var xhr = new XMLHttpRequest();
@@ -773,9 +773,9 @@ function getReplys(obj,limit){
 		var xhrResult = JSON.parse(xhr.responseText);
 		var Replys = xhrResult.sort(function(a,b){if(a.id < b.reply_id){return -1;} else{ return 1;}});
 		for( var i = Replys.length - 1; i>=0;i--){
-			var reply = $("div");
 			if( typeof(Replys[i]) == "string" ){
-				reply.id = 'replymore_' + postid;
+				var reply = $("div");
+				reply.id = 'replymore_' + pid;
 				reply.className = 'reply_more';
 				reply.innerHTML += "이전 댓글 보기";
 				reply.onclick= function(){
@@ -783,40 +783,12 @@ function getReplys(obj,limit){
 				}
 				replywrap.insertBefore(reply,replywrap.firstElementChild);
 			} else {
-				reply.id = 'reply_' + postid + '_' + Replys[i].id;
-				reply.className = 'reply';
-				var a = $("a");
-				a.href = "/@" + Replys[i].user.uid;
-				reply.appendChild(a);
-				a.innerHTML += "<img src='/files/profile/" + Replys[i].user.uid + "' class='profileimg_reply'>";
-				if( Replys[i].file ){
-					reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Replys[i].user.uid + '">' +  Replys[i].user.name.toString() + "</a>" + Replys[i].text.toString() + '<br><img src="/files/post/' + postid + '/reply/' + Replys[i].id + "?" + Replys[i].date + '"><br><span id="date_' + new Date(Replys[i].date).getTime() + '" class="date">' + getDateString(Replys[i].date,1) + '</span></div>';
-				} else {
-					reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Replys[i].user.uid + '">' +  Replys[i].user.name.toString() + "</a>" + Replys[i].text.toString() + '<br><span id="date_' + new Date(Replys[i].date).getTime() + '" class="date">' + getDateString(Replys[i].date,1) + '</span></div>';
-				}
-				reply_menu_btn = reply.lastElementChild.firstChild;
-				reply_menu = $("div");
-				reply_menu_btn.appendChild(reply_menu);
-				reply_menu_btn.onclick = function(event){
-					event.stopPropagation();
-					event.preventDefault();
-					this.firstElementChild.style.display="block";
-				}
-				reply_menu.className = "reply_menu";
+				var reply = makeReply(Replys[i],pid);
 				if( obj.id.substr(10,1) == '_'){
 					reply.style[getBrowser()+"Animation"] = 'fade_post .5s linear';
 					replywrap.insertBefore(reply,replywrap.lastElementChild.previousElementSibling.previousElementSibling);
 				} else {
 					replywrap.insertBefore(reply,replywrap.firstElementChild);
-				}
-				if( session.uid == Replys[i].user.uid ){
-					reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
-					reply_menu.innerHTML += "<div onclick='removeReply(" + postid + "," + Replys[i].id + ")' >댓글삭제</div>";
-					reply_menu.innerHTML += "<div onclick='changeReply(" + postid + "," + Replys[i].id + ")' >댓글수정</div>";
-				} else {
-					reply_menu.innerHTML += "<div onclick='dontseeReply(" + postid + "," + Replys[i].id + ")' >보고싶지 않습니다</div>";
-					reply_menu.innerHTML += "<div onclick='reportReply(" + postid + "," + Replys[i].id + ")' >댓글신고</div>";
-					reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
 				}
 			}
 		}
@@ -824,12 +796,264 @@ function getReplys(obj,limit){
 			replywrap.removeChild(obj);
 		}
 	}}
-	xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+postid+'&skip='+reply_skip+'&limit='+limit);
+	xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+pid+'&skip='+reply_skip+'&limit='+limit);
+}
+
+function makePreview( link, text, Post, inside ){
+	var linkxhr = new XMLHttpRequest();
+	linkxhr.onreadystatechange = function (event){ if(linkxhr.readyState == 4 && linkxhr.status == 200) {
+		if( linkxhr.responseText != "" ){
+			var metas = JSON.parse(linkxhr.responseText);
+			var preview = $("a");
+			preview.href = link[0];
+			preview.target = "_blank";
+			preview.id = "link_preview_" + Post.id;
+			preview.className = "link_preview";
+			var preview_img = $("img");
+			preview_img.id = link[0];
+			preview_img.src = metas.image;
+			preview_img.onclick = function(event){
+				var vid;
+				var vindex;
+				vindex = this.id.indexOf("youtu.be/");
+				if( vindex >= 0 ){
+					vid = this.id.substr( vindex + 9 );
+				}
+				vindex = this.id.indexOf("youtube.com/watch?v=");
+				if( vindex >= 0 ){	
+					vid = this.id.substr( vindex + 20 );
+				}
+				if( vid != "" && vid != null ){
+					event.stopPropagation();
+					event.preventDefault();
+					this.nextElementSibling.className = "link_preview_text_big";
+					var iframe = $("iframe");
+					iframe.style.height = this.clientHeight;
+					iframe.src = "https://youtube.com/embed/"  + vid.split('&')[0]; 
+					iframe.allowFullscreen = true;
+					this.parentNode.replaceChild(iframe,this);
+				}
+			}
+			var preview_title = $("div");
+			preview_title.innerHTML = metas.title;
+			preview_title.className = "link_preview_title";
+			var preview_description = $("div");
+			preview_description.innerHTML = metas.description;
+			preview_description.className = "link_preview_description";
+			preview.appendChild( preview_img );
+			var preview_text = $("div");
+			preview.appendChild( preview_text );
+			preview_text.appendChild( preview_title );
+			preview_text.appendChild( preview_description );
+			preview_img.onload = function(){
+				if( preview_img.naturalWidth >= preview_img.parentNode.clientWidth ){
+					preview_img.className = "link_preview_img_big";
+					preview_text.className = "link_preview_text_big";
+				} else {
+					preview_img.className = "link_preview_img_small";
+					preview_text.className = "link_preview_text_small";
+				}
+			}
+			inside.appendChild( preview );
+		}
+	}};
+	linkxhr.open("POST", "/api/newsfeed/linkpreview", false); linkxhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); linkxhr.send('link='+link[0]);
+}
+
+function makeReply( Reply, pid ){
+	var reply = $("div");
+	reply.id = 'reply_' + pid + '_' + Reply.id;
+	reply.className = 'reply';
+	var a = $("a");
+	a.href = "/@" + Reply.user.uid;
+	reply.appendChild(a);
+	a.innerHTML += "<img src='/files/profile/" + Reply.user.uid + "'  class='profileimg_reply'>";
+	if( Reply.file ){
+		reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Reply.user.uid + '">' +  Reply.user.name.toString() + "</a>" + Reply.text.toString() + '<br><img src="/files/post/'+ pid + '/reply/' + Reply.id + "?" + Reply.date + '">' + "<br><span id='date_" + new Date(Reply.date).getTime() + "' class='date'>" + getDateString(Reply.date,1) + '</span></div>';
+	} else {
+		reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Reply.user.uid + '">' +  Reply.user.name.toString() + "</a>" + Reply.text.toString() + "<br><span id='date_" + new Date(Reply.date).getTime() + "' class='date'>" + getDateString(Reply.date,1) + '</span></div>';
+	}
+	reply_menu_btn = reply.lastElementChild.firstChild;
+	reply_menu_btn.onmouseleave=function(event){
+		event.stopPropagation();
+		event.preventDefault();
+		this.firstElementChild.style.display="none";
+	}
+	var reply_menu = $("div");
+	reply_menu_btn.appendChild(reply_menu);
+	reply_menu_btn.onclick = function(event){
+		event.stopPropagation();
+		event.preventDefault();
+		this.firstElementChild.style.display="block" 
+	}
+	reply_menu.className = "reply_menu";
+	if( session.uid == Reply.user.uid ){
+		reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
+		reply_menu.innerHTML += "<div onclick='removeReply(" + pid + "," + Reply.id + ")' >댓글삭제</div>";
+		reply_menu.innerHTML += "<div onclick='changeReply(" + pid + "," + Reply.id + ")' >댓글수정</div>";
+	} else {
+		reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
+		reply_menu.innerHTML += "<div onclick='dontseeReply(" + pid + "," + Reply.id + ")' >보고싶지 않습니다</div>";
+		reply_menu.innerHTML += "<div onclick='reportReply(" + pid + "," + Reply.id + ")' >댓글신고</div>";
+	}
+	return reply;
+}
+
+function makePost( Post ){
+	var Replys = [];
+	if( Post.reply ){
+		for( var j = Post.reply.length - 1; j>=0;j--){
+			Replys.push(Post.reply[j]);
+		}
+		Replys.sort(function(a,b){if(a.id < b.id){return 1;} else{ return -1;}});
+	}
+	var div = $("div");
+	div.id = 'post_' + Post.id;
+	div.className = 'post';
+	var a = $("a");
+	a.href = '/@'+Post.user.uid;
+	a.className = 'post_name';
+	a.innerHTML += "<img src='/files/profile/" + Post.user.uid + "' class='profileimg_post'>";
+	a.innerHTML += Post.user.name.toString();
+	div.appendChild(a);
+	var inside = $("div");
+	inside.id = "post_inside_" + Post.id;
+	if( Post.text && Post.text.length >= 1 ){
+		//inside.innerHTML+="<span>"+Post.text.toString() +"</span>";
+		var textspan = $("span");
+		inside.appendChild(textspan);
+		var texts = Post.text.split("\r\n");
+		var lncnt = 0;
+		for( var k = 0; k < texts.length; ++k ){
+			++lncnt;
+			if( texts[k].length > (postwrap.clientWidth+20)/12.8 ){
+				++lncnt;
+			}
+			if( lncnt > 5 ){
+				var textmore = $("span");
+				textmore.innerHTML = "더보기";
+				textmore.style.color = "#f15c3e";
+				textmore.style.fontWeight = "bold";
+				textmore.id = Post.text.replace(/\r\n/g,"<br />");
+				
+				textmore.addEventListener("click",function(){
+					this.parentNode.innerHTML = this.id;
+				});
+				textspan.appendChild(textmore);
+				break;
+			} else {
+				var textindex = 0;
+				while(1){
+					var link = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
+					if( link != null ){
+						var replace_str = "<a target='_blank' href='" + link[0] + "'>" + link[0] + "</a>";
+						textindex += link.index + replace_str.length ;
+						makePreview(link,texts[k],Post,inside);
+						texts[k] = texts[k].replace( link[0].toString(), replace_str );
+					} else {
+						break;
+					}
+				}
+				textspan.innerHTML += texts[k].toString() + '<br />';
+			}
+		}
+	}
+	if( Post.html ){
+		inside.innerHTML = Post.html;	
+	}
+	if( Post.file ){
+		/*
+		var span = $("span");
+		span.className = "post_span";
+		span.addEventListener('click', function(e){
+			$("#postimg_" + e.target.parentNode.id.substr(5)).click();
+		}, false);
+		span.innerHTML = Post.file ;
+		div.insertBefore(span,div.firstElementChild.nextElementSibling);
+		*/
+		div.innerHTML+="<span class='post_span' onclick='$(\"#postimg_" + Post.id + "\").click();'>" + Post.file + "</span>";
+		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
+		/*
+		//수정됨 표시 ( 모바일화면작아서 일단은 보류 )
+		if( Post.change ){
+			div.innerHTML+="<span class='post_changed' onclick='alert(\"" + getDateString(Post.change,false,true) + "\")'>수정됨</span>";
+			inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.change + "' id='postimg_" + Post.id + "' class='postimg' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.change + "\")' >";
+		} else {
+		*/
+		inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.date + "' id='postimg_" + Post.id + "' class='postimg' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.date + "\")' >";
+		//}
+	} else {
+		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
+		/* 수정됨
+		if( Post.change ){
+			div.innerHTML+="<span class='post_changed' onclick='alert(\"" + getDateString(Post.change,false,true) + "\")'>수정됨</span>";
+		}
+		*/
+	}
+	if( Post.isfavorite ){
+		div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Post.id + "' ><img src='/img/star.png'></span>";
+	}
+	inside.className="post_inside";
+	div.appendChild(inside);
+	var btn = $("div");
+	btn.className = 'postmenubtn';
+	btn.addEventListener('click', function(){ showmenu(this) });
+	div.appendChild(btn);
+	var menu = $("div")
+	menu.id = 'menu_' + Post.id;
+	menu.className = 'post_menu';
+	if( session.id == Post.user.id ){
+		menu.innerHTML="<div id='postremove_" + Post.id + "' class='postremove' onclick='removePost(" + Post.id + ")'>게시글삭제</div>";
+		menu.innerHTML+="<div id='changepost_" + Post.id + "' onclick='changePost(" + Post.id + ")'>게시글수정</div>";
+	} else {
+		menu.innerHTML+="<div id='dontsee_" + Post.id + "' onclick='dontsee(" + Post.id + ")'>보고싶지 않습니다</div>";
+	}
+	if( Post.isfavorite ){
+		menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',0' + ")'>관심글해제</div>";
+	} else {
+		menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',1' + ")'>관심글등록</div>";
+	}
+	div.appendChild(menu);
+
+	var replywrap = $("div");
+	replywrap.className = 'replywrap';
+	div.appendChild(replywrap);
+	for( var i = Replys.length - 1; i >=0; i-- ){
+		if(typeof(Replys[i]) == "string"){
+			var reply = $("div");
+			reply.id = 'replymore_' + Post.id;
+			reply.className = 'reply_more';
+			reply.innerHTML += "이전 댓글 보기";
+			reply.onclick= function(){
+				getReplys(this,8);
+			}
+			replywrap.insertBefore(reply,replywrap.firstElementChild);
+		} else {
+			replywrap.appendChild(makeReply(Replys[i],Post.id));
+		}
+	}
+	var reply = $("div");
+	reply.onkeydown = function(event){ capturekey(event,this)}
+	reply.id = 'replywrite_' + Post.id;
+	reply.className = 'reply';
+	reply.innerHTML += "<img src='/files/profile/" + session.uid + "' class='profileimg_reply'>";
+	reply.innerHTML += "<textarea type='text' class='writereply' onkeyup='reply_resize(this)' onkeydown='reply_resize(this)' onkeypress='reply_resize(this)' placeholder='댓글을 입력하세요...' ></textarea><label for='replyinput_" + Post.id + "' class='replyinput_label'></label>"
+	replywrap.appendChild(reply);
+	var reply_upload = $("input");
+	reply_upload.type = "file";
+	reply_upload.accept = 'image/*';
+	reply_upload.id="replyinput_" + Post.id;
+	reply_upload.onchange = function(event){ openfile_reply(event) }
+	replywrap.appendChild(reply_upload);
+	var reply_output = $("div");
+	reply_output.className = "replyoutput";
+	reply_output.id = "replyoutput_" + Post.id;
+	replywrap.appendChild(reply_output);
+	return div;
 }
 
 //게시글 불러오기
 function getPosts(limit){
-	
 	if( $("#post_none") ){
 		post_wrap.removeChild($("#post_none").parentNode);
 	}
@@ -846,254 +1070,13 @@ function getPosts(limit){
 		if (xhr.readyState == 4 && xhr.status == 200){
 			if(xhr.responseText!='[]'){
 				var xhrResult = JSON.parse(xhr.responseText);
-				var Posts = xhrResult.post.sort(function(a,b){if(a.id < b.id){return -1;} else{ return 1;}});
+				var Posts = xhrResult.sort(function(a,b){if(a.id < b.id){return -1;} else{ return 1;}});
 				posts += Posts.length;
 				if(Posts.length != limit){
 					skip = posts;
 				}
-				for(var i = Posts.length-1; i>=0; --i){
-					var Replys = [];
-					if( Posts[i].reply ){
-						for( var j = Posts[i].reply.length - 1; j>=0;j--){
-							Replys.push(Posts[i].reply[j]);
-						}
-						Replys.sort(function(a,b){if(a.id < b.id){return 1;} else{ return -1;}});
-					}
-					var div = $("div");
-					div.id = 'post_' + Posts[i].id;
-					div.className = 'post';
-					var a = $("a");
-					a.href = '/@'+Posts[i].user.uid;
-					a.className = 'post_name';
-					a.innerHTML += "<img src='/files/profile/" + Posts[i].user.uid + "' class='profileimg_post'>";
-					a.innerHTML += Posts[i].user.name.toString();
-					div.appendChild(a);
-					var inside = $("div");
-					inside.id = "post_inside_" + Posts[i].id;
-					if( Posts[i].text && Posts[i].text.length >= 1 ){
-						//inside.innerHTML+="<span>"+Posts[i].text.toString() +"</span>";
-						var textspan = $("span");
-						inside.appendChild(textspan);
-						var texts = Posts[i].text.split("\r\n");
-						var lncnt = 0;
-						for( var k = 0; k < texts.length; ++k ){
-							++lncnt;
-							if( texts[k].length > (postwrap.clientWidth+20)/12.8 ){
-								++lncnt;
-							}
-							if( lncnt > 5 ){
-								var textmore = $("span");
-								textmore.innerHTML = "더보기";
-								textmore.style.color = "#f15c3e";
-								textmore.style.fontWeight = "bold";
-								textmore.id = Posts[i].text.replace(/\r\n/g,"<br />");
-								
-								textmore.addEventListener("click",function(){
-									this.parentNode.innerHTML = this.id;
-								});
-								textspan.appendChild(textmore);
-								break;
-							} else {
-								var textindex = 0;
-								while(1){
-									var link = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
-									if( link != null ){
-										var replace_str = "<a target='_blank' href='" + link[0] + "'>" + link[0] + "</a>";
-										textindex += link.index + replace_str.length ;
-										texts[k] = texts[k].replace( link[0].toString(), replace_str );
-										var linkxhr = new XMLHttpRequest();
-										linkxhr.onreadystatechange = function (event){ if(linkxhr.readyState == 4 && linkxhr.status == 200) {
-											if( linkxhr.responseText != "" ){
-												var metas = JSON.parse(linkxhr.responseText);
-												var preview = $("a");
-												preview.href = link[0];
-												preview.target = "_blank";
-												preview.id = "link_preview_" + Posts[i].id;
-												preview.className = "link_preview";
-												var preview_img = $("img");
-												preview_img.id = link[0];
-												preview_img.src = metas.image;
-												preview_img.onclick = function(event){
-													var vid;
-													var vindex;
-													vindex = this.id.indexOf("youtu.be/");
-													if( vindex >= 0 ){
-														vid = this.id.substr( vindex + 9 );
-													}
-													vindex = this.id.indexOf("youtube.com/watch?v=");
-													if( vindex >= 0 ){	
-														vid = this.id.substr( vindex + 20 );
-													}
-													if( vid != "" && vid != null ){
-														event.stopPropagation();
-														event.preventDefault();
-														this.nextElementSibling.className = "link_preview_text_big";
-														var iframe = $("iframe");
-														iframe.style.height = this.clientHeight;
-														iframe.src = "https://youtube.com/embed/"  + vid.split('&')[0]; 
-														iframe.allowFullscreen = true;
-														this.parentNode.replaceChild(iframe,this);
-													}
-												}
-												var preview_title = $("div");
-												preview_title.innerHTML = metas.title;
-												preview_title.className = "link_preview_title";
-												var preview_description = $("div");
-												preview_description.innerHTML = metas.description;
-												preview_description.className = "link_preview_description";
-												preview.appendChild( preview_img );
-												var preview_text = $("div");
-												preview.appendChild( preview_text );
-												preview_text.appendChild( preview_title );
-												preview_text.appendChild( preview_description );
-												inside.appendChild( preview );
-												preview_img.onload = function(){
-													if( preview_img.naturalWidth >= preview_img.parentNode.clientWidth ){
-														preview_img.className = "link_preview_img_big";
-														preview_text.className = "link_preview_text_big";
-													} else {
-														preview_img.className = "link_preview_img_small";
-														preview_text.className = "link_preview_text_small";
-													}
-												}
-											}
-										}};
-										linkxhr.open("POST", "/api/newsfeed/linkpreview", false); linkxhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); linkxhr.send('link='+link[0]);
-									} else {
-										break;
-									}
-								}
-								textspan.innerHTML += texts[k].toString() + '<br />';
-							}
-						}
-					}
-					if( Posts[i].html ){
-						inside.innerHTML = Posts[i].html;	
-					}
-					if( Posts[i].file ){
-						/*
-						var span = $("span");
-						span.className = "post_span";
-						span.addEventListener('click', function(e){
-							$("#postimg_" + e.target.parentNode.id.substr(5)).click();
-						}, false);
-						span.innerHTML = Posts[i].file ;
-						div.insertBefore(span,div.firstElementChild.nextElementSibling);
-						*/
-
-						div.innerHTML+="<span class='post_span' onclick='$(\"#postimg_" + Posts[i].id + "\").click();'>" + Posts[i].file + "</span>";
-						div.innerHTML+="<span id='date_" + new Date(Posts[i].date).getTime() + "' class='date'>" + getDateString(Posts[i].date) + "</span>";
-
-						/*
-						//수정됨 표시 ( 모바일화면작아서 일단은 보류 )
-						if( Posts[i].change ){
-							div.innerHTML+="<span class='post_changed' onclick='alert(\"" + getDateString(Posts[i].change,false,true) + "\")'>수정됨</span>";
-							inside.innerHTML+="<img src='/files/post/" + Posts[i].id + "/1" + "?" + Posts[i].change + "' id='postimg_" + Posts[i].id + "' class='postimg' onclick='viewimg(" + Posts[i].id + "," + Posts[i].file + ",\"" + Posts[i].change + "\")' >";
-						} else {
-						*/
-
-						inside.innerHTML+="<img src='/files/post/" + Posts[i].id + "/1" + "?" + Posts[i].date + "' id='postimg_" + Posts[i].id + "' class='postimg' onclick='viewimg(" + Posts[i].id + "," + Posts[i].file + ",\"" + Posts[i].date + "\")' >";
-						//}
-					} else {
-						div.innerHTML+="<span id='date_" + new Date(Posts[i].date).getTime() + "' class='date'>" + getDateString(Posts[i].date) + "</span>";
-						/* 수정됨
-						if( Posts[i].change ){
-							div.innerHTML+="<span class='post_changed' onclick='alert(\"" + getDateString(Posts[i].change,false,true) + "\")'>수정됨</span>";
-						}
-						*/
-					}
-					if( Posts[i].isfavorite ){
-						div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Posts[i].id + "' ><img src='/img/star.png'></span>";
-					}
-					inside.className="post_inside";
-					div.appendChild(inside);
-					var btn = $("div");
-					btn.className = 'postmenubtn';
-					btn.addEventListener('click', function(){ showmenu(this) });
-					div.appendChild(btn);
-					var menu = $("div")
-					menu.id = 'menu_' + Posts[i].id;
-					menu.className = 'post_menu';
-					if( session.id == Posts[i].user.id ){
-						menu.innerHTML="<div id='postremove_" + Posts[i].id + "' class='postremove' onclick='removePost(" + Posts[i].id + ")'>게시글삭제</div>";
-						menu.innerHTML+="<div id='changepost_" + Posts[i].id + "' onclick='changePost(" + Posts[i].id + ")'>게시글수정</div>";
-					} else {
-						menu.innerHTML+="<div id='dontsee_" + Posts[i].id + "' onclick='dontsee(" + Posts[i].id + ")'>보고싶지 않습니다</div>";
-					}
-					if( Posts[i].isfavorite ){
-						menu.innerHTML+="<div id='favorite_" + Posts[i].id + "' onclick='favorite(" + Posts[i].id + ',0' + ")'>관심글해제</div>";
-					} else {
-						menu.innerHTML+="<div id='favorite_" + Posts[i].id + "' onclick='favorite(" + Posts[i].id + ',1' + ")'>관심글등록</div>";
-					}
-					div.appendChild(menu);
-					var replywrap = $("div");
-					replywrap.className = 'replywrap';
-					div.appendChild(replywrap);
-					for( var j = Replys.length - 1; j>=0;j--){
-						var reply = $("div");
-						if(typeof(Replys[j]) == "string"){
-							reply.id = 'replymore_' + Posts[i].id;
-							reply.className = 'reply_more';
-							reply.innerHTML += "이전 댓글 보기";
-							reply.onclick= function(){
-								getReplys(this,8);
-							}
-							replywrap.insertBefore(reply,replywrap.firstElementChild);
-						} else {
-							reply.id = 'reply_' + Posts[i].id + '_' + Replys[j].id;
-							reply.className = 'reply';
-							var a = $("a");
-							a.href = "/@" + Replys[j].user.uid;
-							reply.appendChild(a);
-							a.innerHTML += "<img src='/files/profile/" + Replys[j].user.uid + "'  class='profileimg_reply'>";
-							if( Replys[j].file ){
-								reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Replys[j].user.uid + '">' +  Replys[j].user.name.toString() + "</a>" + Replys[j].text.toString() + '<br><img src="/files/post/'+ Posts[i].id + '/reply/' + Replys[j].id + "?" + Posts[i].date + '">' + "<br><span id='date_" + new Date(Replys[j].date).getTime() + "' class='date'>" + getDateString(Replys[j].date,1) + '</span></div>';
-							} else {
-								reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Replys[j].user.uid + '">' +  Replys[j].user.name.toString() + "</a>" + Replys[j].text.toString() + "<br><span id='date_" + new Date(Replys[j].date).getTime() + "' class='date'>" + getDateString(Replys[j].date,1) + '</span></div>';
-							}
-							reply_menu_btn = reply.lastElementChild.firstChild;
-							reply_menu = $("div");
-							reply_menu_btn.appendChild(reply_menu);
-							reply_menu_btn.onclick = function(event){
-								event.stopPropagation();
-								event.preventDefault();
-								this.firstElementChild.style.display="block" 
-							}
-							reply_menu.className = "reply_menu";
-							if( session.uid == Replys[j].user.uid ){
-								reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
-								reply_menu.innerHTML += "<div onclick='removeReply(" + Posts[i].id + "," + Replys[j].id + ")' >댓글삭제</div>";
-								reply_menu.innerHTML += "<div onclick='changeReply(" + Posts[i].id + "," + Replys[j].id + ")' >댓글수정</div>";
-							} else {
-								reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
-								reply_menu.innerHTML += "<div onclick='dontseeReply(" + Posts[i].id + "," + Replys[j].id + ")' >보고싶지 않습니다</div>";
-								reply_menu.innerHTML += "<div onclick='reportReply(" + Posts[i].id + "," + Replys[j].id + ")' >댓글신고</div>";
-							}
-							replywrap.appendChild(reply);
-						}
-						reply_menu_btn.onmouseleave=function(event){
-							event.stopPropagation();
-							event.preventDefault();
-							this.firstElementChild.style.display="none";
-						}
-					}
-					var reply = $("div");
-					reply.onkeydown = function(event){ capturekey(event,this)}
-					reply.id = 'replywrite_' + Posts[i].id;
-					reply.className = 'reply';
-					reply.innerHTML += "<img src='/files/profile/" + session.uid + "' class='profileimg_reply'>";
-					reply.innerHTML += "<textarea type='text' class='writereply' onkeyup='reply_resize(this)' onkeydown='reply_resize(this)' onkeypress='reply_resize(this)' placeholder='댓글을 입력하세요...' ></textarea><label for='replyinput_" + Posts[i].id + "' class='replyinput_label'></label>"
-					replywrap.appendChild(reply);
-					var reply_upload = $("input");
-					reply_upload.type = "file";
-					reply_upload.accept = 'image/*';
-					reply_upload.id="replyinput_" + Posts[i].id;
-					reply_upload.onchange = function(event){ openfile_reply(event) }
-					replywrap.appendChild(reply_upload);
-					var reply_output = $("div");
-					reply_output.className = "replyoutput";
-					reply_output.id = "replyoutput_" + Posts[i].id;
-					replywrap.appendChild(reply_output);
+				for( var i = Posts.length-1; i >= 0; --i){
+					var div = makePost(Posts[i]);
 					if( limit ){
 						postwrap.appendChild(div);
 					} else {

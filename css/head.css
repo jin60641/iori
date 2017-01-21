@@ -190,7 +190,7 @@
 	color : white !important;
 }
 
-#head_search_result > a > div:hover .head_search_result_userid, #head_search_result > a > div:active .head_search_result_userid {
+#head_search_result > a > div:hover .head_search_result_uid, #head_search_result > a > div:active .head_search_result_uid {
 	background-color : #f15c3e;
 	color : white !important;
 }

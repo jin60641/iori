@@ -114,11 +114,19 @@ var UserSchema = new mongoose.Schema({
 
 var NoticeSchema = new mongoose.Schema({
     id : { type : Number },
-    from_id : { type : Number },
-    to_id : { type : Number },
+    to : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+    from : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+    type : { type : String },
+	link : { type : Number },
     readed : { type : Boolean, default : false },
-    notice_type : { type : Number },
-    obj_id : { type : Number },
     date : { type : Date, default : Date.now }
 });
 
