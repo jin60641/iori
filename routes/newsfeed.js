@@ -84,7 +84,7 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res){
 
 router.get( '/post/:pid', function( req, res ){
 	getPost( req, function( post ){
-		makeObj( req, res, "post", { "post" : JSON.stringify(post) });
+		makeObj( req, res, "post", { "Post" : JSON.stringify(post) });
 	});
 });
 
@@ -105,9 +105,8 @@ function getPost( req, cb ){
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
 	var uid = req.body['uid'];
-	var pid = parseInt(req.body['pid']);
+	var pid = parseInt(req.params['pid']);
 	var tos = new Array();
-	console.log(skip,limit);
 	if( skip >= 0 == false ){
 		skip = 0;
 	}
@@ -212,7 +211,7 @@ function getPost( req, cb ){
 	});
 };
 
-router.post( '/api/newsfeed/getreplys' , checkSession, function( req, res ){
+router.post( '/api/newsfeed/getreplys', function( req, res ){
 	var postid = parseInt(req.body['postid']);
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);

@@ -265,7 +265,7 @@ window.addEventListener('load',function(){
 	navi_profile.id = "navi_profile";
 	navi_profile.className = "navi_menu";
 	navi_profile.innerHTML = "<img src='/files/profile/" + session.id + "'>";
-	if( session == "" || session.signUp == false ){
+	if( session == "" || session.signUp != true ){
 		navi_profile.onclick = function(){
 			if( document.URL.indexOf("login") >= 0 ){
 				location.href = "/login/" + document.URL.split('/').slice(4).join("-");

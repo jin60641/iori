@@ -74,14 +74,18 @@ function dontseeReply(pid,reply_id){
 function dontsee(postid){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var post = $("#post_"+postid);
-		post.style.display="none";
-		var dontsee_menu = $("div");
-		dontsee_menu.className = "post";
-		dontsee_menu.style.paddingBottom = "8px";
-		dontsee_menu.innerHTML = "뉴스피드에 이 게시물이 표시되지 않습니다. <span style='color:#34a798;cursor:pointer;' onclick='dontsee_cancle(" + postid + ")'>취소</span>";
-		dontsee_menu.innerHTML += "<img src='/img/remove_reply.jpg' style='width:16px; float:right; cursor:pointer' onclick='this.parentNode.parentNode.removeChild(this.parentNode)'><br>";
-		postwrap.insertBefore(dontsee_menu,post);
+		if( location.pathname.substr(0,6) == "/post/" ){
+			location.href = "/";
+		} else {
+			var post = $("#post_"+postid);
+			post.style.display="none";
+			var dontsee_menu = $("div");
+			dontsee_menu.className = "post";
+			dontsee_menu.style.paddingBottom = "8px";
+			dontsee_menu.innerHTML = "뉴스피드에 이 게시물이 표시되지 않습니다. <span style='color:#34a798;cursor:pointer;' onclick='dontsee_cancle(" + postid + ")'>취소</span>";
+			dontsee_menu.innerHTML += "<img src='/img/remove_reply.jpg' style='width:16px; float:right; cursor:pointer' onclick='this.parentNode.parentNode.removeChild(this.parentNode)'><br>";
+			postwrap.insertBefore(dontsee_menu,post);
+		}
 	}}
 	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+postid);
 }
@@ -121,7 +125,7 @@ function favorite(postid,add){
 			menu_favorite.onclick=function(){
 				favorite(this.id.substr(9),1)
 			}
-			menu_favorite.innerText="관심글등록";
+			menu_favorite.innerText = "관심글등록";
 			$("#post_"+postid).removeChild($("#post_favorite_"+postid));
 			imgmenu_favorite.src='/img/favorite.png';
 			imgmenu_favorite.onclick = function(){
@@ -142,7 +146,11 @@ function changePost(postid){
 	cancle.innerText="수정 취소";
 	$("#menu_"+postid).replaceChild(cancle,$("#changepost_"+postid))
 	var inside = $("#post_inside_"+postid);
-	inside.style.paddingBottom="39px";
+	inside.style.paddingBottom = "39px";
+	var preview = $("#link_preview_"+postid);
+	if( preview ){
+		preview.style.display = "none";
+	}
 	var textarea = $("textarea");
 	if( inside.firstChild && inside.firstChild.lastElementChild ){
 		inside.firstChild.lastElementChild.click();
@@ -324,6 +332,7 @@ function cancleChange(postid){
 	$("#menu_"+postid).replaceChild(div,$("#changecancle_"+postid))
 	for(var i = inside.childElementCount - 1; i>=0; --i){
 		var child = inside.childNodes[i];
+			console.log(child);
 		if(child.tagName=="TEXTAREA"){
 			try {
 				eval("origin = origin_"+postid);
@@ -335,7 +344,9 @@ function cancleChange(postid){
 			console.log(origin);
 			inside.replaceChild(origin,child);
 			eval("delete origin_"+postid);
-		} else if(!(child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR")){
+		} else if(child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR"||child.tagName=="A"){
+			child.style.display = "";
+		} else {
 			inside.removeChild(child);
 		}
 	}
@@ -621,15 +632,19 @@ function removePost(pid){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 		if( xhr.responseText == "게시글이 삭제되었습니다."){			
-			var post = $("#post_"+pid);
-			post.addEventListener('transitionend', function(){
-				if(this.style.opacity=="0"){
-					postwrap.removeChild(post);
-				}
-			});
-			post.style.opacity="0";
-			socket.emit( 'post_remove', pid )
-			getPosts(1);
+			if( location.pathname.substr(0,6) == "/post/" ){
+				location.href = "/";
+			} else {
+				var post = $("#post_"+pid);
+				post.addEventListener('transitionend', function(){
+					if(this.style.opacity=="0"){
+						postwrap.removeChild(post);
+					}
+				});
+				post.style.opacity="0";
+				socket.emit( 'post_remove', pid )
+				getPosts(1);
+			}
 		} else {
 			alert(xhr.responseText);
 		}
@@ -873,28 +888,30 @@ function makeReply( Reply, pid ){
 	} else {
 		reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Reply.user.uid + '">' +  Reply.user.name.toString() + "</a>" + Reply.text.toString() + "<br><span id='date_" + new Date(Reply.date).getTime() + "' class='date'>" + getDateString(Reply.date,1) + '</span></div>';
 	}
-	reply_menu_btn = reply.lastElementChild.firstChild;
-	reply_menu_btn.onmouseleave=function(event){
-		event.stopPropagation();
-		event.preventDefault();
-		this.firstElementChild.style.display="none";
-	}
-	var reply_menu = $("div");
-	reply_menu_btn.appendChild(reply_menu);
-	reply_menu_btn.onclick = function(event){
-		event.stopPropagation();
-		event.preventDefault();
-		this.firstElementChild.style.display="block" 
-	}
-	reply_menu.className = "reply_menu";
-	if( session.uid == Reply.user.uid ){
-		reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
-		reply_menu.innerHTML += "<div onclick='removeReply(" + pid + "," + Reply.id + ")' >댓글삭제</div>";
-		reply_menu.innerHTML += "<div onclick='changeReply(" + pid + "," + Reply.id + ")' >댓글수정</div>";
-	} else {
-		reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
-		reply_menu.innerHTML += "<div onclick='dontseeReply(" + pid + "," + Reply.id + ")' >보고싶지 않습니다</div>";
-		reply_menu.innerHTML += "<div onclick='reportReply(" + pid + "," + Reply.id + ")' >댓글신고</div>";
+	if( session != "" && session.signUp == true ){
+		reply_menu_btn = reply.lastElementChild.firstChild;
+		reply_menu_btn.onmouseleave=function(event){
+			event.stopPropagation();
+			event.preventDefault();
+			this.firstElementChild.style.display="none";
+		}
+		var reply_menu = $("div");
+		reply_menu_btn.appendChild(reply_menu);
+		reply_menu_btn.onclick = function(event){
+			event.stopPropagation();
+			event.preventDefault();
+			this.firstElementChild.style.display="block" 
+		}
+		reply_menu.className = "reply_menu";
+		if( session.uid == Reply.user.uid ){
+			reply_menu_btn.style.backgroundImage = "url('/img/change_reply.jpg')";
+			reply_menu.innerHTML += "<div onclick='removeReply(" + pid + "," + Reply.id + ")' >댓글삭제</div>";
+			reply_menu.innerHTML += "<div onclick='changeReply(" + pid + "," + Reply.id + ")' >댓글수정</div>";
+		} else {
+			reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.jpg')"
+			reply_menu.innerHTML += "<div onclick='dontseeReply(" + pid + "," + Reply.id + ")' >보고싶지 않습니다</div>";
+			reply_menu.innerHTML += "<div onclick='reportReply(" + pid + "," + Reply.id + ")' >댓글신고</div>";
+		}
 	}
 	return reply;
 }
@@ -907,6 +924,7 @@ function makePost( Post ){
 		}
 		Replys.sort(function(a,b){if(a.id < b.id){return 1;} else{ return -1;}});
 	}
+	var post_wrap = $('#post_wrap');
 	var div = $("div");
 	div.id = 'post_' + Post.id;
 	div.className = 'post';
@@ -921,42 +939,53 @@ function makePost( Post ){
 	if( Post.text && Post.text.length >= 1 ){
 		//inside.innerHTML+="<span>"+Post.text.toString() +"</span>";
 		var textspan = $("span");
-		inside.appendChild(textspan);
+		textspan.className = "textspan";
 		var texts = Post.text.split("\r\n");
-		var lncnt = 0;
+		var preview_cnt = 0;
+		var textmore = $("yyspan");
 		for( var k = 0; k < texts.length; ++k ){
-			++lncnt;
-			if( texts[k].length > (postwrap.clientWidth+20)/12.8 ){
-				++lncnt;
-			}
-			if( lncnt > 5 ){
-				var textmore = $("span");
-				textmore.innerHTML = "더보기";
-				textmore.style.color = "#f15c3e";
-				textmore.style.fontWeight = "bold";
-				textmore.id = Post.text.replace(/\r\n/g,"<br />");
-				
-				textmore.addEventListener("click",function(){
-					this.parentNode.innerHTML = this.id;
-				});
-				textspan.appendChild(textmore);
-				break;
-			} else {
-				var textindex = 0;
-				while(1){
-					var link = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
-					if( link != null ){
-						var replace_str = "<a target='_blank' href='" + link[0] + "'>" + link[0] + "</a>";
-						textindex += link.index + replace_str.length ;
+			var textindex = 0;
+			while(1){
+				var link = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
+				if( link != null ){
+					var replace_str = "<a target='_blank' href='" + link[0] + "'>" + link[0] + "</a>";
+					textindex += link.index + replace_str.length ;
+					if( !preview_cnt++ ){
 						makePreview(link,texts[k],Post,inside);
-						texts[k] = texts[k].replace( link[0].toString(), replace_str );
-					} else {
-						break;
 					}
+					texts[k] = texts[k].replace( link[0].toString(), replace_str );
+				} else {
+					break;
 				}
-				textspan.innerHTML += texts[k].toString() + '<br />';
 			}
+			textspan.innerHTML += texts[k].toString() + '<br />';
 		}
+		var tmp_post = $("div");
+		tmp_post.className = "post";
+		tmp_post.appendChild(textspan);
+		post_wrap.appendChild(tmp_post);
+		textspan.style.display = "block";
+		textspan.style.width = postwrap.clientWidth - 60 + "px";
+		if( textspan.clientHeight >= 60 ){
+			var textmore_btn = $("span");
+			textmore_btn.className = "textmore_btn";
+			textmore_btn.innerHTML = "더보기";
+			textmore_btn.id = "textmore_btn_" + Post.id;
+			
+			textmore_btn.addEventListener("click",function(){
+				this.previousElementSibling.style.maxHeight = "initial";
+				this.parentNode.removeChild(this);
+			});
+			inside.appendChild(textmore_btn);
+		}
+		if( inside.firstElementChild != null ){
+			inside.insertBefore(textspan,inside.firstElementChild);
+		} else {
+			inside.appendChild(textspan);
+		}
+		post_wrap.removeChild(tmp_post);
+		textspan.style.display = "";
+		textspan.style.width = "";
 	}
 	if( Post.html ){
 		inside.innerHTML = Post.html;	
@@ -995,25 +1024,27 @@ function makePost( Post ){
 	}
 	inside.className="post_inside";
 	div.appendChild(inside);
-	var btn = $("div");
-	btn.className = 'postmenubtn';
-	btn.addEventListener('click', function(){ showmenu(this) });
-	div.appendChild(btn);
-	var menu = $("div")
-	menu.id = 'menu_' + Post.id;
-	menu.className = 'post_menu';
-	if( session.id == Post.user.id ){
-		menu.innerHTML="<div id='postremove_" + Post.id + "' class='postremove' onclick='removePost(" + Post.id + ")'>게시글삭제</div>";
-		menu.innerHTML+="<div id='changepost_" + Post.id + "' onclick='changePost(" + Post.id + ")'>게시글수정</div>";
-	} else {
-		menu.innerHTML+="<div id='dontsee_" + Post.id + "' onclick='dontsee(" + Post.id + ")'>보고싶지 않습니다</div>";
+	if( session != "" && session.signUp == true ){
+		var btn = $("div");
+		btn.className = 'postmenubtn';
+		btn.addEventListener('click', function(){ showmenu(this) });
+		div.appendChild(btn);
+		var menu = $("div")
+		menu.id = 'menu_' + Post.id;
+		menu.className = 'post_menu';
+		if( session.id == Post.user.id ){
+			menu.innerHTML="<div id='postremove_" + Post.id + "' class='postremove' onclick='removePost(" + Post.id + ")'>게시글삭제</div>";
+			menu.innerHTML+="<div id='changepost_" + Post.id + "' onclick='changePost(" + Post.id + ")'>게시글수정</div>";
+		} else {
+			menu.innerHTML+="<div id='dontsee_" + Post.id + "' onclick='dontsee(" + Post.id + ")'>보고싶지 않습니다</div>";
+		}
+		if( Post.isfavorite ){
+			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',0' + ")'>관심글해제</div>";
+		} else {
+			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',1' + ")'>관심글등록</div>";
+		}
+		div.appendChild(menu);
 	}
-	if( Post.isfavorite ){
-		menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',0' + ")'>관심글해제</div>";
-	} else {
-		menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',1' + ")'>관심글등록</div>";
-	}
-	div.appendChild(menu);
 
 	var replywrap = $("div");
 	replywrap.className = 'replywrap';
@@ -1032,23 +1063,25 @@ function makePost( Post ){
 			replywrap.appendChild(makeReply(Replys[i],Post.id));
 		}
 	}
-	var reply = $("div");
-	reply.onkeydown = function(event){ capturekey(event,this)}
-	reply.id = 'replywrite_' + Post.id;
-	reply.className = 'reply';
-	reply.innerHTML += "<img src='/files/profile/" + session.uid + "' class='profileimg_reply'>";
-	reply.innerHTML += "<textarea type='text' class='writereply' onkeyup='reply_resize(this)' onkeydown='reply_resize(this)' onkeypress='reply_resize(this)' placeholder='댓글을 입력하세요...' ></textarea><label for='replyinput_" + Post.id + "' class='replyinput_label'></label>"
-	replywrap.appendChild(reply);
-	var reply_upload = $("input");
-	reply_upload.type = "file";
-	reply_upload.accept = 'image/*';
-	reply_upload.id="replyinput_" + Post.id;
-	reply_upload.onchange = function(event){ openfile_reply(event) }
-	replywrap.appendChild(reply_upload);
-	var reply_output = $("div");
-	reply_output.className = "replyoutput";
-	reply_output.id = "replyoutput_" + Post.id;
-	replywrap.appendChild(reply_output);
+	if( session != "" && session.signUp == true ){
+		var reply = $("div");
+		reply.onkeydown = function(event){ capturekey(event,this)}
+		reply.id = 'replywrite_' + Post.id;
+		reply.className = 'reply';
+		reply.innerHTML += "<img src='/files/profile/" + session.uid + "' class='profileimg_reply'>";
+		reply.innerHTML += "<textarea type='text' class='writereply' onkeyup='reply_resize(this)' onkeydown='reply_resize(this)' onkeypress='reply_resize(this)' placeholder='댓글을 입력하세요...' ></textarea><label for='replyinput_" + Post.id + "' class='replyinput_label'></label>"
+		replywrap.appendChild(reply);
+		var reply_upload = $("input");
+		reply_upload.type = "file";
+		reply_upload.accept = 'image/*';
+		reply_upload.id="replyinput_" + Post.id;
+		reply_upload.onchange = function(event){ openfile_reply(event) }
+		replywrap.appendChild(reply_upload);
+		var reply_output = $("div");
+		reply_output.className = "replyoutput";
+		reply_output.id = "replyoutput_" + Post.id;
+		replywrap.appendChild(reply_output);
+	}
 	return div;
 }
 
@@ -1469,6 +1502,7 @@ window.addEventListener('load',function(){
 			} else {
 				
 			}
+		} else if( typeof(Post) == "object" ){
 		} else {
 			postwrap.appendChild(write);
 		}
@@ -1591,18 +1625,37 @@ window.addEventListener('load',function(){
 	document.body.appendChild(imglayer);
 	output_post = $("#output_post");
 	post_file = $("#post_file");
+
 	window.addEventListener('scroll', function(e){
 		if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight){
 			getPosts(4);
 		}
 	});
+
+	if( location.pathname.substr(0,6) == "/post/" ){
+		if( Post.length ){
+			Post = Post[0]
+			postwrap.appendChild(makePost(Post));
+		} else {
+			location.href = "/";
+		}
+	} else {
+		getPosts(10);
+		socket.on( 'post_new', function(){
+			getPosts(0,1);
+		});
+		socket.on( 'post_removed', function( postid ){
+			postwrap.removeChild($("#post_"+postid));	
+			getPosts(1);
+		});
+	}
+
 	imgmenu_resize();
 	
 	window.addEventListener('resize', function(){
 		imgmenu_resize();
 	});
 
-	getPosts(10);
 
 	socket.on( 'notice_new', function(){
 //		notice.innerHTML = parseInt(notice.innerHTML)+1;
@@ -1617,13 +1670,6 @@ window.addEventListener('load',function(){
 		if( $( "#post_" + data.pid ) ){
 			getReplys( $( "#replywrite_" + data.pid ), 1 );
 		}
-	});
-	socket.on( 'post_new', function(){
-		getPosts(0,1);
-	});
-	socket.on( 'post_removed', function( postid ){
-		postwrap.removeChild($("#post_"+postid));	
-		getPosts(1);
 	});
 	socket.on( 'reply_removed', function( replyid ){
 		$("#"+replyid).parentNode.removeChild($("#" + replyid));	

@@ -2,7 +2,13 @@
 <html>
 	<head>
 		<% include ./header %>
-		<SCript async src="/js/timeline.js"></script>
+		<script>
+		Post = "<%= Post %>".replace(/&#34;/g,'"');
+		if( Post.length > 0 ){
+			Post = JSON.parse(Post)
+		}
+		</script>
+		<script src="/js/timeline.js"></script>
 		<link async rel="stylesheet" type="text/css" href="/css/timeline.css">
 		<% include ./footer %>
 	</head>
