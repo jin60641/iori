@@ -7,15 +7,12 @@ var async = require("async");
 
 router.use(require('body-parser').urlencoded());
 router.use(busboy())
-var makeObj = require('./makeObj.js');
 
-function checkSession( req, res, next ){
-	if( req.user && req.user.signUp ){
-		return next();
-	} else {
-		res.redirect('/login/' + req.url.substr(1).replace(/\//g,'-'));
-	}
-}
+var makeObj = require('./makeObj.js');
+var makeNotice = require('./notice.js').makeNotice;
+console.log(makeNotice);
+
+var checkSession = require('./auth.js').checkSession;
 
 String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");
@@ -307,6 +304,9 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 								if( socket_id != undefined ){
 									io.sockets.connected[socket_id].emit( 'chat_new', { type : current.type, dialog_id : current.from.uid } );
 			   					}
+								if( user.id != req.user.id ){
+									makeNotice( user, req.user, "chat", current );
+								}
 								res.send( current.to );
 							}
 						});
@@ -325,6 +325,7 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 								for( var i = 0; i < group.users.length; ++i ){
 				   					var socket_id = socket_ids[group.users[i].id];
 									if( socket_id != undefined && group.users[i].id != req.user.id ){
+										makeNotice( group.users[i], req.user, "chat", current );
 										io.sockets.connected[socket_id].emit( 'chat_new', { type : current.type, dialog_id : current.to.id } );
 				   					}
 								}

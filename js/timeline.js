@@ -332,7 +332,6 @@ function cancleChange(postid){
 	$("#menu_"+postid).replaceChild(div,$("#changecancle_"+postid))
 	for(var i = inside.childElementCount - 1; i>=0; --i){
 		var child = inside.childNodes[i];
-			console.log(child);
 		if(child.tagName=="TEXTAREA"){
 			try {
 				eval("origin = origin_"+postid);
@@ -341,7 +340,6 @@ function cancleChange(postid){
 				inside.removeChild(child);
 				continue;
 			}
-			console.log(origin);
 			inside.replaceChild(origin,child);
 			eval("delete origin_"+postid);
 		} else if(child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR"||child.tagName=="A"){
@@ -815,17 +813,17 @@ function getReplys(obj,limit){
 }
 
 function makePreview( link, text, Post, inside ){
-	var linkxhr = new XMLHttpRequest();
-	linkxhr.onreadystatechange = function (event){ if(linkxhr.readyState == 4 && linkxhr.status == 200) {
-		if( linkxhr.responseText != "" ){
-			var metas = JSON.parse(linkxhr.responseText);
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		if( xhr.responseText != "" ){
+			var metas = JSON.parse(xhr.responseText);
 			var preview = $("a");
-			preview.href = link[0];
+			preview.href = link;
 			preview.target = "_blank";
 			preview.id = "link_preview_" + Post.id;
 			preview.className = "link_preview";
 			var preview_img = $("img");
-			preview_img.id = link[0];
+			preview_img.id = link;
 			preview_img.src = metas.image;
 			preview_img.onclick = function(event){
 				var vid;
@@ -872,7 +870,7 @@ function makePreview( link, text, Post, inside ){
 			inside.appendChild( preview );
 		}
 	}};
-	linkxhr.open("POST", "/api/newsfeed/linkpreview", false); linkxhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); linkxhr.send('link='+link[0]);
+	xhr.open("POST", "/api/newsfeed/linkpreview", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);
 }
 
 function makeReply( Reply, pid ){
@@ -946,12 +944,13 @@ function makePost( Post ){
 		for( var k = 0; k < texts.length; ++k ){
 			var textindex = 0;
 			while(1){
-				var link = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
+				var link = /(http|https):\/\/([\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-])*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
 				if( link != null ){
-					var replace_str = "<a target='_blank' href='" + link[0] + "'>" + link[0] + "</a>";
+					var str = link[0];
+					var replace_str = "<a target='_blank' href='" + str + "'>" + link[0] + "</a>";
 					textindex += link.index + replace_str.length ;
 					if( !preview_cnt++ ){
-						makePreview(link,texts[k],Post,inside);
+						makePreview(str,texts[k],Post,inside);
 					}
 					texts[k] = texts[k].replace( link[0].toString(), replace_str );
 				} else {
@@ -966,12 +965,11 @@ function makePost( Post ){
 		post_wrap.appendChild(tmp_post);
 		textspan.style.display = "block";
 		textspan.style.width = postwrap.clientWidth - 60 + "px";
-		if( textspan.clientHeight >= 60 ){
+		if( textspan.clientHeight >= 75 ){
 			var textmore_btn = $("span");
 			textmore_btn.className = "textmore_btn";
 			textmore_btn.innerHTML = "더보기";
 			textmore_btn.id = "textmore_btn_" + Post.id;
-			
 			textmore_btn.addEventListener("click",function(){
 				this.previousElementSibling.style.maxHeight = "initial";
 				this.parentNode.removeChild(this);
@@ -1105,9 +1103,7 @@ function getPosts(limit){
 				var xhrResult = JSON.parse(xhr.responseText);
 				var Posts = xhrResult.sort(function(a,b){if(a.id < b.id){return -1;} else{ return 1;}});
 				posts += Posts.length;
-				if(Posts.length != limit){
-					skip = posts;
-				}
+				skip = posts;
 				for( var i = Posts.length-1; i >= 0; --i){
 					var div = makePost(Posts[i]);
 					if( limit ){
@@ -1129,7 +1125,15 @@ function getPosts(limit){
 				for( var i = 1; i <= slide_count; ++i ){
 					var slide = $("div");
 					slide.className = "slide";
-					slide.style.background = "url('/img/slider_" + i + ".jpg')";
+					var colorcode = "";
+					for( var j = 0; j < 3; ++j ){
+						colorcode += Math.round(Math.random()*50 + 180).toString(16);
+						if( colorcode.length % 2 ){
+							colorcode += "0";
+						}
+					}
+					slide.style.backgroundColor = '#' + colorcode;
+//					slide.style.background = "url('/img/slider_" + i + ".jpg')";
 					slide_imgs.appendChild(slide);
 				};
 			
@@ -1223,10 +1227,8 @@ function getPosts(limit){
 	var params = "skip=";
 	if( limit ){
 		params += skip + "&limit=" + limit;
-		skip += limit;
 	} else if(limit == 0){
 		params += "0&limit=1";
-//		skip += 1;
 	}
 	if( skip > posts ){
 		skip = posts;
@@ -1242,41 +1244,38 @@ function getPosts(limit){
 
 var sliding_tmp = 0;
 function sliding( type ){
-    if( !type ){
-        type = 1;
-    }
-    var imgs = $("#slide_imgs");
-    var margin = document.body.clientWidth;
-    var current_left = parseInt(imgs.style.left.split("px")[0]);
-    if( !sliding_tmp ){
-        sliding_tmp = 1;
-        if( ( type == -1 && current_left == 0 ) ){
-            var img = imgs.childNodes[imgs.childElementCount-1];
-            imgs.removeChild(img);
-            img = img.cloneNode(true);
-            img.style.marginLeft =  margin * type + "px";
-            img.onload = function(){
-                img.style.transition = "margin-left .5s";
-                img.style.marginLeft = "0px";
-            }
-            imgs.insertBefore(img,imgs.childNodes[0]);
-            removeTimer = setTimeout(function(){
-                sliding_tmp = 0;
-            },500);
-            return;
-        } else if ( ( type == 1 && current_left >= -margin * ( imgs.childElementCount - 1 ) ) ){
-            var img = imgs.childNodes[0];
-            imgs.appendChild(img.cloneNode(true))
-            img.style.transition = "margin-left .5s";
-            img.style.marginLeft = -margin + "px";
-            removeTimer = setTimeout(function(){
-                sliding_tmp = 0;
-                imgs.removeChild(imgs.firstChild)
-            },500);
-            return;
-        }
-        imgs.style.left = current_left - margin * type + "px";
-    }
+	if( !type ){
+		type = 1;
+	}
+	var imgs = $("#slide_imgs");
+	var margin = document.body.clientWidth;
+	var current_left = parseInt(imgs.style.left.split("px")[0]);
+	if( !sliding_tmp ){
+		sliding_tmp = 1;
+		if( ( type == -1 && current_left == 0 ) ){
+			var img = imgs.childNodes[imgs.childElementCount-1];
+			imgs.removeChild(img);
+			img = img.cloneNode(true);
+			img.style.marginLeft =  margin * type + "px";
+			imgs.insertBefore(img,imgs.childNodes[0]);
+			removeTimer = setTimeout(function(){
+				img.style.marginLeft = "0px";
+				sliding_tmp = 0;
+			},10);
+			return;
+		} else if ( ( type == 1 && current_left >= -margin * ( imgs.childElementCount - 1 ) ) ){
+			var img = imgs.childNodes[0];
+			imgs.appendChild(img.cloneNode(true))
+			img.style.transition = "margin-left .5s";
+			img.style.marginLeft = -margin + "px";
+			removeTimer = setTimeout(function(){
+				sliding_tmp = 0;
+				imgs.removeChild(imgs.firstChild)
+			},500);
+			return;
+		}
+		imgs.style.left = current_left - margin * type + "px";
+	}
 }
 
 
@@ -1474,7 +1473,7 @@ window.addEventListener('load',function(){
 	document.body.appendChild(postwrap);
 
 	if( session ){
-		write = $("div");
+		var write = $("div");
 		write.id = "write";
 		write.innerHTML+='<div id="output_post"></div>';
 		write.innerHTML+='<div id="post_write_button" onclick="postWrite();"></div>';
@@ -1482,7 +1481,7 @@ window.addEventListener('load',function(){
 		write.innerHTML+='<input type="file" accept="image/*" id="post_file" name="file" multiple="multiple" onchange="openfile_post(event)">';
 		write.className = "post";
 	
-		postwrite = $("textarea");
+		var postwrite = $("textarea");
 		postwrite.id = 'post_write';
 		postwrite.placeholder = "글을 입력하세요";
 		postwrite.addEventListener('keydown', function(){ post_resize(this) }, false);
@@ -1736,8 +1735,8 @@ function postWrite(){
 		post_file.value="";
 		output_post.innerHTML="";
 		//output_post.style.display="none";
-		postwrite.style.borderTop="1px solid rgba(0,0,0,0.2)";
-		postwrite.style.borderBottom="1px solid rgba(0,0,0,0.2)";
+		$('#postwrite').style.borderTop="1px solid rgba(0,0,0,0.2)";
+		$('#postwrite').style.borderBottom="1px solid rgba(0,0,0,0.2)";
 	} else {
 		alert("게시글이 비어 있습니다.");
 	}

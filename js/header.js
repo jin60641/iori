@@ -194,18 +194,17 @@ window.addEventListener('load',function(){
 	navi_tab.appendChild(navi_tab_chat);
 	
 	head.appendChild(navi_tab);
-	var navi_tab_now = $("#navi_tab_" + location.pathname.substr(1));
+	var path = location.pathname.substr(1);
+	var navi_tab_now = $("#navi_tab_" + path);
 	if( navi_tab_now ){
 		navi_tab_now.style.color = "#ff5c3e";
 		navi_tab_now.style.height = "24px";
 		navi_tab_now.style.borderBottom = "5px solid #ff5c3e";
-	} else if ( document.URL.split('/').slice(3)[0] == "" ){
+	} else if ( path == "" ){
 		navi_tab_home.style.color = "#ff5c3e";
 		navi_tab_home.style.height = "24px";
 		navi_tab_home.style.borderBottom = "5px solid #ff5c3e";
 	}
-	
-		
 
 	var search = $("input");
 	search.id = "head_search";

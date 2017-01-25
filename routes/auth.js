@@ -231,12 +231,12 @@ router.get('/api/auth/logout', function( req, res){
 	res.clearCookie("password")
 	res.clearCookie("uid")
 	res.clearCookie("facebook")
-    req.logout();
+	req.logout();
 	req.session.destroy( function( err ){
 		if( req.user ){
 			delete req.user;
 		}
-	    res.redirect('/');
+		res.redirect('/');
 	});
 });
 
@@ -300,5 +300,15 @@ router.post('/changepw', function( req, res ){
 	}
 });
 
+function checkSession( req, res, next ){
+	if( req.user && req.user.signUp ){
+		return next();
+	} else {
+		res.redirect('/login/' + req.url.substr(1).replace(/\//g,'-'));
+	}
+}
 
-module.exports = router;
+module.exports = {
+	router : router,
+	checkSession : checkSession
+}

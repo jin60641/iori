@@ -91,6 +91,7 @@ textarea {
 	height : 100px;
 	vertical-align : top;
 	padding-left : 3px;
+	transition : border-top .1s linear, border-bottom .1s linear;
 }
 
 #post_wrap > .post > .post_name {
@@ -476,7 +477,7 @@ textarea {
 .post .textspan {
 	word-wrap: break-word;
 	overflow-y : hidden;
-	max-height : 60px;
+	max-height : 75px;
 	display : block;
 }
 
@@ -849,7 +850,7 @@ textarea {
 }
 
 #post_slider > #slide_imgs > .slide {
-	transition : left .5s;
+	transition : left .5s, margin-left .5s;
 	position : relative;
 	width : 100vw;
 	height : calc( 100vh - 42px );

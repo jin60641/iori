@@ -9,7 +9,8 @@ router.use(require('body-parser').urlencoded());
 router.use(busboy())
 var makeObj = require('./routes/makeObj.js');
 
-router.use(require('./routes/auth.js'));
+router.use(require('./routes/auth.js').router);
+router.use(require('./routes/notice.js').router);
 router.use(require('./routes/newsfeed.js'));
 router.use(require('./routes/user.js'));
 router.use(require('./routes/chat.js'));

@@ -416,7 +416,8 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				chat_panel = chat_panel_obj[ "chat_dialogs_g_" + chats[i].to.id ];
 			} else if( chats[i].type == "u" &&  chats[i].to.id == session.id && current_id != chats[i].from.id ){
 				chat_panel = chat_panel_obj[ "chat_dialogs_u_" + chats[i].to.id ];
-			} else {
+			}
+			if( chat_panel == undefined ){
 				chat_panel = current_panel;
 			}
 			var chat = $("div");

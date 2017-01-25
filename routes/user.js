@@ -8,14 +8,9 @@ var im = require('imagemagick');
 router.use(require('body-parser').urlencoded());
 router.use(busboy())
 var makeObj = require('./makeObj.js');
+var makeNotice = require('./notice.js').makeNotice;
 
-function checkSession( req, res, next ){
-	if( req.user && req.user.signUp ){
-		return next();
-	} else {
-		res.redirect('/login/' + req.url.substr(1).replace(/\//g,'-'));
-	}
-}
+var checkSession = require('./auth.js').checkSession;
 
 String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");
@@ -255,17 +250,14 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 					});
 				} else {
 					var current = new db.Follows({
-						from : {
-							id : req.user.id,
-							uid : req.user.uid,
-							name : req.user.name
-						},
+						from : req.user,
 						to : user
 					});
 					current.save( function( err3 ){
 						if( err3 ){
 							throw err3;
 						} else {
+							makeNotice( user, req.user, "follow", current );
 							res.send("follow");
 						}
 					});

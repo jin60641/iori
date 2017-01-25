@@ -1,26 +1,18 @@
 var express = require('express');
 var router = express.Router();
-var ejs = require('ejs');
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');
 var async = require("async");
 var request = require("request");
-var socketjs = require("./socket.js");
 
 router.use(require('body-parser').urlencoded());
 router.use(busboy());
 
 var makeObj = require('./makeObj.js');
+var makeNotice = require('./notice.js').makeNotice;
 
-
-function checkSession( req, res, next ){
-	if( req.user && req.user.signUp ){
-		return next();
-	} else {
-		res.redirect('/login/' + req.url.substr(1).replace(/\//g,'-'));
-	}
-}
+var checkSession = require("./auth.js").checkSession;
 
 String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");
@@ -345,8 +337,7 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 						throw error;
 					}
 					if( post.user.id != req.user.id ){
-					//	makeNotice( post.user, req.user, "reply", current.id );
-						io.sockets.connected[socket_ids[post.uid]].emit( 'reply_new', current );
+						makeNotice( post.user, req.user, "reply", current );
 					}
 					db.Follows.find({ "to.id" : req.user.id }, function( err, followers ){
 						if( err ){

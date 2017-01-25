@@ -125,7 +125,8 @@ var NoticeSchema = new mongoose.Schema({
 		name : { type : String }
 	},
     type : { type : String },
-	link : { type : Number },
+	desc : { type : String },
+	link : { type : String },
     readed : { type : Boolean, default : false },
     date : { type : Date, default : Date.now }
 });
