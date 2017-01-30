@@ -10,7 +10,6 @@ router.use(busboy())
 
 var makeObj = require('./makeObj.js');
 var makeNotice = require('./notice.js').makeNotice;
-console.log(makeNotice);
 
 var checkSession = require('./auth.js').checkSession;
 

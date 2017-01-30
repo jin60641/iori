@@ -28,7 +28,7 @@ if( session == "" && document.cookie ){
 		xhr.onreadystatechange = function(event){
 			if( xhr.readyState == 4 && xhr.status == 200 ){
 				if( xhr.responseText == "success" ){
-					if( document.URL.indexOf("login") ){
+					if( document.URL.indexOf("login") >= 0 ){
 						location.href = "/" + document.URL.split('/').slice(4).toString().split('-').join('/');
 					} else {
 						location.reload()
@@ -54,7 +54,6 @@ function sendData_search( query ){
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			var result = $("#head_search_result");
-	console.log(xhr.responseText);
 			if( xhr.responseText != "[]" ){
 				result.innerHTML="";
 				var xhrResult = JSON.parse( xhr.responseText );

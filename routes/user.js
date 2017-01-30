@@ -91,7 +91,7 @@ router.get('/@:uid(*)', function( req, res ){
 				following : false
 			}
 			if( req.user && req.user.id ){
-				db.Follows.findOne({ to_id : user.id, from_id : req.user.id }, function( err2, following ){
+				db.Follows.findOne({ "to.id" : user.id, "from.id" : req.user.id }, function( err2, following ){
 					if( err2 ){
 						throw err2;
 					} else {
@@ -237,7 +237,7 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 		if( err ){
 			throw err;
 		} else if ( user ){
-			db.Follows.findOne({ to_id : user.id }, function( err2, follow ){
+			db.Follows.findOne({ "to.id" : user.id }, function( err2, follow ){
 				if( err2 ){
 					throw err2;
 				} else if( follow ){

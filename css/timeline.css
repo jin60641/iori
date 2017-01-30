@@ -1,35 +1,3 @@
-@-webkit-keyframes fade_post {
-	from { 
-		opacity : 0; 
-	} to {
-		opacity : 1; 
-	}
-}
-
-@-o-keyframes fade_post {
-	from { 
-		opacity : 0; 
-	} to { 
-		opacity : 1; 
-	}
-}
-@-moz-keyframes fade_post {
-	from {
-		opacity : 0; 
-	} to { 
-		opacity : 1; 
-	}
-}
-
-@keyframes fade_post {
-	from { 
-		opacity : 0; 
-	}
-	to { 
-		opacity : 1; 
-	}
-}
-
 html {
 	width : 100%;
 }

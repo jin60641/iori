@@ -8,14 +8,34 @@ var makeObj = require('./makeObj.js');
 var checkSession = require('./auth.js').checkSession;
 
 router.get( '/notice', checkSession, function( req, res ){
-	db.Notices.find({ "to.id" : req.user.id }, function( err, result ){
+	getNotices( req, function( result ){
+		makeObj( req, res, "notice", { notices : JSON.stringify(result) } );
+	});
+});
+
+router.post( '/api/notice/getnotices', checkSession, function( req, res ){
+	getNotices( req, function( result ){
+		res.send( result );
+	});
+});
+
+function getNotices( req, cb ){
+	var skip = parseInt(req.body['skip']);
+	var limit = parseInt(req.body['limit']);
+	if( skip >= 0 == false ){
+		skip = 0;
+	}
+	if( limit >= 0 == false ){
+		limit = 20;
+	}
+	db.Notices.find({ "to.id" : req.user.id }).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, result ){
 		if( err ){
 			throw err;
 		} else {
-			makeObj( req, res, "notice", { notices : JSON.stringify(result) } );
+			cb( result );
 		}
 	});
-});
+};
 
 function makeNotice( to, from, type, obj ){
 	var nid;
@@ -56,12 +76,13 @@ function makeNotice( to, from, type, obj ){
 					current.link = "/@" + obj.from.uid;
 					break;
 			}
-			console.log(current);
 			current.save( function( err ){
 				if( err ){
 					throw err;
 				}
-				io.sockets.connected[sid].emit( 'notice_new', current );
+				if( sid && io.sockets.connected[sid] ){
+					io.sockets.connected[sid].emit( 'notice_new', current );
+				}
 			});
 		}
 	});

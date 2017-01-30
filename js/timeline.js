@@ -1258,10 +1258,12 @@ function sliding( type ){
 			img = img.cloneNode(true);
 			img.style.marginLeft =  margin * type + "px";
 			imgs.insertBefore(img,imgs.childNodes[0]);
-			removeTimer = setTimeout(function(){
+			setTimeout(function(){
 				img.style.marginLeft = "0px";
+			}, 10);
+			removeTimer = setTimeout(function(){
 				sliding_tmp = 0;
-			},10);
+			},500);
 			return;
 		} else if ( ( type == 1 && current_left >= -margin * ( imgs.childElementCount - 1 ) ) ){
 			var img = imgs.childNodes[0];
@@ -1715,6 +1717,7 @@ function replyWrite(post){
 // 게시글쓰기
 realfiles=[];
 function postWrite(){
+	var postwrite = $('#post_write');
 	var tmp = postwrite.value;
 	var formdata = new FormData();
 	if( realfiles[0] || tmp.length>= 1 ){
