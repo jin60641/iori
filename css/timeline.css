@@ -504,13 +504,37 @@ textarea {
 .post .post_inside .link_preview {
 	display : block;
 	margin-top : 10px;
-	padding-bottom : 5px;
 	box-shadow : 0 0 0 1.5px rgba(0, 0, 0, .1) inset, 0 1px 1px rgba(0, 0, 0, .05);
 	white-space : pre-line;
 }
 
 .post .post_inside .link_preview:visited {
 	color : black;
+}
+
+
+.post .post_inside .link_preview .link_preview_img {
+	margin : 0px;
+}
+
+.post .post_inside .link_preview .link_preview_img .link_preview_helper {
+	width : 100%;
+	height : 100%;
+	position : absolute;
+	
+}
+
+.post .post_inside .link_preview_img {
+	position : relative;
+	display : inline-block;
+}
+
+.post .post_inside .link_preview_img:hover {
+}
+
+.post .post_inside .link_preview_img img {
+	max-width : 100%;
+	max-height : 100%;
 }
 
 .post .post_inside .link_preview_img_big {
@@ -524,10 +548,20 @@ textarea {
 	height : 150px;
 }
 
+.post .post_inside .link_preview_img_small img {
+	width : 100%;
+	height : 100%;
+}
+
 .post .post_inside iframe {
 	border : 0px;
 	width : 100%;
 	min-height : 35vh;
+}
+
+.post .post_inside .link_preview .link_preview_text_big {
+	padding-bottom : 10px;
+	margin-top : 0px;
 }
 
 .post .post_inside .link_preview_text_small {
@@ -535,18 +569,26 @@ textarea {
 	display : inline-block;
 }
 
-.post .post_inside .link_preview div {
+.post .post_inside .link_preview .link_preview_text {
+	display : inline-block;
 	margin : 10px;
+	margin-bottom : 0px;
 	font-size : 17px;
 }
 
 .post .post_inside .link_preview_title {
-	padding-left : 5px;
 	font-weight : bold;
+	margin : 10px;
 }
 
 .post .post_inside .link_preview_description {
 	font-size : 15px;
+	margin : 10px;
+}
+
+.post .post_inside .link_preview_description span {
+	color : #aaa;
+	
 }
 
 .post .post_inside .link_preview_site_name {
@@ -979,8 +1021,20 @@ textarea {
 		width : calc(100%);
 	}
 	.post .post_inside .link_preview_text_small {
+		width : initial;
 		display : initial;
 	}
+	.post .post_inside .link_preview_text .link_preview_title {
+		font-size : 13px;
+	}
+	.post .post_inside .link_preview_text .link_preview_description {
+		font-size : 11px;
+	}
+
+	.post .post_inside iframe {
+		min-height : initial;
+	}
+	
 	.post .game_result {
 		font-size : 13px;
 	}

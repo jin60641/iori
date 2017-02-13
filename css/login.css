@@ -11,7 +11,8 @@
 	margin : auto;
 	margin-bottom : 10px;
 	display : block;
-	width : calc( 100% - 24px );
+	width : 100%;
+	box-sizing : border-box;
 }
 
 #form input {

@@ -131,6 +131,7 @@ function getPost( req, cb ){
 				tos.push( uid );
 				callback( null );
 			} else {
+				tos.push( 1 );
 				tos.push( req.user.id );
 				db.Follows.find({ "from.id" : req.user.id }, function( err, follows ){
 					if( err ){

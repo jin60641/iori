@@ -101,6 +101,7 @@ var FollowSchema = new mongoose.Schema({
 
 var UserSchema = new mongoose.Schema({
     id : { type : Number },
+	admin : { type : Boolean, default : false },
     email : String,
     name : String,
     password : String,
@@ -138,14 +139,6 @@ var LinkSchema = new mongoose.Schema({
     image : { type : String }
 });
 
-var MusicSchema = new mongoose.Schema({
-    id : { type : Number },
-    title : { type : String },
-    artist : { type : String },
-    genre : { type : String },
-    vals : []
-});
-
 module.exports = {
     Users : mongoose.model('users',UserSchema),
     Follows : mongoose.model('follows',FollowSchema),
@@ -156,6 +149,5 @@ module.exports = {
     Groups : mongoose.model('groups',GroupSchema),
     Notices : mongoose.model('notices',NoticeSchema),
     Links : mongoose.model('links',LinkSchema),
-	Chats : mongoose.model('chats',ChatSchema),
-    Musics : mongoose.model('musics',MusicSchema)
+	Chats : mongoose.model('chats',ChatSchema)
 }

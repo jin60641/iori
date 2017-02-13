@@ -44,6 +44,27 @@ document.addEventListener('webkitfullscreenchange', function(){
 	}
 });
 
+function getAudio( pid ){
+	alert("영상에 따라 추출 시 약간의 시간이 소요될 수 있습니다.");
+	var vid = $('#link_preview_' + pid).href.split('v=')[1];
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		var obj;
+		try {
+			obj = JSON.parse(xhr.responseText);
+			var download = $("a");
+			var title = $('#link_preview_title_' + pid);
+			download.download = title.innerText;
+			download.href = '/api/audio/getaudio/' + vid;
+			download.click();
+		} catch(e){
+			alert(xhr.responseText);
+		}
+    }};
+    xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+
+}
+
 //게시물,덧글 메뉴닫기
 function hidemenu(){
 	var post_menu = $(".post_menu");
@@ -822,55 +843,78 @@ function makePreview( link, text, Post, inside ){
 			preview.target = "_blank";
 			preview.id = "link_preview_" + Post.id;
 			preview.className = "link_preview";
-			var preview_img = $("img");
-			preview_img.id = link;
-			preview_img.src = metas.image;
-			preview_img.onclick = function(event){
-				var vid;
-				var vindex;
-				vindex = this.id.indexOf("youtu.be/");
-				if( vindex >= 0 ){
-					vid = this.id.substr( vindex + 9 );
-				}
-				vindex = this.id.indexOf("youtube.com/watch?v=");
-				if( vindex >= 0 ){	
-					vid = this.id.substr( vindex + 20 );
-				}
-				if( vid != "" && vid != null ){
+			var preview_img = $("div");
+			preview_img.className = "link_preview_img";
+
+			preview.appendChild( preview_img );
+
+			var preview_text = $("div");
+			preview_text.className = "link_preview_text";
+			preview.appendChild( preview_text );
+
+			var preview_title = $("div");
+			preview_title.id = "link_preview_title_" + Post.id;
+			preview_title.innerHTML = metas.title;
+			preview_title.className = "link_preview_title";
+			preview_text.appendChild( preview_title );
+
+
+
+			var vid;
+			var vindex;
+			vindex = link.indexOf("youtu.be/");
+			if( vindex >= 0 ){
+				vid = link.substr( vindex + 9 );
+			}
+			vindex = link.indexOf("youtube.com/watch?v=");
+			if( vindex >= 0 ){	
+				vid = link.substr( vindex + 20 );
+			}
+			if( vid != "" && vid != null ){
+				preview_img.id = vid;
+				
+				preview_img.onclick = function(event){
 					event.stopPropagation();
 					event.preventDefault();
 					this.nextElementSibling.className = "link_preview_text_big";
 					var iframe = $("iframe");
 					iframe.style.height = this.clientHeight;
-					iframe.src = "https://youtube.com/embed/"  + vid.split('&')[0]; 
+					iframe.src = "https://youtube.com/embed/"  + this.id.split('&')[0]; 
 					iframe.allowFullscreen = true;
 					this.parentNode.replaceChild(iframe,this);
 				}
+			} else {
+				var preview_description = $("div");
+	//			preview_description.innerHTML = metas.description;
+				preview_description.innerHTML = metas.description;
+				preview_text.appendChild( preview_description );
+				if( metas.description.length > 100 ){
+					preview_description.innerHTML += '... <span>자세히</span>';
+				}
+				preview_description.className = "link_preview_description";
 			}
-			var preview_title = $("div");
-			preview_title.innerHTML = metas.title;
-			preview_title.className = "link_preview_title";
-			var preview_description = $("div");
-			preview_description.innerHTML = metas.description;
-			preview_description.className = "link_preview_description";
-			preview.appendChild( preview_img );
-			var preview_text = $("div");
-			preview.appendChild( preview_text );
-			preview_text.appendChild( preview_title );
-			preview_text.appendChild( preview_description );
-			preview_img.onload = function(){
-				if( preview_img.naturalWidth >= preview_img.parentNode.clientWidth ){
-					preview_img.className = "link_preview_img_big";
-					preview_text.className = "link_preview_text_big";
+
+			var preview_helper = $("div");
+			preview_helper.className = "link_preview_helper";
+			preview_img.appendChild(preview_helper);
+			var tmpimg = new Image;
+			tmpimg.src = metas.image;
+			var realimg = $('img');
+			realimg.src = metas.image;
+			preview_img.appendChild(realimg);
+			tmpimg.onload = function(){
+				if( tmpimg.naturalWidth >= preview_img.parentNode.clientWidth ){
+					preview_img.className += " link_preview_img_big";
+					preview_text.className += " link_preview_text_big";
 				} else {
-					preview_img.className = "link_preview_img_small";
-					preview_text.className = "link_preview_text_small";
+					preview_img.className += " link_preview_img_small";
+					preview_text.className += " link_preview_text_small";
 				}
 			}
 			inside.appendChild( preview );
 		}
 	}};
-	xhr.open("POST", "/api/newsfeed/linkpreview", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);
+	xhr.open("POST", "/api/newsfeed/linkpreview", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);
 }
 
 function makeReply( Reply, pid ){
@@ -934,12 +978,12 @@ function makePost( Post ){
 	div.appendChild(a);
 	var inside = $("div");
 	inside.id = "post_inside_" + Post.id;
+	var preview_cnt = 0;
 	if( Post.text && Post.text.length >= 1 ){
 		//inside.innerHTML+="<span>"+Post.text.toString() +"</span>";
 		var textspan = $("span");
 		textspan.className = "textspan";
 		var texts = Post.text.split("\r\n");
-		var preview_cnt = 0;
 		var textmore = $("yyspan");
 		for( var k = 0; k < texts.length; ++k ){
 			var textindex = 0;
@@ -1040,6 +1084,9 @@ function makePost( Post ){
 			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',0' + ")'>관심글해제</div>";
 		} else {
 			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',1' + ")'>관심글등록</div>";
+		}
+		if( preview_cnt ){
+			menu.innerHTML+="<div id='getaudio_" + Post.id + "' onclick='getAudio(" + Post.id + ")'>mp3 다운</div>";
 		}
 		div.appendChild(menu);
 	}
@@ -1654,6 +1701,7 @@ window.addEventListener('load',function(){
 	imgmenu_resize();
 	
 	window.addEventListener('resize', function(){
+		
 		imgmenu_resize();
 	});
 
