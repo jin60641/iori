@@ -4,6 +4,7 @@ var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');
 var im = require('imagemagick');
+var async = require('async');
 
 router.use(require('body-parser').urlencoded());
 router.use(busboy())
@@ -20,41 +21,89 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
-router.post('/@:uid(*)/follower', function( req, res ){
+
+router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 	var uid = req.params['uid'];
-	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
-		if( err ){
-			throw err;
-		} else if( user ){
-			db.Follows.find({ "to.id" : user.id }, function( err, result ){
+	var type = req.params['type'];
+	var way;
+	var user;
+	async.waterfall([ 
+		function( cb ){
+			db.Users.findOne({ uid : req.params['uid'] }, function( err, result ){
 				if( err ){
 					throw err;
-				} else if( result.length ){
-					res.send(result);
+				} else if( result ){
+					user = result;
+					cb( null );
+				} else {
+					res.send("없는 사용자입니다.");
 				}
 			});
-		} else {
-			res.send("없는 사용자입니다.");
-		}
-	});
-});
-
-router.post('/@:uid(*)/following', function( req, res ){
-	var uid = req.params['uid'];
-	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
-		if( err ){
-			throw err;
-		} else if( user ){
-			db.Follows.find({ "from.id" : user.id }, function( err, result ){
+		}, function( cb ){
+			var query = {};
+			if( type == "following" ){
+				way = "to";
+				query["from.id"] = user.id; 
+			} else if( type == "follower" ){
+				way = "from";
+				query["to.id"] = user.id; 
+			}
+			db.Follows.find( query, function( err, result ){
+				if( err ){
+					throw err;
+				} else if( result.length >= 1 ){
+					var uids = [];
+					for( var i = 0; i < result.length; ++i ){
+						uids.push(result[i][way].id);
+						if( i == result.length - 1){
+							cb( null, uids );
+						}
+					}
+				} else {
+					res.send("[]");
+				}
+			});
+		}, function( uids, cb ){
+			db.Users.find({ id : { $in : uids } },{ id : 1, name : 1, uid : 1, profile : 1, header : 1 }).lean().exec( function( err, result ){
 				if( err ){
 					throw err;
 				} else {
-					res.send(result);
+					cb( null, result );
 				}
 			});
-		} else {
-			res.send("없는 사용자입니다.");
+		}, function( users, cb ){
+			if( req.user && req.user.id ){
+				for( var j = 0; j < users.length; ++j ){
+					( function(i){
+						db.Follows.find({ $or : [{ "to.id" : req.user.id, "from.id" : users[i].id },{ "from.id" : user.id, "to.id" : users[i].id }] }, function( err, result ){
+							if( err ){
+								throw err;
+							} else {
+								if( result != null ){
+									if( result.length == 2 ){
+										users[i].following = true;
+										users[i].follower = true;
+									} else if( result.length ){
+										if( result[0].to.id == req.user.id ){
+											users[i].follower = true;
+										} else {
+											users[i].following = true;
+										}
+									}
+								} 
+								if( i+1 == users.length ){
+									cb( null, users );
+								}
+							}
+						});
+					})(j);
+				}
+			} else {
+				cb( null, users );
+			}
 		}
+	], function( err, users ){
+		res.send(users);
 	});
 });
 
@@ -76,7 +125,8 @@ router.post('/@:uid(*)/favorite', function( req, res ){
 	});
 });
 
-router.get('/@:uid(*)', function( req, res ){
+
+function getProfilePage( req, res ){
 	var uid = req.params['uid'];
 	db.Users.findOne({ uid : uid }, function( err, user ){
 		if( err ){
@@ -109,7 +159,10 @@ router.get('/@:uid(*)', function( req, res ){
 			res.send("존재하지 않는 사용자입니다.");
 		}
 	});
-});
+}
+
+router.get('/@:uid(*)/:tab', getProfilePage );
+router.get('/@:uid(*)', getProfilePage );
 
 router.post('/@:uid(*)', function( req, res ){
 	db.Users.findOne({ uid : req.params['uid'], signUp : true }, function( err, user ){
@@ -173,6 +226,7 @@ router.post( '/api/user/search', function( req, res){
 
 router.post( '/api/user/removeimg', checkSession, function( req, res ){
 	var type = req.body['imgtype'];
+	console.log(type);
 	if( type != "profile" && type != "header" ){
 		res.end();
 	} else {

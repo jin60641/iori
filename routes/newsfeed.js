@@ -99,6 +99,7 @@ function getPost( req, cb ){
 	var uid = req.body['uid'];
 	var pid = parseInt(req.params['pid']);
 	var tos = new Array();
+	var favorites = new Array();
 	if( skip >= 0 == false ){
 		skip = 0;
 	}
@@ -128,10 +129,25 @@ function getPost( req, cb ){
 		}, function( callback ){
 			if( uid != undefined && parseInt( uid ) >= 1 ){
 				uid = parseInt(uid);
-				tos.push( uid );
-				callback( null );
+				if( req.body['favorite'] == "true" ){
+					db.Favorites.find({ uid : uid }).sort({ id : -1 }).limit( limit).skip( skip ).exec( function( err, result ){
+						if( err ){
+							callback( null );
+							throw err;
+						} else {
+							async.map( result, function( obj, cb ){
+								favorites.push( obj.pid );
+								cb( null );
+							}, function(e,r){
+								callback( null );
+							});	
+						}
+					});
+				} else {
+					tos.push( uid );
+					callback( null );
+				}
 			} else {
-				tos.push( 1 );
 				tos.push( req.user.id );
 				db.Follows.find({ "from.id" : req.user.id }, function( err, follows ){
 					if( err ){
@@ -152,6 +168,8 @@ function getPost( req, cb ){
 			var query;
 			if( pid > 0 ){
 				query = { id : pid };
+			} else if( req.body['favorite'] == "true" && uid != null ){
+				query = { id : { $in : favorites } };
 			} else {
 				query = { id : { $nin : dontsee_posts }, "user.id" : { $in : tos } };
 			}
@@ -552,7 +570,7 @@ function getMeta(body){
 	return metas;
 }
 
-router.post( '/api/newsfeed/linkpreview', checkSession, function( req, res ){
+router.post( '/api/newsfeed/linkpreview', function( req, res ){
 	var url = req.body['link'];
 	db.Links.findOne({ url : url },function( error, result ){
 		if( error ){

@@ -84,6 +84,7 @@ window.addEventListener('load', function(){
 	}
 */
 
+/*
 // 더미데이터생성
 	for(var i = 0; i < 50; i++ ){	
 	var dialog = $("div");
@@ -106,7 +107,7 @@ window.addEventListener('load', function(){
 	chat_dialog_box.appendChild(dialog);
 	}
 /////////////
-
+*/
 
 	var chat_box = $("div");
 	chat_box.id = "chat_box";
@@ -420,65 +421,74 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			if( chat_panel == undefined ){
 				chat_panel = current_panel;
 			}
-			var chat = $("div");
-			chat.id = "chat_" + chats[i].id;
-			chat.className = "chat";
-		
-			if( chats[i].html ){
-				chat.className = "chat_system";
-				chat.innerHTML = chats[i].html;
+			if( current_id && current_id.length ){
+				var chat = $("div");
+				chat.id = "chat_" + chats[i].id;
+				chat.className = "chat";
+			
+				if( chats[i].html ){
+					chat.className = "chat_system";
+					chat.innerHTML = chats[i].html;
+					if( scroll ){
+						chat_panel.appendChild(chat);
+						chat_panel.scrollTop += chat.clientHeight
+					} else {	
+						chat_panel.insertBefore(chat,chat_panel.firstElementChild);
+					}
+					continue;
+				}
+	
+				var chat_profileimg = $("img");
+				chat_profileimg.src = "/files/profile/" + chats[i].from.uid + '?' + new Date();
+				chat_profileimg.className = "chat_profileimg";
+				chat.appendChild(chat_profileimg);
+				
+				var chat_body = $("div");
+				chat_body.className = "chat_body";
+	
+				var chat_body_name = $("div");
+				chat_body_name.className = "chat_body_name";
+				chat_body_name.innerText = chats[i].from.name
+				chat_body.appendChild(chat_body_name);
+	
+				if( chats[i].text ){
+					chat_body.innerHTML += "<div class='chat_body_caret'><div class='outer'></div><div class='inner'></div></div>";
+					var chat_body_text = $("div");
+					chat_body_text.className = "chat_body_text";
+					chat_body_text.innerText = chats[i].text;
+					chat_body.appendChild(chat_body_text);
+				} else if ( chats[i].file ){
+					var chat_body_file = $("img");
+					chat_body_file.className = "chat_body_file";
+					chat_body_file.src = "/files/chat/" + chats[i].id + '?' + new Date();
+					if( scroll ){
+						chat_body_file.onload = function(){
+							chat_panel.scrollTop = chat_panel.scrollHeight;
+						}
+					}
+					chat_body_file.onclick = function(){
+						viewimg(this.src);
+					};
+					chat_body.appendChild(chat_body_file);
+				}
+	
+				chat.appendChild(chat_body);
+	
+				if( chats[i].from.id == session.id ){
+					chat.className += " my_chat";
+					chat.appendChild( chat_profileimg );
+				}
+	/*
+				var previous = chat.previousElementSibling
+	*/
 				if( scroll ){
 					chat_panel.appendChild(chat);
-					chat_panel.scrollTop += chat.clientHeight
-				} else {	
+				} else {
 					chat_panel.insertBefore(chat,chat_panel.firstElementChild);
+					chat_panel.scrollTop += chat.clientHeight
 				}
-				continue;
+			} else { 
 			}
-
-			var chat_profileimg = $("img");
-			chat_profileimg.src = "/files/profile/" + chats[i].from.uid + '?' + new Date();
-			chat_profileimg.className = "chat_profileimg";
-			chat.appendChild(chat_profileimg);
-			
-			var chat_body = $("div");
-			chat_body.className = "chat_body";
-
-			var chat_body_name = $("div");
-			chat_body_name.className = "chat_body_name";
-			chat_body_name.innerText = chats[i].from.name
-			chat_body.appendChild(chat_body_name);
-
-			if( chats[i].text ){
-				chat_body.innerHTML += "<div class='chat_body_caret'><div class='outer'></div><div class='inner'></div></div>";
-				var chat_body_text = $("div");
-				chat_body_text.className = "chat_body_text";
-				chat_body_text.innerText = chats[i].text;
-				chat_body.appendChild(chat_body_text);
-			} else if ( chats[i].file ){
-				var chat_body_file = $("img");
-				chat_body_file.className = "chat_body_file";
-				chat_body_file.src = "/files/chat/" + chats[i].id + '?' + new Date();
-				if( scroll ){
-					chat_body_file.onload = function(){
-						chat_panel.scrollTop = chat_panel.scrollHeight;
-					}
-				}
-				chat_body_file.onclick = function(){
-					viewimg(this.src);
-				};
-				chat_body.appendChild(chat_body_file);
-			}
-
-			chat.appendChild(chat_body);
-
-			if( chats[i].from.id == session.id ){
-				chat.className += " my_chat";
-				chat.appendChild( chat_profileimg );
-			}
-/*
-			var previous = chat.previousElementSibling
-*/
 			if( scroll ){
 				var dialog;
 				var className = "chat_dialogs";
@@ -525,10 +535,6 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 						}
 					}
 				}
-				chat_panel.appendChild(chat);
-			} else {
-				chat_panel.insertBefore(chat,chat_panel.firstElementChild);
-				chat_panel.scrollTop += chat.clientHeight
 			}
 		}
 		if( scroll ){
@@ -655,7 +661,10 @@ function openDialog(text){
 		new_panel.className = dialog_id;
 	}
 
-	var new_panel = chat_panel_obj[ "chat_dialogs_" + dialog.id.split('_')[2] + '_' + dialog.id.split('_').slice(3).join('_') ];
+	var new_panel;
+	if( dialog && dialog.id ){
+		new_panel = chat_panel_obj[ "chat_dialogs_" + dialog.id.split('_')[2] + '_' + dialog.id.split('_').slice(3).join('_') ];
+	}
 	if( new_panel == undefined ){
 		getChats(20,null,null,true);
 	} else {

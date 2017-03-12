@@ -10,7 +10,7 @@
 	z-index : 100;
 	width : 100%;
 	position : fixed;
-	min-height : 214px;
+	min-height : 198px;
 	height : 25vh;
 	box-shadow : 0px 4px 8px rgba(0,0,0,.2);
 	background-color : white;
@@ -210,6 +210,81 @@ body #post_wrap {
 	padding-top : 10px;
 }
 
+#user_tab {
+	padding-bottom : 0px;
+	background-color : white;
+	font-size: 13px;
+	box-sizing : border-box;
+	letter-spacing: 0px;
+	border: 1px solid;
+	border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+	border-radius: 3px;
+	padding-left : 15px;
+	margin : auto;
+	margin-top : 15px;
+	width : 650px;
+	max-width : 100%;
+	font-family : 'NanumGothicL';
+}
+
+
+#user_tab > div {
+	cursor : pointer;
+	display : inline-block;
+	width : 70px;
+	text-align : center;
+	padding-top : 13px;
+	height : 28px;
+	text-decoration : none;
+}
+
+#user_tab > div:hover {
+	color : #ff5c3e;
+}
+
+#user_tab > div::after {
+	content: '';
+	margin-top : 12px;
+	display: block;
+	width: 100%;
+	height : 0px;
+	background : #ff5c3e;
+}
+
+#user_tab > div:hover::after {
+	margin-top : 8px;
+	height : 5px;
+}
+
+#follow_wrap {
+	max-width : 100vw;
+	width : 650px;
+	display : block;
+	margin : auto;
+	padding-top : 10px;
+}
+
+#follow_wrap #follow_wrap_none {
+	margin : auto;
+	margin-top: 10px;
+	box-sizing : border-box;
+	padding : 19px 10px 25px 10px;
+
+	width : 100%;
+
+	background-color: white;
+
+	border: 1px solid;
+	border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+	border-radius: 3px;
+
+	text-decoration: none;
+	text-align : center;
+
+	letter-spacing: 0px;
+	font-size : 14px;
+	font-family : 'NanumGothic';
+}
 
 @media screen and ( max-height : 329px ) {
 	#body #container #user_img {

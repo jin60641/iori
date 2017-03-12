@@ -68,7 +68,7 @@ function sendData_search( query ){
 		}}
 		xhr.open("POST", "/api/user/search", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('query='+query);
 	} else {
-		search_result.innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
+		$('#head_search_result').innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
 	}
 }
 
@@ -228,6 +228,13 @@ window.addEventListener('load',function(){
 
 	var search_result = $("div");
 	search_result.id = "head_search_result";
+
+	search_result.addEventListener('touch', function( evt ){
+		evt.stopPropagation();
+	});
+	search_result.addEventListener('touchstart', function( evt ){
+		evt.stopPropagation();
+	});
 	search_result.onmouseover = function(){
 		searchResultView = 1;
 	}
@@ -277,11 +284,17 @@ window.addEventListener('load',function(){
 	head.appendChild(navi_profile);
 
 	var head_menu = $("div");
+	head_menu.addEventListener('touch', function( evt ){
+		evt.stopPropagation();
+	});
+	head_menu.addEventListener('touchstart', function( evt ){
+		evt.stopPropagation();
+	});
 	head_menu.id = "head_menu";
 	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
 	head_menu.innerHTML += "<a href='/@" + session.uid + "'><img src='/img/menu_home.png'>| 프로필</a>";
-	head_menu.innerHTML += "<a href='/room'><img src='/img/menu_game.png'>| 게임</a>";
-	head_menu.innerHTML += "<a href='/ranking'><img src='/img/menu_ranking.png'>| 랭킹</a>";
+	head_menu.innerHTML += "<a href='/setting'><img src='/img/menu_game.png'>| 설정</a>";
+//	head_menu.innerHTML += "<a href='/ranking'><img src='/img/menu_ranking.png'>| 랭킹</a>";
 	if( session == "" ){
 	} else if( session.signUp == 1 ){
 		head_menu.innerHTML += "<a href='#' onclick='sessionLogOut(this)' ><img src='/img/menu_logout.png'>| 로그아웃</a>";

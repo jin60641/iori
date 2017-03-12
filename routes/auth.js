@@ -37,10 +37,11 @@ router.use(session(sessionMiddleware));
 router.use(passport.initialize()).use(passport.session());
 passport.serializeUser(function(user, done) {
 	if( user && user._json ){
-		db.Users.findOne({ email : user._json.email }, { _id : 0, __v : 0, date : 0, email : 0, password : 0 }, function( err, result ){
+		db.Users.findOne({ email : user._json.email }).lean().exec( function( err, result ){
 			if( err ){
 				throw err;
 			} else if( result && result.signUp ){
+				delete result.password;
 				user = result;
 				done(null, user);
 			} else {
@@ -75,7 +76,7 @@ passport.use(new FacebookTokenStrategy({
 */
 
 passport.use(new LocalStrategy({ usernameField : 'uid', passwordField : 'password' }, function( uid, password, next ){
-	db.Users.findOne({ $or : [{ email : uid }, { uid : uid }] }, function( err, user ){
+	db.Users.findOne({ $or : [{ email : uid }, { uid : uid }] }).lean().exec( function( err, user ){
 		if( err ){
 			return next(err);
 		} else if(!user){
@@ -88,13 +89,8 @@ passport.use(new LocalStrategy({ usernameField : 'uid', passwordField : 'passwor
 				if( user && user.signUp == false ){
 					return next(null,false,{message:'이메일 인증을 진행하셔야 정상적인 이용이 가능합니다.'});
 				} else if( user ){
-					var tmp = {
-						id : user.id,
-						name : user.name,
-						uid : user.uid,
-						signUp : user.signUp
-					}
-					return next(null,tmp);
+					delete user.password;
+					return next(null,user);
 				}
 			} else {
 				return next(null,false,{message:'이메일 또는 비밀번호가 잘못되었습니다.'});

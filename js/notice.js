@@ -7,15 +7,36 @@ window.addEventListener('load',function(){
 	}
 
 	socket.on( 'notice_new', function( notice ){
+		console.log(notice);
 		getNotice(0);
 	});
+	checkNoticeNone();
 });
+
+function getDateString(origin_date){
+	var date = new Date(origin_date);
+	var now = new Date();
+	var date_time = Math.floor(date.getTime()/1000)
+	var now_time = Math.floor(now.getTime()/1000)
+	var gap = now_time - date_time;
+	if( gap < 86400 ){
+		return ((date.getDate()!=now.getDate())?"어제 ":"") + (date.getHours()<=9?"0":"") + date.getHours() + ":" + (date.getMinutes()<=9?"0":"") + date.getMinutes();
+	} else if( date.getDate() != now.getDate() ){
+		return (date.getYear()-100)+'/'+(date.getMonth()<=8?"0":"")+(date.getMonth()+1)+'/'+(date.getDate()<=9?0:"")+date.getDate();
+	}
+}
+
 
 function makeNotice( notice ){
 	var box = $('a');
 	box.href = notice.link;
 	box.id = "notice_"+notice.id;
 	box.className = "notice";
+
+	var date = $('div');
+	date.className = "notice_date";
+	date.innerText = getDateString(notice.date);
+	box.appendChild(date);
 
 	var profileimg = $('img');
 	profileimg.src = "/files/profile/" + notice.from.uid;
@@ -49,6 +70,7 @@ function makeNotice( notice ){
 	}
 	box.appendChild( message );
 
+
 	return box;
 }
 
@@ -59,6 +81,7 @@ function getNotice( limit ){
 		if( Notices.length >= 1 ){
 			var wrap = $('#notice_wrap');
 			for( var i = 0; i < Notices.length; ++i ){
+				notices.push(Notices[i]);
 				var div = makeNotice(Notices[i]);
 				if( limit >= 1 ){
 					wrap.appendChild(div);
@@ -71,6 +94,7 @@ function getNotice( limit ){
 					}
 				}
 			}
+			checkNoticeNone();
 		}
 	}}
 	xhr.open("POST","/api/notice/getnotices", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -82,4 +106,17 @@ function getNotice( limit ){
 		params += "0&limit=1";
 	}
 	xhr.send(params);
+}
+
+function checkNoticeNone(){
+	var wrap = $('#notice_wrap');
+	var none = $('#notice_wrap_none')
+	if( notices.length == 0 && none == undefined ){
+		none = $('div');
+		none.id = "notice_wrap_none";
+		none.innerText = "아직 확인하지 않은 알림이 없습니다";
+		wrap.appendChild(none);
+	} else if( none ){
+		wrap.removeChild(none);
+	}
 }

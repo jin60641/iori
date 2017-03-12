@@ -7,6 +7,28 @@
 	margin : auto;
 }
 
+#notice_wrap #notice_wrap_none {
+    margin : auto;
+    margin-top: 10px;
+    box-sizing : border-box;
+    padding : 19px 10px 25px 10px;
+
+    width : 100%;
+
+    background-color: white;
+
+    border: 1px solid;
+    border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+    border-radius: 3px;
+
+    text-decoration: none;
+    text-align : center;
+
+    letter-spacing: 0px;
+    font-size : 14px;
+    font-family : 'NanumGothic';
+}
+
 .notice {
 	margin : auto;
     width : calc( 100% - 20px );
@@ -28,6 +50,14 @@
 
 .notice:first-of-type {
     border-top: 1px solid #e5e6e9;
+}
+
+.notice .notice_date {
+    letter-spacing : -1px;
+    position : absolute;
+    right : 14px;
+    top : 10px;
+    font-size : 12px;
 }
 
 .notice .notice_profileimg {

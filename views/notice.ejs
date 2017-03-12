@@ -3,7 +3,7 @@
 	<head>
 		<% include ./header %>
 		<link async rel="stylesheet" type="text/css" href="/css/notice.css">
-		<script async>
+		<script>
 			notices = "<%= notices %>".replace(/&#34;/g,'"');
 			if( notices.length > 0 ){
 				notices = JSON.parse(notices)

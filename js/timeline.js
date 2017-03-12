@@ -1,9 +1,6 @@
 
-window.addEventListener("click", hidemenu);
-window.addEventListener("keydown",keydown);
 
 //모바일을 위한 터치 이벤트 리스너
-
 	/*
 		if( !document.webkitIsFullScreen ){
 			imglayer.style.opacity="0";
@@ -15,6 +12,8 @@ window.addEventListener("keydown",keydown);
 		}
 	*/
 
+window.addEventListener("click", hidemenu);
+window.addEventListener("keydown",keydown);
 window.addEventListener('scroll',preventDefault);
 window.addEventListener('touchmove',preventDefault);
 window.addEventListener('mousewheel',preventDefault);
@@ -93,6 +92,7 @@ function dontseeReply(pid,reply_id){
 
 //보고싶지 않습니다(게시물)
 function dontsee(postid){
+	var postwrap = $('#post_wrap');
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		if( location.pathname.substr(0,6) == "/post/" ){
@@ -113,6 +113,7 @@ function dontsee(postid){
 
 //보고싶지 않습니다 취소
 function dontsee_cancle(postid){
+	var postwrap = $('#post_wrap');
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		var post = $("#post_"+postid);
@@ -645,6 +646,7 @@ function removeReply(pid,id){
 
 //게시글 삭제
 function removePost(pid){
+	var postwrap = $('#post_wrap');
 	if(!confirm("정말로 삭제하시겠습니까?")){
 		return false;
 	}
@@ -1008,7 +1010,7 @@ function makePost( Post ){
 		tmp_post.appendChild(textspan);
 		post_wrap.appendChild(tmp_post);
 		textspan.style.display = "block";
-		textspan.style.width = postwrap.clientWidth - 60 + "px";
+		textspan.style.width = post_wrap.clientWidth - 60 + "px";
 		if( textspan.clientHeight >= 75 ){
 			var textmore_btn = $("span");
 			textmore_btn.className = "textmore_btn";
@@ -1132,8 +1134,10 @@ function makePost( Post ){
 
 //게시글 불러오기
 function getPosts(limit){
+	var postwrap = $('#post_wrap');
+	postwrap.style.display = "";
 	if( $("#post_none") ){
-		post_wrap.removeChild($("#post_none").parentNode);
+		postwrap.removeChild($("#post_none").parentNode);
 	}
 	if( skip > posts ){
 		skip = posts;
@@ -1160,7 +1164,7 @@ function getPosts(limit){
 						postwrap.insertBefore(div,postwrap.firstElementChild.nextElementSibling);
 					}
 				}
-			} else if( posts == 0 && postOption.userid == undefined && ( session == "" || ( session != "" && session.signUp != 1 ) ) ){
+			} else if( posts == 0 && postOption.uid == undefined && ( session == "" || ( session != "" && session.signUp != 1 ) ) ){
 				var post_slider = $("div");
 				post_slider.id = "post_slider";
 			
@@ -1264,7 +1268,11 @@ function getPosts(limit){
 				var post_inside = $("div");
 				post_inside.className = "post_inside";
 				post_inside.id = "post_none";
-				post_inside.innerText = "아직 작성된 게시글이 없습니다.";
+				if( postOption.favorite == "true" ){
+					post_inside.innerText = "아직 관심글로 표시한 게시글이 없습니다.";
+				} else {
+					post_inside.innerText = "아직 작성된 게시글이 없습니다.";
+				}
 				post.appendChild(post_inside);
 				postwrap.appendChild(post);
 			}
@@ -1333,6 +1341,7 @@ function sliding( type ){
 // 이미지 보고있을때 단축키들
 var select;
 function keydown(e){
+	var postwrap = $('#post_wrap');
 	if(imgviewing){
 		event.stopPropagation();
 	//	event.preventDefault();
@@ -1517,11 +1526,12 @@ function imgmenu_resize(){
 }
 
 window.addEventListener('load',function(){
-	postwrap = $("div");
+
+	var postwrap = $("div");
 	postwrap.id = 'post_wrap'
 	document.body.appendChild(postwrap);
 
-	if( session ){
+	if( session && postOption.uid == null ){
 		var write = $("div");
 		write.id = "write";
 		write.innerHTML+='<div id="output_post"></div>';
@@ -1555,7 +1565,7 @@ window.addEventListener('load',function(){
 			postwrap.appendChild(write);
 		}
 	}
-	
+
 	imgviewing = 0;
 	imglayer = $("div");
 	imglayer.id="imglayer";
@@ -1675,7 +1685,7 @@ window.addEventListener('load',function(){
 	post_file = $("#post_file");
 
 	window.addEventListener('scroll', function(e){
-		if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight){
+		if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
 			getPosts(4);
 		}
 	});
@@ -1687,6 +1697,8 @@ window.addEventListener('load',function(){
 		} else {
 			location.href = "/";
 		}
+	} else if( postOption.uid != null ){
+		
 	} else {
 		getPosts(10);
 		socket.on( 'post_new', function(){

@@ -6,9 +6,9 @@ var headerLabelScale = 1;
 window.addEventListener("click", hideLabelMenu);
 
 window.addEventListener('load', function(){
-	body = $("div");
+	var body = $("div");
 	body.id = "body";
-	document.body.insertBefore(body,document.body.firstChild);
+	document.body.insertBefore(body,head.nextSibling);
 
 	container = $("div");
 	container.id = "container";
@@ -22,7 +22,8 @@ window.addEventListener('load', function(){
 	headerimg_back.id = "headerimg_back";
 	if( user.header ){
 		headerimg_back.style.cursor = "pointer";
-		headerimg_back.style.backgroundImage = "url('/files/header/" + user.id + "?" + new Date().getTime() + "')";
+		headerimg_back.style.backgroundImage = "url('/files/header/" + user.id + "?')";
+		//headerimg_back.style.backgroundImage = "url('/files/header/" + user.id + "?" + new Date().getTime() + "')";
 		headerimg_back.onclick = function(){
 			viewimg(0,1,new Date(),"/files/header/" + user.id);
 		}
@@ -90,8 +91,6 @@ window.addEventListener('load', function(){
 	container.appendChild(headerimg_form);
 	container.appendChild(profileimg_form);
 
-
-
 	if( user.id == session.id ){
 		var user_setting = makeUserButton("setting","프로필 수정");
 		user_setting.onclick = settingStart
@@ -137,38 +136,35 @@ window.addEventListener('load', function(){
 	user_userid.innerHTML = "@" + user.uid;
 	container.appendChild(user_userid);
 
+	var user_tab = $("div");
 
-/*
-	friend_obj = $("div");
-	body.appendChild(friend_obj);
-*/
-//	makeFriendList(friend_obj,user.id);
-
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function (event){
-		if (xhr.readyState == 4 && xhr.status == 200){
-			if(xhr.responseText.length >= 1 ){
-				friend_box.innerText = xhr.responseText;
-				friend_box.onclick = function(){
-					if( friend_box.innerText == "no" ){
-						friendAdd(userid,user_name.innerHTML);
-						this.innerText = "request";
-					} else if( friend_box.innerText == "request" || friend_box.innerText == "friend" ){
-						friendDel(userid);
-						friend_box.innerText = "no";
-					} else if( friend_box.innerText == "me" ){
-						location.href="/myinfo";
-					}
-					friend_box.style.backgroundImage =" url('/img/friend_" + friend_box.innerText + ".jpg')";
-				}
-				friend_box.style.backgroundImage =" url('/img/friend_" + friend_box.innerText + ".jpg')";
-			}
-		}
-		container.appendChild(friend_box);
+	var tab_arr = [
+		{ name : "게시글", id : "post" },
+		{ name : "팔로잉", id : "following" },
+		{ name : "팔로워", id : "follower" },
+		{ name : "관심글", id : "favorite" }
+	];
+	for( var i = 0; i < tab_arr.length; ++i ){
+		var tab = $("div");
+		tab.className = "profile_tab";
+		tab.id = "profile_tab_"+tab_arr[i].id;
+		tab.innerText = tab_arr[i].name;
+		tab.onclick = openUserTab;
+		user_tab.appendChild(tab);
 	}
-//	xhr.open("POST","/isfriend", false); xhr.send('id='+user.uid);
+	
+	user_tab.id = "user_tab";
+	
+	document.body.insertBefore(user_tab,body.nextSibling);
+
 	window.addEventListener('scroll', resizeContainer );
 	window.addEventListener('resize', resizeContainer );
+	
+	var follow_wrap = $('div');
+	follow_wrap.id = "follow_wrap";
+	document.body.appendChild(follow_wrap);
+
+	openUserTab();
 });
 
 function resizeContainer(){
@@ -191,6 +187,8 @@ function resizeContainer(){
 	}
 	changeLabelSize("profile");
 	changeLabelSize("header");
+	
+	
 }
 
 function changeLabelSize(type){
@@ -241,7 +239,7 @@ function settingSave(){
 	if( $('#headerimg_file').value != "" ){
 		sendProfileImage( "header" );
 		flag = true;
-	} else if( $('#headerimg_back').style.backgroundImage == null && user.header ){
+	} else if( $('#headerimg_back').style.backgroundImage == "" && user.header ){
 		sendProfileImage( "header", false );
 	}
 
@@ -503,4 +501,81 @@ function removeImage( evt ){
 	var label = $('#' + type + 'img_label');
 	label.removeChild(label.firstChild);
 	label.appendChild(makePhotoHelper(type,false));
+}
+
+function openUserTab( evt ){
+	var tab;
+	var tab_name;
+	var history_str = "/@" + user.uid;
+	if( evt ){
+		tab = this;
+		tab_name = this.id.split("_").pop();
+	} else {
+		tab_name = document.URL.split("/").pop();
+		tab = $('#profile_tab_' + tab_name);
+	}
+	if( tab_name == "post" || tab_name[0] == "@" ){
+		tab = $('#profile_tab_post');
+		tab_name = "";
+	} else {
+		history_str += '/' + tab_name;
+	}
+	skip = 0;
+	posts = 0;
+	var tabs = $('.profile_tab');
+	for( var i = 0; i < tabs.length; ++i ){
+		var t = tabs[i];
+		t.style.color = "";
+		t.style.height = "";
+		t.style.borderBottom = "";
+	}
+	$('#post_wrap').innerHTML = "";
+	$('#post_wrap').style.display = "none";
+	$('#follow_wrap').innerHTML = "";
+	$('#follow_wrap').style.display = "none";
+	switch(tab_name){
+		case "following":
+			getFollows(6,"following");
+			break;
+		case "follower":
+			getFollows(6,"follower");
+			break;
+		case "favorite":
+			postOption.favorite = "true";
+			getPosts(10);
+			break;
+		default:
+			postOption.favorite = "false";
+			getPosts(10);
+	}
+	history.pushState(null,null,history_str);
+	
+	tab.style.color = "#ff5c3e";
+	tab.style.height = "24px";
+	tab.style.borderBottom = "5px solid #ff5c3e";
+}
+
+function getFollows(limit,type){
+	var wrap = $('#follow_wrap');
+	wrap.style.display = "";
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+		if( xhr.responseText != "[]" ){
+			var users = JSON.parse(xhr.responseText);
+			for( var i = 0; i < users.length; ++i ){
+				wrap.appendChild( makeUserCard( users[i] ) );
+			}
+		} else {
+			var none = $('div');
+			none.id = "follow_wrap_none";
+//			if( type == "following" ){
+				none.innerText = "팔로우 중인 유저가 없습니다.";
+//			} else {
+//			}
+			wrap.appendChild(none);
+		}
+	}}
+	xhr.open("POST","/@" + user.uid + '/' + type, false); 
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.send();
 }

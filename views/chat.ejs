@@ -2,14 +2,14 @@
 <html>
 	<head>
 		<% include ./header %>
-		<link async rel="stylesheet" type="text/css" href="/css/chat.css">
-		<script async>
+		<link rel="stylesheet" type="text/css" href="/css/chat.css">
+		<script>
 			dialogs = "<%= dialogs %>".replace(/&#34;/g,'"');
 			if( dialogs.length > 0 ){
 				dialogs = JSON.parse(dialogs)
 			}
 		</script>
-		<script async src="/js/chat.js"></script>
+		<script src="/js/chat.js"></script>
 		<% include ./footer %>
 	</head>
 	<body>
