@@ -4,6 +4,13 @@
 		<% include ./header %>
 		<link rel="stylesheet" type="text/css" href="/css/setting.css">
 		<script>
+			<%
+				if( page == undefined || page.length == 0 ){
+					page = "account"
+				}
+			%>
+			page = "<%= page %>";
+			
 			settings = "<%= settings %>".replace(/&#34;/g,'"');
 		</script>
 		<script src="/js/setting.js"></script>

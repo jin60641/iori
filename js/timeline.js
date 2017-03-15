@@ -1527,6 +1527,9 @@ function imgmenu_resize(){
 
 window.addEventListener('load',function(){
 
+//	document.body.appendChild(makeUserCard(session);
+
+
 	var postwrap = $("div");
 	postwrap.id = 'post_wrap'
 	document.body.appendChild(postwrap);

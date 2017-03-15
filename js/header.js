@@ -293,7 +293,7 @@ window.addEventListener('load',function(){
 	head_menu.id = "head_menu";
 	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
 	head_menu.innerHTML += "<a href='/@" + session.uid + "'><img src='/img/menu_home.png'>| 프로필</a>";
-	head_menu.innerHTML += "<a href='/setting'><img src='/img/menu_game.png'>| 설정</a>";
+	head_menu.innerHTML += "<a href='/setting/account'><img src='/img/menu_game.png'>| 설정</a>";
 //	head_menu.innerHTML += "<a href='/ranking'><img src='/img/menu_ranking.png'>| 랭킹</a>";
 	if( session == "" ){
 	} else if( session.signUp == 1 ){

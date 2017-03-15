@@ -9,11 +9,11 @@
 	background-color : white;
 }
 
-.setting_box {
+#setting_box {
 	border : 1px solid #e6ecf0;
 }
 
-.setting_title {
+#setting_title {
 	border-bottom : 1px solid #e6ecf0;
 	font-size : 22px;
 	padding : 11px;
@@ -21,37 +21,57 @@
 }
 
 .setting_label {
+	cursor : pointer;
 	display : inline-block;
 	margin-left : 11px;
 	width : 120px;
 	text-align : right;
 	font-size : 13px;
 	vertical-align : top;
-	padding-top : 5px;
+	padding-top : 9px;
 }
 
 .setting_div {
 	margin-left : 15px;
 	vertical-align : top;
 	display : inline-block;
-	margin-bottom : 13px;
+	margin-bottom : 20px;
 }
 
 .setting_input {
 	display : inline-block;
-	width : 210px;
+	width : 230px;
 	padding : 6px;
 	margin : 0;
 	outline : 0;
 	background-color : #fff;
 	border : 1px solid #e6ecf0;
 	border-radius : 3px;
+	margin-bottom : 3px;
 }
 
 .setting_text {
+	position : absolute;
 	color : #657786;
-	margin-top : 5px;
+	padding-left : 2px;
 	font-size : 12px;
 }
 
+#setting_submit {
+	width : 78px;
+	text-align : center;
+	padding : 9px;
+	background-color : white;
+	border : 1px solid #e1e8ed;
+	border-radius : 4px;
+	color : #66757f;
+	cursor : pointer;
+	font-size : 14px;
+	font-weight : bold;
+	margin : 0px 25px 15px auto;
+}
 
+.setting_submit:hover {
+	text-decoration : none;
+	background-color : #f5f5f5;
+}

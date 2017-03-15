@@ -4,6 +4,8 @@ var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');
 var im = require('imagemagick');
+var smtpTransport = require("./mailconfig").smtpTransport;
+var crypto = require('crypto');
 var async = require('async');
 
 router.use(require('body-parser').urlencoded());
@@ -21,6 +23,13 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
+router.get('/setting/:page', checkSession, function( req, res ){
+	var page = req.params['page'];
+	if( page == undefined || page.length == 0 ){
+		page = "account";
+	}
+	makeObj( req, res, "setting", { page : page });
+});
 
 router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 	var uid = req.params['uid'];
@@ -226,7 +235,6 @@ router.post( '/api/user/search', function( req, res){
 
 router.post( '/api/user/removeimg', checkSession, function( req, res ){
 	var type = req.body['imgtype'];
-	console.log(type);
 	if( type != "profile" && type != "header" ){
 		res.end();
 	} else {
@@ -323,4 +331,166 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 	});
 });
 
+router.post( '/api/user/change/uid', checkSession, function( req, res ){
+	var uid = req.body['uid'];
+	var save = req.body['save'];
+	db.Users.findOne({ uid : uid }, function( err, user ){
+		if( err ){
+			throw err;
+		} 
+		if( user ){
+			if( user.uid == req.user.uid ){
+				res.send("현재 내 아이디입니다.");
+			} else {
+				res.send("이미 사용중인 아이디입니다.");
+			}
+		} else {
+			if( uid.length >= 8 && uid.length <= 20 ){
+				var regex = /[a-zA-Z0-9_]*/;
+				if( regex.test(uid) == false ){
+					res.send("아이디에는 영문 대/소문자와 밑줄(_)만 사용하실 수 있습니다.");
+				} else if( save == "true" ){
+					db.Users.update({ id : req.user.id },{ uid : uid }, function( err, reuslt ){
+						if( err ){
+							throw err;
+						}
+						req.user.uid = uid;
+						res.send("success");
+					});
+				} else {
+					res.send("사용 가능합니다!");
+				}
+			} else {
+				res.send("아이디의 길이는 8자 이상 20자 이하여야 합니다.");
+			}
+
+		}
+	});
+});
+
+router.post( '/api/user/change/email', checkSession, function( req, res ){
+	var email = req.body['email'];
+	var save = req.body['save'];
+	db.Users.findOne({ email : email }, function( err, user ){
+		if( err ){
+			throw err;
+		} 
+		var regex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
+		if( user ){
+			if( user.email == req.user.email ){
+				res.send("현재 내 이메일입니다.");
+			} else {
+				res.send("이미 사용중인 이메일입니다.");
+			}
+		} else if ( regex.test(email) ){
+			if( save == "true" ){
+				var shasum = crypto.createHash('sha1');
+				shasum.update(email);
+				var password = shasum.digest('hex');
+				var string = "http://iori.kr/api/change/email/" + email + "/" + password;
+				smtpTransport.sendMail({
+					from: 'iori <iori.kr>',
+					to: email,
+					subject : 'iori.kr 인증 메일',
+					html : '<div style="width : 100%; text-align : center; font-size : 10pt; line-height : 24px;"><img src="http://iori.kr/img/logo.png" style="width : 200px; margin : 30px 0 30px 0;"><div style="border-top : 1px solid #4c0e25; border-bottom : 1px solid #4c0e25; padding-top : 60px; padding-bottom : 60px; margin-bottom : 20px;">안녕하세요. iori.kr입니다.<br>이메일 정보를 변경하시려면 아래의 링크를 클릭해주세요.<br><a href="' + string + '" style="display : block; margin-top : 20px; text-decoration:none;color:#ce410a;font-weight:bold;">여기를 눌러 이메일 인증</a><br>인증이 완료되면 정상적으로 서비스 이용이 가능합니다.<br>감사합니다.<br>오늘도 좋은 하루되세요.<br>iori.kr 운영진 드림.<br></div>더 궁금한 사항이 있으시면 support@iori.kr로 문의 바랍니다.</div>'
+				}, function(err3,response){
+					if( err3 ){
+						throw err3;
+					} else {
+						res.send(email + "으로 인증메일이 발송되었습니다.\n메일을 확인해주세요.");
+					}
+				});
+			} else {
+				res.send("사용 가능합니다! 설정 저장 후 인증메일을 확인하셔야 변경됩니다");
+			}
+		} else {
+			res.send("유효하지않은 이메일입니다.");
+		}
+	});
+});
+
+router.get( '/api/user/change/email/:email/:link', checkSession, function( req, res ){
+	var email = req.params.email;
+	var link = req.params.link;
+	if( req.user == null || req.user.email == null ){
+		res.render(__dirname + '/../views/emailauth.ejs', { result : "로그인 후에 링크를 클릭해주세요." });
+	}
+	if( email != null, link != null ){
+		db.Users.findOne({ 'id' : req.user.id }, function( err, user ){
+			if( err ){
+				throw err;
+			} else if( user ){
+				var shasum = crypto.createHash('sha1');
+				shasum.update(email);
+				var sha_email = shasum.digest('hex');
+				if( sha_email == link ){
+					db.Users.update({ 'id' : req.user.id }, { email : email } , function( error, result ){
+						if( error ){
+							throw error;
+						} else {
+							req.user.email = email;
+							res.render(__dirname + '/../views/emailauth.ejs', { result : "이메일 변경이 완료되었습니다." });
+						}
+					});
+				} else {
+					res.redirect('/');
+				}
+			} else {
+				res.redirect('/');
+			}
+		});
+	}
+});
+
+router.post( '/api/user/change/password', checkSession, function( req, res ){
+	var oldpw = req.body['oldpw'];
+	var password = req.body['newpw'];
+	var score = 0;
+	if( password.match(/[a-z]/) ){
+		++score;
+	}
+	if( password.match(/[A-Z]/) ){
+		++score;
+	}
+	if( password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/) ){
+		++score;
+	}
+	if( password.match(/[0-9]/) ){
+		++score;
+	}
+	if( password.length < 8 || password.length > 20 ){
+		score = -1;
+	}
+	if( score >= 2 ){
+		var shasum = crypto.createHash('sha1');
+		shasum.update(password);
+		password = shasum.digest('hex');
+		if( oldpw != null ){
+			db.Users.findOne({ id : req.user.id }, function( err, user ){
+				if( err ){
+					throw err;
+				}
+				var shasum2 = crypto.createHash('sha1');
+				shasum2.update(oldpw);
+				var sha_pw = shasum2.digest('hex');
+				if( user.password == sha_pw ){
+					user.update({ password : password }, function( err2, result ){
+						if( err2 ){
+							throw err2;
+						}
+						res.send("success");
+					});
+				} else {
+					res.send("fail");
+				}
+			});
+		} else {
+			res.send('사용 가능합니다');
+		}
+	} else if( score == -1 ){
+		res.send("8자 이상 20자 이하여야 합니다.");
+	} else {
+		res.send("대소문자, 특수문자, 숫자 등을 혼용해주세요");
+	}
+});
 module.exports = router;
