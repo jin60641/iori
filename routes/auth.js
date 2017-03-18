@@ -309,15 +309,12 @@ function checkAdmin( req, res, next ){
 	if( req.user && req.user.signUp ){
 		db.Users.findOne({ id : req.user.id }, function( err, result ){
 			if( result.admin == true ){
-		console.log("Admin");
 				return next();
 			} else {
-		console.log("no Admin");
 				makeObj(req,res,"404");
 			}
 		});
 	} else {
-		console.log("no signUp");
 		makeObj(req,res,"404");
 	}
 }

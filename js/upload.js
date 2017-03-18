@@ -2,7 +2,7 @@ var listenstart;
 var mousestart;
 var waveformRenderId;
 var audioPlayId;
-var audio;
+var audio = new Audio;
 var waveformArray = [];
 var FPS = 45;
 var sin_index = 0;
@@ -19,11 +19,12 @@ function waveformRender() {
 	var waveformCtx = waveform.getContext('2d');
 	waveformCtx.clearRect(0, 0, waveform.width, waveform.height);
 	if( waveformArray != undefined && waveformArray.length >= 1 && listenstart != null ){
-		var audioCurrentTime = audio.currentTime;
-		var audioDuration = audio.duration;
+		var audioCurrentTime = audio.currentTime + ( -listenstart + waveform.width / 2 ) / 6;
+		var audioDuration = waveformArray.length;
 		for( var i = 0; i < waveformArray.length; ++i ){
+		/*
 		//  if( i*6 >= -listenstart + waveform.width / 2 && i*6 <= -listenstart + waveform.width / 2 + 10 ){
-				//if( i*6 / ( audio.duration * 5 ) < audioCurrentTime / audioDuration ){
+				//if( i*6 / ( waveformArray.length * 5 ) < audioCurrentTime / audioDuration ){
 				if( i / waveformArray.length < audioCurrentTime / audioDuration ){
 					waveformCtx.fillStyle = "#ff5c26";
 				} else {
@@ -32,6 +33,17 @@ function waveformRender() {
 		//  } else {
 		//	  waveformCtx.fillStyle = "#D0D9DD";
 		//  }
+		*/
+			if( i*6 >= -listenstart + waveform.width / 2 && i*6 <= -listenstart + waveform.width / 2 + 17.5 ){
+				if( i / waveformArray.length < audioCurrentTime / audioDuration ){
+					waveformCtx.fillStyle = "#ff5c26";
+				} else {
+					waveformCtx.fillStyle = "#FFB5AB";
+				}
+			} else {
+				waveformCtx.fillStyle = "#D0D9DD";
+			}
+		
 			var height;
 			if( max > waveform.height * (7/10) ){
 				height = waveformArray[i] / (max/(waveform.height*(7/10)))
@@ -41,7 +53,7 @@ function waveformRender() {
 			waveformCtx.fillRect( i*6 + listenstart, ( waveform.height - height ) * (7/10), 4, height * (7/10) + 2 );
 //			waveformCtx.fillRect( i*6 + listenstart, ( waveform.height - waveformArray[i]/max * ( waveform.height ) ) * (7/10), 4, waveformArray[i]/max * (7/10) * ( waveform.height ) + 2 );
 			waveformCtx.fillStyle = "#000000";
-			if( i%30 == 0 && i ){
+			if( i%10 == 0 && i ){
 				waveformCtx.fillRect( i*6 + listenstart , waveform.height * 7/10 + 2, 2 ,waveform.height * 1/10 - 6 );
 				waveformCtx.textAlign = "center";
 				waveformCtx.font = "16px Arial";
@@ -49,9 +61,9 @@ function waveformRender() {
 			}
 		}
 		/*
-		var val = waveformArray[Math.floor(waveformArray.length*audio.currentTime/audio.duration)];
+		var val = waveformArray[Math.floor(waveformArray.length*audioCurrentTime/waveformArray.length)];
 		waveformCtx.fillStyle = "#ff5c26";
-			waveformCtx.fillRect( listenstart, ( waveform.height - val/max * ( waveform.height ) ) * (7/10), 4, val/max * (7/10) * ( waveform.height ) + 2 );
+		waveformCtx.fillRect( listenstart, ( waveform.height - val/max * ( waveform.height ) ) * (7/10), 4, val/max * (7/10) * ( waveform.height ) + 2 );
 		*/
 	} else {
 		var sections = waveform.width;
@@ -77,7 +89,7 @@ function getMusicInfo( file ){
 	console.log("getMusic");
 	console.log(file);
 	console.log("--------");
-	audio = new Audio();
+	var audio = new Audio();
 	audio.src = URL.createObjectURL(file);
 	audio.controls = false;
 	console.log("getMusic) waveformCreate 호출");
@@ -158,6 +170,7 @@ function getMusicInfo( file ){
 				img.src = "data:image/png;base64," + btoa(apic_str.substr(imageStart));
 			}
 		} else {
+			var img = $('#upload_img');
 			img.src = "/img/apicnone.png";
 		}
 		/*
@@ -213,7 +226,7 @@ function openMusic(evt){
 		getMusicInfo(new Blob([reader.result]));
 	}
 	reader.readAsArrayBuffer( file );
-	label.src="";
+	$("#label").src="";
 }
 
 window.addEventListener('load',function(){
@@ -237,6 +250,7 @@ window.addEventListener('load',function(){
 	music.style.display = "none";
 	form.appendChild(music);
 	var label = $("label");
+	label.id = "label";
 	label.htmlFor = "upload_file";
 	label.addEventListener('dragover', DragOver, false);
 	label.addEventListener('drop', openMusic, false);
@@ -312,10 +326,10 @@ function gameStart(){
 
 	function moveWaveform(spot){
 		var play_btn = $('#play_btn');
-		if( spot != null && mousestart != null && audio != null && audio.duration >= 0 && play_btn.onclick != null ){
+		if( spot != null && mousestart != null && audio != null && waveformArray.length >= 0 && play_btn.onclick != null ){
 			listenstart += spot - mousestart;
-			if( listenstart < -( audio.duration * 6 - window.innerWidth  * (2/4) ) ){
-				listenstart = -( audio.duration * 6 - window.innerWidth * (2/4) );
+			if( listenstart < -( waveformArray.length * 6 - window.innerWidth  * (2/4) ) ){
+				listenstart = -( waveformArray.length * 6 - window.innerWidth * (2/4) );
 			} else if( listenstart > window.innerWidth / 2 ){
 				listenstart = window.innerWidth / 2;
 			}
@@ -359,6 +373,8 @@ function gameStart(){
 
 
 function uploadMusic( url ){
+	waveformArray = [];
+	audio.pause();
 	if( url ){
 		var vid;
 		var vindex;
@@ -402,6 +418,8 @@ function uploadMusic( url ){
 			if( xhr.responseText && xhr.responseText.length ){
 				try {
 					var obj = JSON.parse( xhr.responseText );
+					console.log("end");
+					console.log("obj");
 					loadMusicArray(obj.vals);
 				} catch(e){
 					alert(xhr.responseText);
@@ -423,10 +441,7 @@ function getMusic( vid ){
 	if( vid ){
 		audio.src = "/api/audio/getaudio/" + vid;
 	} else {
-		audio.src = URL.createObjectURL($('#upload_file').files[0]);
-	}
-	audio.onloadedmetadata = function(){
-		listenstart = (-(audio.duration * (2.5))) + (window.innerWidth/2);
+		//audio.src = URL.createObjectURL($('#upload_file').files[0]);
 	}
 	audio.controls = false;
 	audio.autoplay = false;
@@ -455,6 +470,7 @@ function getMusic( vid ){
 
 function loadMusicArray( data ){
 	waveformArray = data;
+	listenstart = (-(waveformArray.length * (2.5))) + (window.innerWidth/2);
 	max = waveformArray.max();
 	var waveform = $('#waveform');
 	waveform.style.cursor = "move";
@@ -466,6 +482,8 @@ function loadMusicArray( data ){
 	var play_btn = $('#play_btn');
 	play_btn.style.cursor = "pointer";
 	play_btn.onclick = function(){
+		audio.src = "/api/audio/getaudio/1/" + (( -listenstart + waveform.width / 2 ) / 6) + "?" + new Date().getTime();
+		//audio.currentTime = ( -listenstart + waveform.width / 2 ) / 6;
 		audio.play();
 	};
 	sin_index = 0;

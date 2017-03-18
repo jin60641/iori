@@ -20,6 +20,22 @@ var ytdl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var AudioContext = require('web-audio-api').AudioContext;
 
+router.get( '/api/audio/getaudio/:uid/:start', checkSession, function( req, res ){
+	var uid = req.params['uid'];
+	var read_path = __dirname + "/../audio/" + uid + ".mp3";
+	var write_path = __dirname + "/../audio/" + uid + "-" + req.user.id + ".mp3";
+	var start = Math.floor(parseInt((req.params['start'])));
+	console.log(" start : " + start);
+	if( fs.existsSync( read_path ) ){
+		ffmpeg(fs.createReadStream(read_path)).setStartTime(start).duration(3).on('end', function(){
+			fs.createReadStream( write_path ).pipe(res);
+		}).save(write_path);
+	} else {
+		console.log("파일이 존재하지 않습니다.");
+		res.end();
+	}
+});
+
 router.get( '/api/audio/getaudio/:vid', function( req, res ){
 	var path = __dirname + "/../audio/" + req.params['vid'] + ".mp3";
 	if( fs.existsSync( path ) ){
@@ -83,12 +99,15 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 	}
 });
 
-router.post( '/api/audio/add', function( req, res ){
+router.post( '/api/audio/add', checkSession, function( req, res ){
 	req.pipe( req.busboy );
 	req.busboy.on( 'file', function( fieldname, file, filename ){
 		makeWave( file, function( vals ){
 			res.send({ vals : vals });
 		});
+		var path = __dirname + "/../audio/" + req.user.id + ".mp3";
+		var fstream = fs.createWriteStream( path );
+		file.pipe(fstream);
 	});
 	req.busboy.on( 'field', function( fieldname, val ){
 	});
@@ -119,7 +138,10 @@ function makeWave( stream, cb ){
 						( function(j){
 							sum += channel[j]*channel[j];
 							if( j + 1 >= ref ){
-								vals.push( Math.floor( Math.sqrt( sum / channel.length ) * 10000 ));
+								var a = sum/channel.length*45000;
+								a = a*a;
+								//vals.push( Math.floor( Math.sqrt( sum / channel.length ) * 10000 ));
+								vals.push(a);
 								if( vals.length >= sections ){
 									cb(vals);
 								}
@@ -141,9 +163,10 @@ function makeWave( stream, cb ){
 							sum += channel[j]*channel[j];
 							if( j + 1 >= ref + len ){
 								vals.push( Math.floor( Math.sqrt( sum / channel.length ) * 10000 ));
-								console.log(Math.floor( Math.sqrt( sum / channel.length ) * 10000 ));
-								console.log(vals.length,sections);
+//								console.log(Math.floor( Math.sqrt( sum / channel.length ) * 10000 ));
+//								console.log(vals.length,sections);
 								if( i + 5 >= sections ){
+									console.log("end");
 									cb(vals);
 								}
 							}
