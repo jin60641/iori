@@ -17,6 +17,7 @@ var sessionMiddleware = {
 }
 var crypto = require('crypto');
 var passport = require('passport');
+var makeObj = require('./makeObj.js');
 var LocalStrategy = require('passport-local').Strategy;
 
 /* 자동로그인(서버)
@@ -304,7 +305,25 @@ function checkSession( req, res, next ){
 	}
 }
 
+function checkAdmin( req, res, next ){
+	if( req.user && req.user.signUp ){
+		db.Users.findOne({ id : req.user.id }, function( err, result ){
+			if( result.admin == true ){
+		console.log("Admin");
+				return next();
+			} else {
+		console.log("no Admin");
+				makeObj(req,res,"404");
+			}
+		});
+	} else {
+		console.log("no signUp");
+		makeObj(req,res,"404");
+	}
+}
+
 module.exports = {
 	router : router,
-	checkSession : checkSession
+	checkSession : checkSession,
+	checkAdmin : checkAdmin
 }

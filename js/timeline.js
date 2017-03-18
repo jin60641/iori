@@ -1,5 +1,6 @@
 
 
+
 //모바일을 위한 터치 이벤트 리스너
 	/*
 		if( !document.webkitIsFullScreen ){

@@ -20,6 +20,9 @@
 	margin-bottom : 11px;
 }
 
+.setting_field {
+}
+
 .setting_label {
 	cursor : pointer;
 	display : inline-block;

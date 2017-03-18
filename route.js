@@ -15,6 +15,7 @@ router.use(require('./routes/audio.js'));
 router.use(require('./routes/newsfeed.js'));
 router.use(require('./routes/user.js'));
 router.use(require('./routes/chat.js'));
+router.use(require('./routes/admin.js'));
 
 String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");

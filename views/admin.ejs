@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+	<head>
+		<% include ./header %>
+		<link rel="stylesheet" type="text/css" href="/css/admin.css">
+		<script>
+			<%
+				if( page == undefined || page.length == 0 ){
+					page = "stat"
+				}
+			%>
+			page = "<%= page %>";
+		</script>
+		<script src="/js/admin.js"></script>
+		<% include ./footer %>
+	</head>
+	<body>
+	</body>
+</html>

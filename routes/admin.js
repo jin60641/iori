@@ -9,30 +9,19 @@ router.use(busboy())
 var makeObj = require('./makeObj.js');
 var makeNotice = require('./notice.js').makeNotice;
 
-var checkSession = require('./auth.js').checkSession;
+var checkSession = require('./auth.js').checkAdmin;
 
-router.admin('/admin/@:uid(*)', function( req, res ){
-	var uid = req.params['uid'];
-	db.Users.findOne({ uid : uid }, function( err, user ){
-		if( err ){
-			throw err;
-		} else if( user ){
-	});
-});
 
-router.post( '/admin/api/user/search', function( req, res){
-	var query = req.body['query'];
-	if( query ){
-		db.Users.find({ $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true },{ __v : 0, _id : 0, signUp : 0, email : 0, password : 0 }, function( err, result ){
-			if( result ){
-				res.send( result );
-			} else {
-				res.end();
-			}
-		});
-	} else {
-		res.send("검색어를 입력하여 주십시오.");
-	}
-});
+function showAdminPage( req, res ){
+    var page = req.params['page'];
+    if( page == undefined || page.length == 0 ){
+        page = "stat";
+    }
+    makeObj( req, res, "admin", { page : page });
+}
+
+router.get('/admin', checkSession, showAdminPage ); 
+router.get('/admin/:page', checkSession, showAdminPage ); 
+
 
 module.exports = router;

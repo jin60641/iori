@@ -44,14 +44,27 @@ window.addEventListener('load', function(){
 	openSettingTab();
 });
 
-function openSettingTab(){
+function openSettingTab( newtab ){
+	if( newtab != undefined ){
+		page = newtab;
+	}
 	if( settings[page] == undefined ){
 		page = "account";
 	}
-	history.pushState(null,null,page);
-	box = $("#setting_box");
-	title = $("#setting_title");
-	submit = $("#setting_submit");
+	if( document.URL.split('/').length < 5 ){
+		history.pushState(null,null,"/setting/"+page);
+	} else {
+		history.pushState(null,null,page);
+	}
+	var box = $("#setting_box");
+
+	var fields = $(".setting_field");
+	for( var i = fields.length - 1; i >= 0; --i ){
+		box.removeChild(fields[i]);
+	}
+	
+	var title = $("#setting_title");
+	var submit = $("#setting_submit");
 	for( var i = 0; i < settings[page].length; ++i ){
 		box.insertBefore(makeField(settings[page][i],page),submit);
 	}
@@ -130,19 +143,20 @@ function checkChangeEmail(save){
 }
 
 function makeField( obj, type ){
-	var dom = $('div');
+	var field = $('div');
+	field.className = "setting_field";
 
 	var label = $('label');
 	label.id = "setting_label_" + obj.id;
 	label.htmlFor = "setting_input_" + obj.id;
 	label.className = "setting_label";
 	label.innerText = obj.name;
-	dom.appendChild(label);
+	field.appendChild(label);
 
 	var div = $('div');
 	div.id = "setting_div_" + obj.id;
 	div.className = "setting_div";
-	dom.appendChild(div);
+	field.appendChild(div);
 
 	var info = $('div');
 	info.id = "setting_info_" + obj.id;
@@ -171,5 +185,5 @@ function makeField( obj, type ){
 	}
 	div.appendChild(text);
 
-	return dom;
+	return field;
 }

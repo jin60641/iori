@@ -10,7 +10,6 @@ function $(query){
 }
 
 
-
 //브라우저가 무엇인지 판단
 function getBrowser(){
 	if( /webkit/i.test( navigator.userAgent ) ){
