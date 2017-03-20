@@ -48,16 +48,18 @@ router.get( '/api/audio/getaudio/:vid', function( req, res ){
 	}
 });
 
-router.post( '/api/audio/add/:vid', function( req, res ){
+router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 	var vid = req.params['vid'];
 	var url = 'http://www.youtube.com/watch?v=' + vid;
-	var path = __dirname + "/../audio/" + vid + ".mp3";
-	var exists = fs.existsSync(path);
-	if( exists ){
-		makeWave( fs.createReadStream( path ), function( vals ){
-			res.send({ vals : vals });
-		});
-	} else {
+//	var path = __dirname + "/../audio/" + vid + ".mp3";
+	var path = __dirname + "/../audio/" + req.user.id + ".mp3";
+	
+//	var exists = fs.existsSync(path);
+//	if( exists ){
+//		makeWave( fs.createReadStream( path ), function( vals ){
+//			res.send({ vals : vals });
+//		});
+//	} else {
 		ytdl.getInfo( url, function( err, info ){
 			var duration;
 			if( info && info.duration ){
@@ -96,7 +98,7 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 				});
 			}
 		});
-	}
+//	}
 });
 
 router.post( '/api/audio/add', checkSession, function( req, res ){

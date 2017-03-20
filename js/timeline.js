@@ -269,11 +269,13 @@ function changePost_apply(inside){
 	eval("var realfiles_change = realfiles_"+postid);
 	eval("var fileindex = fileindex_"+postid);
 	if( fileindex[0] || inside.firstElementChild.value.length>= 1 ){
+		console.log(realfiles_change);
 		for( var i = 0; i < realfiles_change.length; ++i ){
 //		for( var i=realfiles_change.length-1; i>=0; --i){
 			formdata.append("file",realfiles_change[i]);
 		}
 		formdata.append("text",inside.firstChild.value);
+		
 		var xhr = new XMLHttpRequest();
 	} else {
 		alert("게시글이 비어 있습니다.");
@@ -307,7 +309,7 @@ function changePost_apply(inside){
 				}
 			}
 			if(xhrResult.file){
-				inside.innerHTML+="<img src='/files/post/"+postid+"/1?"+xhrResult.date+"' id='postimg_"+postid+"' class='postimg' onclick='viewimg("+postid+","+xhrResult.file+",\""+ xhrResult.date+"\")' ></img>"
+//				inside.innerHTML+="<img src='/files/post/"+postid+"/1?"+xhrResult.date+"' id='postimg_"+postid+"' class='postimg' onclick='viewimg("+postid+","+xhrResult.file+",\""+ xhrResult.date+"\")' ></img>"
 			}
 			cancleChange(postid);
 			/*
