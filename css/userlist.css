@@ -89,6 +89,12 @@
 .user_list_info .user_list_tab {
 	display : inline-block;
 	width : 100px;
+	text-decoration : none;
+	transition : color .1s ease-in-out;
+}
+
+.user_list_info .user_list_tab:hover, .user_list_info .user_list_tab:hover .user_list_tab_name {
+	color : #f15c3e;
 }
 
 .user_list_info .user_list_tab .user_list_tab_name {
