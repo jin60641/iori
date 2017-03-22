@@ -1,4 +1,6 @@
 window.addEventListener('load', function(){
+	body.style.display = "none";
+
 	var chat_wrap = $("div");
 	chat_wrap.id = "chat_wrap";
 

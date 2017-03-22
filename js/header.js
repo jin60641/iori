@@ -167,9 +167,22 @@ function close_all(){
 }
 
 window.addEventListener('load',function(){
+	body = $("div");
+	document.body.appendChild(body);
+	body.id = "body";
+	if( session != null && session.signUp == true  ){
+		body.appendChild(makeUserCard(session));
+	}
+
+	var wrap = $("div");
+	body.appendChild(wrap);
+	wrap.id = "wrap";
+
+
 	var head = $("div");
 	document.body.insertBefore( head, document.body.firstChild );
 	head.id = "head";
+
 
 	var navi_tab = $("div");
 	navi_tab.id = "navi_tab";

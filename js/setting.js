@@ -34,7 +34,7 @@ window.addEventListener('load', function(){
 	title.id = "setting_title";
 	box.appendChild(title);
 	wrap.appendChild(box);
-	document.body.appendChild(wrap);
+	$('#wrap').appendChild(wrap);
 
 	var submit = $('div');
 	submit.innerText = "저장";

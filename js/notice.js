@@ -1,7 +1,7 @@
 window.addEventListener('load',function(){
 	var wrap = $('div');
 	wrap.id = "notice_wrap";
-	document.body.appendChild(wrap);
+	$('#wrap').appendChild(wrap);
 	for( var i = 0; i < notices.length; ++i ){
 		wrap.appendChild(makeNotice(notices[i]));
 	}

@@ -1,4 +1,4 @@
-function makeUserCard( obj ){
+function makeUserCard( obj, popup ){
 	var div = $('div');
 	div.className = "user_list_div";
 	
@@ -31,7 +31,7 @@ function makeUserCard( obj ){
 	uid.className = "user_list_uid";
 	text.appendChild(uid);
 	
-	if( obj.uid != session.uid ){	
+	if( obj.uid != session.uid || popup ){	
 		var following = $('div');
 		following.id = "user_follow_btn_" + obj.id;
 		following.className = "user_follow_btn";
@@ -63,7 +63,11 @@ function makeUserCard( obj ){
 			text.appendChild(follower);
 		}
 	} else {
+		div.id = "user_list_self";
 		text.className = "user_list_text_self";
+
+		
+		
 		div.appendChild(text);
 	}
 

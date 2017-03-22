@@ -13,7 +13,6 @@ textarea {
 }
 
 #post_wrap {
-	padding-top : 53px;
 	overflow-y : hidden;
 	width : 650px;
 	box-sizing : border-box;
@@ -835,7 +834,6 @@ textarea {
 }
 
 #post_slider {
-	padding-top : 42px;
 	display: table;
 	position : relative;
 	vertical-align : middle;
@@ -844,6 +842,9 @@ textarea {
 	letter-spacing : 0px;
 	word-spacing : 0px;
 	font-size : 0px;
+}
+#post_slider * {
+	text-align : center;
 }
 
 #post_slider > #slide_imgs {

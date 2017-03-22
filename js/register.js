@@ -3,7 +3,7 @@ window.addEventListener('load', function(){
 	var form_title = $("div");	
 	form_title.innerText = "회원가입";
 	form_title.id = "form_title";
-	document.body.appendChild(form_title)
+//	document.body.appendChild(form_title)
 	var form = $("form");
 	form.id = "form";
 	

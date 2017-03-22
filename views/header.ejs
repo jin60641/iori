@@ -21,5 +21,9 @@ session = "<%= session %>".replace(/&#34;/g,'"');
 if( session.length > 0 ){
 	session = JSON.parse(session);
 }
+info = "<%= info %>".replace(/&#34;/g,'"');
+if( info.length > 0 ){
+	info = JSON.parse(info);
+}
 </script>
 <script src="/js/header.js"></script>

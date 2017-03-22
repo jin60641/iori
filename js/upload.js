@@ -7,7 +7,6 @@ var waveformArray = [];
 var FPS = 45;
 var sin_index = 0;
 var max = 0;
-var context = new webkitAudioContext();
 var realfile;
 
 Array.prototype.max = function() {

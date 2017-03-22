@@ -937,10 +937,11 @@ function makeReply( Reply, pid ){
 	}
 	if( session != "" && session.signUp == true ){
 		reply_menu_btn = reply.lastElementChild.firstChild;
-		reply_menu_btn.onmouseleave=function(event){
+		reply_menu_btn.id = "reply_menu_btn_" + pid + '_' + Reply.id
+		reply.onmouseleave=function(event){
 			event.stopPropagation();
 			event.preventDefault();
-			this.firstElementChild.style.display="none";
+			$('#'+this.id.replace("reply","reply_menu_btn")).firstElementChild.style.display = "none";
 		}
 		var reply_menu = $("div");
 		reply_menu_btn.appendChild(reply_menu);
@@ -1262,8 +1263,9 @@ function getPosts(limit){
 					sliding(1);
 				}
 			
-				document.body.removeChild(post_wrap);
-				document.body.appendChild(post_slider);
+				$('#wrap').removeChild(post_wrap);
+				$('#wrap').style.marginTop = "initial";
+				$('#wrap').appendChild(post_slider);
 				sliderTimer = setInterval(sliding,3000);
 			} else if( posts == 0 ){
 				var post = $("div");
@@ -1530,12 +1532,10 @@ function imgmenu_resize(){
 
 window.addEventListener('load',function(){
 
-//	document.body.appendChild(makeUserCard(session);
-
 
 	var postwrap = $("div");
 	postwrap.id = 'post_wrap'
-	document.body.appendChild(postwrap);
+	$('#wrap').appendChild(postwrap);
 
 	if( session && postOption.uid == null ){
 		var write = $("div");
@@ -1690,11 +1690,13 @@ window.addEventListener('load',function(){
 	output_post = $("#output_post");
 	post_file = $("#post_file");
 
-	window.addEventListener('scroll', function(e){
-		if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
-			getPosts(4);
-		}
-	});
+		window.addEventListener('scroll', function(e){
+			if( $('#post_wrap') != null ){
+				if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
+					getPosts(4);
+				}
+			}
+		});
 
 	if( location.pathname.substr(0,6) == "/post/" ){
 		if( Post.length ){

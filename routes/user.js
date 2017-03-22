@@ -23,6 +23,9 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
+router.get('/setting', checkSession, function( req, res ){
+	makeObj( req, res, "setting", { page : null });
+});
 router.get('/setting/:page', checkSession, function( req, res ){
 	var page = req.params['page'];
 	if( page == undefined || page.length == 0 ){
