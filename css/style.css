@@ -103,10 +103,10 @@ textarea {
 
 #body * {
 	text-indent : initial;
-	text-align : initial;
 }
 
 #body > * {
+	text-align : initial;
 	margin-top : 18px;
 	display : inline-block;
 	vertical-align : top;

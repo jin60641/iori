@@ -66,9 +66,40 @@ function makeUserCard( obj, popup ){
 		div.id = "user_list_self";
 		text.className = "user_list_text_self";
 
-		
-		
 		div.appendChild(text);
+		if( info ){
+			var obj = [{
+				en : "post",
+				kr : "게시글"
+			},{
+				en : "following",
+				kr : "팔로잉"
+			},{
+				en : "follower",
+				kr : "팔로워"
+			}];
+			var div_info = $('div');
+			div_info.className = "user_list_info";
+			for( var i = 0; i < obj.length; ++i ){
+				var tab = $('div');
+				tab.className = "user_list_tab";
+				
+				var name = $('div');
+				name.className = "user_list_tab_name";
+				name.innerText = obj[i].kr
+				tab.appendChild(name);
+				
+				var value = $('div');
+				value.className = "user_list_tab_value";
+				value.innerText = info[obj[i].en];
+				tab.appendChild(value);
+
+				div_info.appendChild(tab);
+			}
+			div.appendChild(div_info);
+		}
+		
+		
 	}
 
 	

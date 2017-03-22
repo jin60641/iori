@@ -10,7 +10,7 @@ function makeObj( req, res, ejs, obj ){
 	    obj.session = JSON.stringify(req.user);
 		async.parallel([
 			function(cb){
-				db.Posts.count({ uid : req.user.id }, function( err, count ){
+				db.Posts.count({ "user.id" : req.user.id }, function( err, count ){
 					cb(null,count);
 				});	
 			}, function(cb){
@@ -23,15 +23,16 @@ function makeObj( req, res, ejs, obj ){
 				});	
 			}
 		], function( err, result ){
-			obj.info = {
+			obj.info = JSON.stringify({
 				post : result[0],
 				following : result[1],
 				follower : result[2]
-			}
+			});
 			renderPage( res, ejs, obj );
 		});
 	} else {
 	    obj.session = null;
+	    obj.info = null;
 		renderPage( res, ejs, obj );
 	}
 

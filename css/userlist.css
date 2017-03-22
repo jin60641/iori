@@ -6,7 +6,7 @@
     width : 300px;
     border-radius : 5px;
     box-shadow : 0px 2px 5px rgba(0,0,0,0.25);
-	padding-bottom : 20px;
+	padding-bottom : 15px;
 }
 
 .user_list_div .user_list_header {
@@ -42,7 +42,7 @@
 }
 .user_list_div .user_list_text_self {
 	float : right;
-	width : 55%;
+	width : 58%;
 	margin-top : 7px;
 }
 
@@ -77,4 +77,27 @@
 	margin-left : 6px;
 	color : #8899a6;
 	font-size : 11px;
+}
+
+.user_list_info {
+	margin-top : 64px;
+	text-align : center;
+	display : block;
+	width : 100%;
+}
+
+.user_list_info .user_list_tab {
+	display : inline-block;
+	width : 100px;
+}
+
+.user_list_info .user_list_tab .user_list_tab_name {
+	color : #657786;
+	font-size : 12px;
+}
+
+.user_list_info .user_list_tab .user_list_tab_value {
+	color : #f15c3e;
+	font-size : 16px;
+	font-weight : bold;
 }

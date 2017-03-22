@@ -1264,6 +1264,7 @@ function getPosts(limit){
 				}
 			
 				$('#wrap').removeChild(post_wrap);
+				$('#body').style.textIndent = "initial";
 				$('#wrap').style.marginTop = "initial";
 				$('#wrap').appendChild(post_slider);
 				sliderTimer = setInterval(sliding,3000);
@@ -1424,6 +1425,7 @@ function DragOut(evt){
 	obj.borderTop="";
 	obj.borderBottom="";
 	obj.borderLeft="";
+	obj.paddingLeft = "";
 	obj.borderRight="";
 }
 
@@ -1432,11 +1434,8 @@ function DragOver(evt){
 	evt.preventDefault();
 	evt.dataTransfer.dropEffect = 'copy';
 	obj = evt.target.style;
-	obj.border="2px dashed #bbb";
-	obj.margin = "-1px 3px 17px 3px"; 
-//	obj.marginLeft="2px";
-//	obj.marginTop="-26px";
-//	obj.marginBottom="-36px";
+	obj.border="1px dashed #bbb";
+	obj.paddingLeft = "2px";
 }
 
 // 이미지 전체화면
