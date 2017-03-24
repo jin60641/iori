@@ -838,7 +838,7 @@ textarea {
 	position : relative;
 	vertical-align : middle;
 	width : 100vw;
-	height : calc( 100vh - 42px );
+	height : calc( 100vh - 50px );
 	letter-spacing : 0px;
 	word-spacing : 0px;
 	font-size : 0px;
@@ -853,7 +853,7 @@ textarea {
 	word-spacing : 0px;
 	font-size : 0px;
 	width : 100vw;
-	height : calc( 100vh - 42px );
+	height : calc( 100vh - 50px );
 	position : absolute;
 	display : inline-block;
 	vertical-align : top;

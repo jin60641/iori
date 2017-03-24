@@ -642,7 +642,9 @@ function openDialog(text){
 	}
 
 	if( dialog != undefined ){
-		dialog.scrollIntoViewIfNeeded();
+		if( dialog.scrollIntoViewIfNeeded ){
+			dialog.scrollIntoViewIfNeeded();	
+		}
 		dialog.className = "chat_dialogs chat_dialogs_selected";
 	}
 

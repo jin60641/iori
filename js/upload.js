@@ -229,6 +229,7 @@ function openMusic(evt){
 }
 
 window.addEventListener('load',function(){
+	$('#body').style.display = "none";
 	var name = $("div");
 	name.innerText = "업로드";
 	name.id = "upload_name";

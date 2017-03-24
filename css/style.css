@@ -102,11 +102,11 @@ textarea {
 }
 
 #body * {
-	text-indent : initial;
+	text-indent : 0;
 }
 
 #body > * {
-	text-align : initial;
+	text-align : left;
 	margin-top : 18px;
 	display : inline-block;
 	vertical-align : top;
@@ -141,7 +141,7 @@ textarea {
 
 @media screen and ( max-width : 1300px ) {
 	#body {
-		text-indent : initial;
+		text-indent : 0;
 	}
 	#body > * {
 		margin-left : 0px;

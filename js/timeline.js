@@ -1264,8 +1264,8 @@ function getPosts(limit){
 				}
 			
 				$('#wrap').removeChild(post_wrap);
-				$('#body').style.textIndent = "initial";
-				$('#wrap').style.marginTop = "initial";
+				$('#body').style.textIndent = "0px";
+				$('#wrap').style.marginTop = "0px";
 				$('#wrap').appendChild(post_slider);
 				sliderTimer = setInterval(sliding,3000);
 			} else if( posts == 0 ){

@@ -81,7 +81,8 @@ function makeUserCard( obj, popup ){
 			var div_info = $('div');
 			div_info.className = "user_list_info";
 			for( var i = 0; i < obj.length; ++i ){
-				var tab = $('div');
+				var tab = $('a');
+				tab.href = "/@"+session.uid+'/'+obj[i].en;
 				tab.className = "user_list_tab";
 				
 				var name = $('div');
