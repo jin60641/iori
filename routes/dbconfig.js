@@ -109,6 +109,14 @@ var UserSchema = new mongoose.Schema({
 	uid : String,
 	profile : { type : Boolean, default : false },
 	header : { type : Boolean, default : false },
+	notice : {
+		favorite : { type : Boolean, default : true },
+		reply : { type : Boolean, default : true },
+		follow : { type : Boolean, default : true },
+		chat : { type : Boolean, default : true },
+		email : { type : Boolean, default : true },
+		web : { type : Boolean, default : true }
+	},
 	last : { type : Date },
 	date : { type : Date, default : Date.now }
 });

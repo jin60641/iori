@@ -98,7 +98,6 @@ textarea {
 #body {
 	padding-top : 42px;
 	text-align : center;
-	text-indent : -300px;
 }
 
 #body * {
@@ -111,6 +110,7 @@ textarea {
 	display : inline-block;
 	vertical-align : top;
 	margin-left : 15px;
+	min-width : 300px;
 }
 
 #body > *:first-of-type {

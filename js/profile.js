@@ -6,7 +6,7 @@ var headerLabelScale = 1;
 window.addEventListener("click", hideLabelMenu);
 
 window.addEventListener('load', function(){
-	$('#user_list_self').style.opacity = "0";
+	$('#user_list_self').style.display = "none";
 	var wrap = $("div");
 	wrap.id = "profile_wrap";
 	document.body.insertBefore(wrap,body);
@@ -157,9 +157,9 @@ window.addEventListener('load', function(){
 	user_tab.id = "user_tab";
 	
 	if($('#post_wrap')){
-		$('#wrap').insertBefore(user_tab,$('#post_wrap'));
+		$('#wrap2').insertBefore(user_tab,$('#post_wrap'));
 	} else {
-		$('#wrap').appendChild(user_tab);
+		$('#wrap2').appendChild(user_tab);
 	}
 
 	window.addEventListener('scroll', resizeContainer );
@@ -167,7 +167,7 @@ window.addEventListener('load', function(){
 	
 	var follow_wrap = $('div');
 	follow_wrap.id = "follow_wrap";
-	$('#wrap').appendChild(follow_wrap);
+	$('#wrap2').appendChild(follow_wrap);
 
 	openUserTab();
 });
@@ -175,10 +175,10 @@ window.addEventListener('load', function(){
 function resizeContainer(){
 	/*
 	// for absolute
-	if( document.body.scrollTop <= $('#wrap').clientHeight + 42 - 130 ){
+	if( document.body.scrollTop <= $('#wrap2').clientHeight + 42 - 130 ){
 		container.style.top = "42px";
 	} else {
-		container.style.top = document.body.scrollTop + 42 - $('#wrap').clientHeight + 80 + "px";
+		container.style.top = document.body.scrollTop + 42 - $('#wrap2').clientHeight + 80 + "px";
 	}
 	*/
 
@@ -327,11 +327,11 @@ function settingCancel(){
 	}
 
 	if( $('#user_setting_cancel') ){
-		container.removeChild($('#user_setting_cancel'));
+		$('#profile_container').removeChild($('#user_setting_cancel'));
 	}
 
 	if( $('#user_setting_save') ){
-		container.removeChild($('#user_setting_save'));
+		$('#profile_container').removeChild($('#user_setting_save'));
 	}
 }
 

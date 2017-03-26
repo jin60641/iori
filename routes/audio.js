@@ -67,7 +67,7 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 			}
 			if( info == undefined || info.duration == undefined ){
 				res.send("잘못된 링크입니다.");
-			} else if( duration.length >= 3 || duration[0] > 10 ){
+			} else if( duration.length >= 3 || duration.length == 2 && duration[0] > 10 ){
 				res.send("10분 이내의 영상만 음원을 추출하실 수 있습니다.");
 			} else {
 				ytdl.exec( url, ['-F'], {}, function( err, list ){

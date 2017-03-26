@@ -445,6 +445,22 @@ router.get( '/api/user/change/email/:email/:link', checkSession, function( req, 
 	}
 });
 
+router.post( '/api/user/change/notice', checkSession, function( req, res ){
+	db.Users.findOne({ id : req.user }, function( err, user ){
+		if( err ){
+			throw err;
+		}
+		var current = new db.Notices(req.body);
+		console.log(current);
+		current.save( function( err2 ){
+			if( err2 ){
+				throw err2;
+			}
+			res.send("설정이 저장되었습니다.");
+		});
+	});
+});
+
 router.post( '/api/user/change/password', checkSession, function( req, res ){
 	var oldpw = req.body['oldpw'];
 	var password = req.body['newpw'];

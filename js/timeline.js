@@ -1,6 +1,3 @@
-
-
-
 //모바일을 위한 터치 이벤트 리스너
 	/*
 		if( !document.webkitIsFullScreen ){
@@ -1263,10 +1260,10 @@ function getPosts(limit){
 					sliding(1);
 				}
 			
-				$('#wrap').removeChild(post_wrap);
-				$('#body').style.textIndent = "0px";
-				$('#wrap').style.marginTop = "0px";
-				$('#wrap').appendChild(post_slider);
+				$('#wrap2').removeChild(post_wrap);
+				$('#body').style.display = "none";
+				document.body.style.minHeight = "0";
+				document.body.appendChild(post_slider);
 				sliderTimer = setInterval(sliding,3000);
 			} else if( posts == 0 ){
 				var post = $("div");
@@ -1531,10 +1528,9 @@ function imgmenu_resize(){
 
 window.addEventListener('load',function(){
 
-
 	var postwrap = $("div");
 	postwrap.id = 'post_wrap'
-	$('#wrap').appendChild(postwrap);
+	$('#wrap2').appendChild(postwrap);
 
 	if( session && postOption.uid == null ){
 		var write = $("div");

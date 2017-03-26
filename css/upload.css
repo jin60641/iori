@@ -32,16 +32,16 @@ form {
 
 form label {
 	height : 250px;
-	display : block;
+	display : inline;
 	cursor : pointer;
 	border-radius : 2px;	
 	text-align : center;
-	margin-bottom : 5vh;
 }
 
 form label img {
 	width : 250px;
 	height : 100%;
+	margin-bottom : 5vh;
 }
 
 form input {

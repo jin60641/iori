@@ -170,14 +170,22 @@ window.addEventListener('load',function(){
 	body = $("div");
 	document.body.appendChild(body);
 	body.id = "body";
+
+	var wrap1 = $("div");
+	wrap1.id = "wrap1";
+	body.appendChild(wrap1);
+
+	var wrap2 = $("div");
+	wrap2.id = "wrap2";
+	body.appendChild(wrap2);
+
+	var wrap3 = $("div");
+	wrap3.id = "wrap3";
+	body.appendChild(wrap3);
+
 	if( session != null && session.signUp == true  ){
-		body.appendChild(makeUserCard(session));
+		wrap1.appendChild(makeUserCard(session));
 	}
-
-	var wrap = $("div");
-	body.appendChild(wrap);
-	wrap.id = "wrap";
-
 
 	var head = $("div");
 	document.body.insertBefore( head, document.body.firstChild );
