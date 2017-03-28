@@ -73,11 +73,11 @@
 	margin-left : 15px;
 	vertical-align : top;
 	display : inline-block;
-	margin-bottom : 20px;
+	position : relative;
 }
 
 .setting_input {
-	display : inline-block;
+	display : block;
 	width : 230px;
 	padding : 6px;
 	margin : 0;
@@ -85,7 +85,20 @@
 	background-color : #fff;
 	border : 1px solid #e6ecf0;
 	border-radius : 3px;
-	margin-bottom : 3px;
+	margin-bottom : 23px;
+}
+
+.setting_input[type="checkbox"]{
+	display : inline-block;
+	margin-bottom : 0px;
+	margin-top : 12px;
+	width : initial;
+}
+
+.setting_info {
+	color : #657786;
+	padding-left : 2px;
+	font-size : 12px;
 }
 
 .setting_text {
@@ -93,6 +106,7 @@
 	color : #657786;
 	padding-left : 2px;
 	font-size : 12px;
+	bottom : 6px;
 }
 
 #setting_submit {

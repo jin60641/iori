@@ -446,16 +446,16 @@ router.get( '/api/user/change/email/:email/:link', checkSession, function( req, 
 });
 
 router.post( '/api/user/change/notice', checkSession, function( req, res ){
-	db.Users.findOne({ id : req.user }, function( err, user ){
+	db.Users.findOne({ id : req.user.id }, function( err, user ){
 		if( err ){
 			throw err;
 		}
-		var current = new db.Notices(req.body);
-		console.log(current);
-		current.save( function( err2 ){
+		var query = JSON.parse(JSON.stringify(req.body).replace(/"true"/g,"true").replace(/"false"/g,"false"));
+		user.update({ notice :  query }, function( err2 ){
 			if( err2 ){
 				throw err2;
 			}
+			req.user.notice = query;
 			res.send("설정이 저장되었습니다.");
 		});
 	});

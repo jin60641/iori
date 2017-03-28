@@ -35,15 +35,15 @@ var settings = {
 		tabs : [{
 			id : "favorite",
 			name : "관심글",
-			type : "checkbox"
+			type : "checkbox",
 		},{
 			id : "reply",
 			name : "답글",
-			type : "checkbox"
+			type : "checkbox",
 		},{
 			id : "follow",
 			name : "팔로우",
-			type : "checkbox"
+			type : "checkbox",
 		},{
 			id : "chat",
 			name : "채팅",
@@ -144,21 +144,25 @@ function openSettingTab( newtab ){
 		submit.onclick = function(){
 			checkChangePassword("true");
 		};
+	} else if( page == "notice" ){
+		submit.onclick = function(){
+			checkChangeNotice();
+		};
 	}
 }
 
-function checkNotice(){
+function checkChangeNotice(){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		if( xhr.responseText == "success" ){
-		}
+		alert(xhr.responseText);
 	}};
 	xhr.open("POST", "/api/user/change/notice", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 	var query = "";
 	var input = $(".setting_input");
-	for( var i = 0; i < input; ++i ){
-		query += input.name + '=' + input.value + '=' + input.checked + '&';
+	for( var i = 0; i < input.length; ++i ){
+		query += input[i].name + '=' + input[i].checked + '&';
 	}
+	console.log(query);
 	xhr.send(query);
 }
 
@@ -186,7 +190,7 @@ function checkChangePassword(save){
 			sessionLogOut();
 		} else if( xhr.responseText == "fail" ){
 			$('#setting_text_oldpw').innerText = "비밀번호가 일치하지 않습니다.";
-		} else {
+		} else if( $('#setting_input_newpw').value.length >= 1 ){
 			$('#setting_text_newpw').innerText = xhr.responseText;
 		}
 	}};
@@ -248,7 +252,7 @@ function makeField( obj ){
 
 	var info = $('div');
 	info.id = "setting_info_" + obj.id;
-	info.className = "setting_text";
+	info.className = "setting_info";
 	div.appendChild(info);
 
 	var input = $('input');
@@ -256,6 +260,9 @@ function makeField( obj ){
 	input.id = "setting_input_" + obj.id;
 	if( obj.type ){
 		input.type = obj.type;
+		if( obj.type == "checkbox" ){
+			input.checked = session.notice[obj.id];
+		}
 	}
 	input.className = "setting_input";
 	if( obj.value ){
@@ -272,7 +279,7 @@ function makeField( obj ){
 	if( obj.text ){
 		text.innerText = obj.text;
 	}
-	div.appendChild(text);
+
 
 	return field;
 }

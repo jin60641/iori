@@ -106,10 +106,10 @@ function makeNotice( to, from, type, obj ){
 			if( err ){
 				throw err;
 			}
-			if( user.notice.email == true )[
+			if( user.notice.email == true ){
 				//이메일발송
 			}
-			if( user.notice.web == true )[
+			if( user.notice.web == true ){
 				//웹알람발송
 			}
 			if( sid && io.sockets.connected[sid] ){
