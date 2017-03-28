@@ -109,14 +109,16 @@ textarea {
 	margin-top : 18px;
 	display : inline-block;
 	vertical-align : top;
-	margin-left : 15px;
 	min-width : 300px;
 }
 
-#body > *:first-of-type {
-    margin-left : 0px;
+#wrap1 {
+	margin-right :15px;
 }
 
+#wrap3 {
+	margin-left :15px;
+}
 .user_follow_btn {
     float : right;
     width : 78px;
@@ -140,14 +142,13 @@ textarea {
 
 
 @media screen and ( max-width : 1300px ) {
-	#body {
-		text-indent : 0;
-	}
-	#body > * {
-		margin-left : 0px;
-	}
-	#user_list_self {
+	#wrap3 {
 		display : none;
 	}
 }
 
+@media screen and ( max-width : 1000px ) {
+	#wrap1 {
+		display : none;
+	}
+}

@@ -254,7 +254,9 @@ function makeField( obj ){
 	var input = $('input');
 	input.name = obj.id;
 	input.id = "setting_input_" + obj.id;
-	input.type = obj.type;
+	if( obj.type ){
+		input.type = obj.type;
+	}
 	input.className = "setting_input";
 	if( obj.value ){
 		input.value = obj.value;
