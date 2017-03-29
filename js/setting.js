@@ -54,8 +54,9 @@ var settings = {
 			type : "checkbox"
 		},{
 			id : "web",
-			name : "웹알람",
-			type : "checkbox"
+			name : "웹알림",
+			type : "checkbox",
+			onclick : checkChangeWebNotify
 		}],
 		kr : "알림"
 	}
@@ -221,6 +222,23 @@ function checkChangeEmail(save){
 	xhr.send('email='+$('#setting_input_email').value+'&save='+save);
 }
 
+
+function checkChangeWebNotify(){
+	var tmp = this;
+	if( this.checked == true ){
+		if (!("Notification" in window)) {
+			alert("이 브라우저는 웹 알림을 지원하지 않습니다.");
+			this.checked = false;
+		} else if (Notification.permission != 'granted') {
+			Notification.requestPermission(function (permission) {
+				if (permission == "denied") {
+					alert("웹 알림을 허용하셔야 합니다.");	
+					tmp.checked = false;
+				}
+			});
+		}
+	}
+}
 function makeSettingTab( en, kr ){
 	var tab = $('div');
 	tab.id = "setting_tab_"+en;
@@ -278,6 +296,9 @@ function makeField( obj ){
 	text.className = "setting_text";
 	if( obj.text ){
 		text.innerText = obj.text;
+	}
+	if( obj.onclick ){
+		input.onclick = obj.onclick;
 	}
 
 

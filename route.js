@@ -156,6 +156,9 @@ router.get('/:dir/:filename', function( req, res ){
 		case "svg":
 			type = "image/svg+xml";
 			break;
+		case "sound":
+        	type = "audio/mpeg";
+			break;
 	}
 	if( type ){
 		var url = __dirname + '/' + dir + '/' + filename;

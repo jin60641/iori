@@ -342,12 +342,20 @@ window.addEventListener('load',function(){
 	});
 	*/
 
-
 });
 
-
-socket.on( 'notice_reply_new', function( data ){
-	makeToast(data.from.name + "님의 답글 : " + data.text);
-});
+if( session.notice.web == true ){
+	socket.on( 'notice_new', function( notice ){
+		var options = {
+			body : notice.desc,
+			icon : "/files/profile/"+notice.from.uid,
+		}
+		var noti = new Notification(notice.from.name,options);
+		new Audio("/sound/notification.mp3").play();
+		noti.onclick = function(){
+			location.href = notice.link
+		}
+	});
+}
 
 

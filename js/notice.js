@@ -49,13 +49,17 @@ function makeNotice( notice ){
 	text.innerHTML = "<span>" + notice.from.name + "</span>";
 	switch( notice.type ){
 		case "chat":
-			text.innerHTML+= "님이 쪽지를 보내셨습니다";
+			text.innerHTML += "님이 쪽지를 보내셨습니다";
 			break;
 		case "follow":
-			text.innerHTML+= "님이 나를 팔로우했습니다";
+			text.innerHTML += "님이 나를 팔로우했습니다";
 			break;
 		case "reply":
-			text.innerHTML+= "님이 당신의 게시글에 댓글을 남겼습니다";
+			text.innerHTML += "님이 당신의 게시글에 댓글을 남겼습니다";
+			break;
+		case "favorite":
+			text.innerHTML += "님이 당신의 게시글을 관심글로 표시했습니다.";
+			break;
 	}
 	message.appendChild( text );
 		
