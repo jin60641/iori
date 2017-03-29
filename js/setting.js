@@ -89,7 +89,18 @@ window.addEventListener('load', function(){
 	box.appendChild(submit);
 
 	openSettingTab();
+	window.addEventListener('resize', settingResize );
+	settingResize();
 });
+
+function settingResize(){
+	if( $("#wrap1").clientWidth == 0 ){
+		$("#setting_wrap").insertBefore( $('#setting_tab'), $("#setting_wrap").firstElementChild );
+	} else {
+		$("#wrap1").appendChild( $('#setting_tab') );
+	}
+}
+
 
 function openSettingTab( newtab ){
 	if( page == newtab ){

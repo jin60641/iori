@@ -8,7 +8,7 @@
 	margin : auto;
 }
 
-#setting_tab {
+#wrap1 #setting_tab {
 	border-top : 1px solid #e5e6e9;
 	border-radius : 4px;
 }
@@ -23,15 +23,29 @@
 	font-size: 14px;
 }
 
-#setting_tab > div:first-of-type {
+#wrap2 #setting_tab > div {
+	display : inline-block;
+	width : 90px;
+	box-sizing : border-box;
+	text-align : center;
+	border-top : 1px #e5e6e9 solid;
+	border-bottom : 0px;
+	border-right : 0px;
+}
+
+#wrap2 #setting_tab > div:last-of-type {
+	border-right : 1px #dfe0e4 solid;
+}
+
+#wrap1 #setting_tab > div:first-of-type {
 	border-radius : 4px 4px 0 0;
 }
 
-#setting_tab > div:last-of-type {
+#wrap1 #setting_tab > div:last-of-type {
 	border-radius : 0px 0px 4px 4px;
 }
 
-#setting_tab > div:hover {
+#wrap1 #setting_tab > div:hover {
 	cursor : pointer;
 	background-color : #f6f6f6;
 	color : #f15c3e;
@@ -52,10 +66,7 @@
 	border-bottom : 1px solid #e6ecf0;
 	font-size : 22px;
 	padding : 11px;
-	margin-bottom : 11px;
-}
-
-.setting_field {
+	margin-bottom : 15px;
 }
 
 .setting_label {
@@ -66,7 +77,7 @@
 	text-align : right;
 	font-size : 13px;
 	vertical-align : top;
-	padding-top : 9px;
+	padding-top : 6px;
 }
 
 .setting_div {
@@ -91,7 +102,7 @@
 .setting_input[type="checkbox"]{
 	display : inline-block;
 	margin-bottom : 0px;
-	margin-top : 12px;
+	margin-top : 8px;
 	width : initial;
 }
 
@@ -126,4 +137,15 @@
 .setting_submit:hover {
 	text-decoration : none;
 	background-color : #f5f5f5;
+}
+
+
+
+@media screen and ( max-width : 1000px ) {
+	#setting_title {
+		display : none;
+	}
+	#setting_box {
+		padding-top : 30px;
+	}
 }

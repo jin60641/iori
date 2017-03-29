@@ -11,6 +11,15 @@ window.addEventListener('load',function(){
 		getNotice(0);
 	});
 	checkNoticeNone();
+
+    window.addEventListener('scroll', function(e){
+        if( $('#notice_wrap') != null ){
+            if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight  ){
+                getNotice(10);
+            }
+        }
+    });
+
 });
 
 function getDateString(origin_date){

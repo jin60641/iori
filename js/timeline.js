@@ -1685,13 +1685,13 @@ window.addEventListener('load',function(){
 	output_post = $("#output_post");
 	post_file = $("#post_file");
 
-		window.addEventListener('scroll', function(e){
-			if( $('#post_wrap') != null ){
-				if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
-					getPosts(4);
-				}
+	window.addEventListener('scroll', function(e){
+		if( $('#post_wrap') != null ){
+			if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
+				getPosts(4);
 			}
-		});
+		}
+	});
 
 	if( location.pathname.substr(0,6) == "/post/" ){
 		if( Post.length ){
@@ -1721,9 +1721,6 @@ window.addEventListener('load',function(){
 	});
 
 
-	socket.on( 'notice_new', function(){
-//		notice.innerHTML = parseInt(notice.innerHTML)+1;
-	})
 	socket.on( 'connect_failed', function(){
 	});
 	socket.onbeforeunload = function(){
@@ -1801,8 +1798,8 @@ function postWrite(){
 		post_file.value="";
 		output_post.innerHTML="";
 		//output_post.style.display="none";
-		$('#postwrite').style.borderTop="1px solid rgba(0,0,0,0.2)";
-		$('#postwrite').style.borderBottom="1px solid rgba(0,0,0,0.2)";
+		$('#post_write').style.borderTop="1px solid rgba(0,0,0,0.2)";
+		$('#post_write').style.borderBottom="1px solid rgba(0,0,0,0.2)";
 	} else {
 		alert("게시글이 비어 있습니다.");
 	}
