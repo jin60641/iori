@@ -48,24 +48,33 @@ router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 	}
 });
 
-router.post( '/api/newsfeed/favorite', checkSession, function( req, res){
+router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 	var postid = parseInt(req.body['postid']);
 	if( postid ){
-		db.Favorites.findOne({ pid : postid, uid : req.user.id }, function( err, result ){
-			if( result ){
-				result.remove( function(){
-					res.end();
-				})
+		db.Posts.findOne({ id : postid }, function( err2, post ){
+			if( err2 ){
+				throw err2;
+			} else if( post == undefined ){
+				res.send("존재하지 않는 게시글입니다.");
 			} else {
-				var current = new db.Favorites({
-					uid : req.user.id,
-					pid : postid
-				});
-				current.save( function( err ){
-					if( err ){
-						throw err;
+				db.Favorites.findOne({ pid : postid, uid : req.user.id }, function( err, result ){
+					if( result ){
+						result.remove( function(){
+							res.end();
+						})
+					} else {
+						var current = new db.Favorites({
+							uid : req.user.id,
+							pid : postid
+						});
+						current.save( function( err ){
+							if( err ){
+								throw err;
+							}
+							makeNotice( post.user, req.user, "favorite", current );
+							res.end();
+						});
 					}
-					res.end();
 				});
 			}
 		});
@@ -306,7 +315,7 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 					post = result;
 					callback( null );
 				} else {
-					res.end();
+					res.send("존재하지 않는 게시글입니다.");
 				}
 			});
 		}, function( callback ){
@@ -355,9 +364,7 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 					if( error ){
 						throw error;
 					}
-					if( post.user.id != req.user.id ){
-						makeNotice( post.user, req.user, "reply", current );
-					}
+					makeNotice( post.user, req.user, "reply", current );
 					db.Follows.find({ "to.id" : req.user.id }, function( err, followers ){
 						if( err ){
 							throw err;

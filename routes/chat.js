@@ -303,9 +303,7 @@ router.post('/api/chat/writechat', checkSession, function( req, res ){
 								if( socket_id != undefined ){
 									io.sockets.connected[socket_id].emit( 'chat_new', { type : current.type, dialog_id : current.from.uid } );
 			   					}
-								if( user.id != req.user.id ){
-									makeNotice( user, req.user, "chat", current );
-								}
+								makeNotice( user, req.user, "chat", current );
 								res.send( current.to );
 							}
 						});

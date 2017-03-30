@@ -186,11 +186,10 @@ function resizeContainer(){
 	var max_scroll = 200;
 	var save_size = 108;
 	var wrap = $('#profile_wrap');
-	var container = $('profile_container');
 	if( document.body.scrollTop <= wrap.clientHeight - save_size ){
-		container.style.top = header_size - document.body.scrollTop + "px";
+		$('#profile_container').style.top = header_size - document.body.scrollTop + "px";
 	} else {
-		container.style.top = -wrap.clientHeight + header_size + save_size + "px";
+		$('#profile_container').style.top = -wrap.clientHeight + header_size + save_size + "px";
 	}
 	changeLabelSize("profile");
 	changeLabelSize("header");

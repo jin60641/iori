@@ -351,7 +351,24 @@ if( session.notice.web == true ){
 			body : notice.desc,
 			icon : "/files/profile/"+notice.from.uid,
 		}
-		var noti = new Notification(notice.from.name,options);
+		var title = notice.from.name;
+		switch( notice.type ){
+			case "chat":
+				break;
+			case "follow":
+				title = "새 팔로워";
+				options.body = notice.from.name + " 님이 나를 팔로우했습니다";
+				break;
+			case "reply":
+				title += "님이 당신의 게시글에 댓글을 남겼습니다";
+				break;
+			case "favorite":
+				title = "새 관심글";
+				options.body = notice.from.name + " 님이 당신의 게시글을 관심글로 표시했습니다.";
+				break;
+		}
+
+		var noti = new Notification(title,options);
 		new Audio("/sound/notification.mp3").play();
 		noti.onclick = function(){
 			location.href = notice.link

@@ -43,6 +43,15 @@ function makeNotice( to, from, type, obj ){
 	var sid = socket_ids[ to.id ];
 	var user;
 	async.waterfall([
+		/*
+		function( cb ){
+			if( to.id == from.id ){
+				return; // 
+			} else {
+				cb( null );
+			}
+		}, 
+		*/
 		function( cb ){
 			db.Users.findOne({ id : to.id }, function( err, result ){
 				if( err ){
@@ -100,6 +109,9 @@ function makeNotice( to, from, type, obj ){
 				break;
 			case "follow":
 				current.link = "/@" + obj.from.uid;
+				break;
+			case "favorite":
+				current.link = "/post/" + obj.pid;
 				break;
 		}
 		current.save( function( err ){

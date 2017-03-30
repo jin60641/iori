@@ -87,11 +87,12 @@ function makeUserCard( obj, popup ){
 				
 				var name = $('div');
 				name.className = "user_list_tab_name";
-				name.innerText = obj[i].kr
+				name.innerText = obj[i].kr;
 				tab.appendChild(name);
 				
 				var value = $('div');
 				value.className = "user_list_tab_value";
+				value.id = "user_list_tab_value_"+obj[i].en;
 				value.innerText = info[obj[i].en];
 				tab.appendChild(value);
 

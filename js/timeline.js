@@ -636,7 +636,6 @@ function removeReply(pid,id){
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 		if( xhr.responseText == "댓글이 삭제되었습니다."){
 			reply.parentNode.removeChild(reply)
-			socket.emit( 'reply_remove', id )
 		} else {
 			alert(xhr.responseText);
 		}
@@ -664,6 +663,10 @@ function removePost(pid){
 				});
 				post.style.opacity="0";
 				socket.emit( 'post_remove', pid )
+				var post_cnt = $('#user_list_tab_value_post');
+				if( post_cnt ){
+					post_cnt.innerText = parseInt(post_cnt.innerText) - 1;
+				}
 				getPosts(1);
 			}
 		} else {
@@ -1709,7 +1712,6 @@ window.addEventListener('load',function(){
 		});
 		socket.on( 'post_removed', function( postid ){
 			postwrap.removeChild($("#post_"+postid));	
-			getPosts(1);
 		});
 	}
 
@@ -1790,6 +1792,10 @@ function postWrite(){
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
 			pid = parseInt(xhr.responseText);
 			getPosts(0);
+			var post_cnt = $('#user_list_tab_value_post');
+			if( post_cnt ){
+				post_cnt.innerText = parseInt(post_cnt.innerText) + 1;
+			}
 //			socket.emit( 'post_write', pid );
 		}}
 		xhr.open("POST","/api/newsfeed/writepost", false);  xhr.send(formdata);
