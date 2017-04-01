@@ -43,16 +43,13 @@ function makeNotice( to, from, type, obj ){
 	var sid = socket_ids[ to.id ];
 	var user;
 	async.waterfall([
-		/*
 		function( cb ){
 			if( to.id == from.id ){
 				return; // 
 			} else {
 				cb( null );
 			}
-		}, 
-		*/
-		function( cb ){
+		}, function( cb ){
 			db.Users.findOne({ id : to.id }, function( err, result ){
 				if( err ){
 					throw err;

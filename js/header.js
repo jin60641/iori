@@ -360,7 +360,6 @@ if( session.notice.web == true ){
 				options.body = notice.from.name + " 님이 나를 팔로우했습니다";
 				break;
 			case "reply":
-				title += "님이 당신의 게시글에 댓글을 남겼습니다";
 				break;
 			case "favorite":
 				title = "새 관심글";
