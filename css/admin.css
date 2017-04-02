@@ -1,0 +1,68 @@
+#wrap3{
+	display : none;
+}
+
+#admin_wrap {
+	width : calc( 100vw - 350px );
+	height : calc( 100vh - 80px );
+	border-radius : 5px;
+	
+	background-color : white;
+	border : 1px solid;
+    border-color : #e5e6e9 #dfe0e4 #dfe0e4 #e5e6e9;
+}
+
+#wrap1 #admin_tab {
+    border-top : 1px solid #e5e6e9;
+    border-radius : 4px;
+}
+
+#admin_tab > div {
+    background-color : white;
+    border : 1px solid #dfe0e4;
+    border-color : #e5e6e9 #dfe0e4 #e5e6e9;
+    border-top : 0px;
+    padding : 12px;
+    color : #66757f;
+    font-size: 14px;
+}
+
+#wrap2 #admin_tab > div {
+    display : inline-block;
+    width : 90px;
+    box-sizing : border-box;
+    text-align : center;
+    border-top : 1px #e5e6e9 solid;
+    border-bottom : 0px;
+    border-right : 0px;
+}
+
+#wrap2 #admin_tab > div:last-of-type {
+    border-right : 1px #dfe0e4 solid;
+}
+
+#wrap1 #admin_tab > div:first-of-type {
+    border-radius : 4px 4px 0 0;
+}
+
+#wrap1 #admin_tab > div:last-of-type {
+    border-radius : 0px 0px 4px 4px;
+}
+
+#wrap1 #admin_tab > div:hover {
+    cursor : pointer;
+    background-color : #f6f6f6;
+    color : #f15c3e;
+}
+
+#admin_tab > .admin_tab_active {
+    color : black;
+    font-weight : bold;
+}
+
+#admin_title {
+	display : inline-block;
+	padding : 10px;
+	font-size : 25px;
+}
+

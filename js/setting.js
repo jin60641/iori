@@ -254,7 +254,6 @@ function makeSettingTab( en, kr ){
 	var tab = $('div');
 	tab.id = "setting_tab_"+en;
 	
-
 	tab.innerText = kr;
 	tab.onclick = function(){
 		openSettingTab(en);

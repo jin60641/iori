@@ -1171,6 +1171,7 @@ function getPosts(limit){
 			} else if( posts == 0 && postOption.uid == undefined && ( session == "" || ( session != "" && session.signUp != 1 ) ) ){
 				var post_slider = $("div");
 				post_slider.id = "post_slider";
+				document.body.style.overflowY = "hidden";
 			
 				var slide_imgs = $("div");
 				slide_imgs.style.left = "0px";
@@ -1226,7 +1227,7 @@ function getPosts(limit){
 				slide_box.appendChild(slide_line);
 
 				var slide_text = $("text");
-				slide_text.innerHTML = "Lorem ipsum dolor sit amet, conectetur adipisicing elit<br>sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+				//slide_text.innerHTML = "Lorem ipsum dolor sit amet, conectetur adipisicing elit<br>sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 				slide_box.appendChild(slide_text);
 
 				var slide_btn = $("div");

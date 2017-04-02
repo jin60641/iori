@@ -3,10 +3,20 @@
 	<head>
 		<% include ./header %>
 		<script>
-		Post = "<%= Post %>".replace(/&#34;/g,'"');
-		if( Post.length > 0 ){
-			Post = JSON.parse(Post)
-		}
+		<%
+			if( locals.Post == undefined ){
+		%>
+				location.href = "/";
+		<%
+			} else {
+		%>
+				Post = "<%= Post %>".replace(/&#34;/g,'"');
+				if( Post.length > 0 ){
+					Post = JSON.parse(Post)
+				}
+		<%
+			}
+		%>
 		</script>
 		<script src="/js/timeline.js"></script>
 		<link rel="stylesheet" type="text/css" href="/css/timeline.css">

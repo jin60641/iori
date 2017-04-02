@@ -23,21 +23,27 @@ function showAdminPage( req, res ){
 router.get('/admin', checkSession, showAdminPage ); 
 router.get('/admin/:page', checkSession, showAdminPage ); 
 
-router.post( '/api/newsfeed/removepost' , checkSession, function( req, res){
-	var pid = req.body['pid'];
-	db.Posts.findOne( { id : pid }, function( err, post ){
-		if( post ){
-			post.remove( function( err2, result ){
-				db.Replys.remove( { pid : pid }, function( error ){
-					var rimraf = require('rimraf');
-					rimraf( __dirname + '/../files/post/' + pid , function(){
-						res.send("게시글이 삭제되었습니다.");
-					});
-				});
-			});
-		} else {
-			res.send("존재하지 않는 게시글입니다.");
+router.post( '/api/admin/getkeys', checkSession, function( req, res ){
+	var tb = req.body["table"];
+	var keys = Object.keys(db[tb].schema.tree);
+	res.send(keys);
+});
+
+router.post( '/api/admin/getdocs', checkSession, function( req, res ){
+	var tb = req.body["table"];
+	var skip = parseInt(req.body["skip"]);
+	var limit = parseInt(req.body["limit"]);
+	var orderby = req.body["orderby"];
+	if( orderby == undefined ){
+		orderby = "id";
+	}
+	var sort = {}
+	sort[orderby] = (req.body["asc"]=="true")?1:-1;
+	db[tb].find({}).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
+		if( err ){
+			throw err;
 		}
+		res.send( objs );	
 	});
 });
 
