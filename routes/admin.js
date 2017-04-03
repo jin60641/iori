@@ -17,11 +17,26 @@ function showAdminPage( req, res ){
 	if( page == undefined || page.length == 0 ){
 		page = "stat";
 	}
-	makeObj( req, res, "admin", { page : page });
+	var obj = { page : page };
+	var oid = req.params['oid'];
+	var schema = db[page[0].toUpperCase() + page.substr(1) + 's'];
+	if( oid != undefined && schema != undefined ){
+		schema.findOne({ id : oid }, function( err, result ){
+			if( err ){
+				throw err;
+			} else {
+				obj.doc = JSON.stringify(result);
+				makeObj( req, res, "admin", obj );
+			}
+		})
+	} else {
+		makeObj( req, res, "admin", obj );
+	}
 }
 
 router.get('/admin', checkSession, showAdminPage ); 
 router.get('/admin/:page', checkSession, showAdminPage ); 
+router.get('/admin/:page/:oid', checkSession, showAdminPage ); 
 
 router.post( '/api/admin/getkeys', checkSession, function( req, res ){
 	var tb = req.body["table"];

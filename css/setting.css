@@ -57,7 +57,7 @@
 }
 
 #setting_box {
-	border-radius : 2px;
+	border-radius : 0 0 4px 4px;
 	background-color : white;
 	border : 1px solid #e6ecf0;
 }

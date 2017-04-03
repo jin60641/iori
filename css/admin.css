@@ -1,19 +1,28 @@
-#wrap3{
+#wrap3 {
 	display : none;
 }
 
 #admin_wrap {
-	width : calc( 100vw - 350px );
 	height : calc( 100vh - 80px );
-	border-radius : 5px;
-	
+	width : calc( 100vw - 350px );
+}
+
+#wrap2 #admin_box {
+	border: 1px solid #e6ecf0;
+}
+
+#wrap2 #admin_table {
+	box-sizing : border-box;
 	background-color : white;
-	border : 1px solid;
-    border-color : #e5e6e9 #dfe0e4 #dfe0e4 #e5e6e9;
+	width : 100%;
+	margin : 0px;
+	padding : 0px;
+	display : block;
+	border-radius : 0 0 4px 4px;
 }
 
 #wrap1 #admin_tab {
-    border-top : 1px solid #e5e6e9;
+    border-bottom : 1px solid #e5e6e9;
     border-radius : 4px;
 }
 
@@ -21,7 +30,7 @@
     background-color : white;
     border : 1px solid #dfe0e4;
     border-color : #e5e6e9 #dfe0e4 #e5e6e9;
-    border-top : 0px;
+	border-bottom : 0;
     padding : 12px;
     color : #66757f;
     font-size: 14px;
@@ -32,9 +41,8 @@
     width : 90px;
     box-sizing : border-box;
     text-align : center;
-    border-top : 1px #e5e6e9 solid;
-    border-bottom : 0px;
-    border-right : 0px;
+	border-left : 0;
+	border-top : 0;
 }
 
 #wrap2 #admin_tab > div:last-of-type {
@@ -61,8 +69,21 @@
 }
 
 #admin_title {
-	display : inline-block;
-	padding : 10px;
-	font-size : 25px;
+    border-bottom : 1px solid #e6ecf0;
+    font-size : 22px;
+    padding : 11px;
+	background-color : white;
+	width : 100%;
+	box-sizing : border-box;
+}
+
+
+@media screen and ( max-width : 1000px ) {
+    #admin_title {
+        display : none;
+    }
+	#admin_table {
+		width : calc( 100vw - 30px );
+	}
 }
 

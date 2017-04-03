@@ -1014,6 +1014,9 @@ textarea {
 		border : 3px solid #f15c3ea;
 		vertical-align : middle;
 	}
+	#post_slider > #slide_box > #slide_btn {
+		display : none;
+	}
 }
 
 @media screen and ( max-width : 500px ){

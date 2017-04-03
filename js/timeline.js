@@ -1172,6 +1172,9 @@ function getPosts(limit){
 				var post_slider = $("div");
 				post_slider.id = "post_slider";
 				document.body.style.overflowY = "hidden";
+				document.ontouchmove = function(event){
+					event.preventDefault();
+				}
 			
 				var slide_imgs = $("div");
 				slide_imgs.style.left = "0px";

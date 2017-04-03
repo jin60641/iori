@@ -1,7 +1,7 @@
 
 var admin_obj = {
 	stat : {
-		kr : "사이트 통계"
+		kr : "통계"
 	},
 	user : {
 		kr : "회원"
@@ -68,8 +68,17 @@ function openAdminTab( newtab ){
 		page = "account";
 	}
 
-	if( document.URL.split('/').length < 5 ){
+	if( $('#admin_table') ){
+		$('#admin_box').removeChild($('#admin_table'));
+	}
+	if( document.URL.split('/').length == 4 ){
 		history.pushState(null,null,"/admin/"+page);
+	} else if( document.URL.split('/').length > 4 ){
+		if( doc && doc.id ){
+			history.pushState(null,null,'/admin/'+page+'/'+doc.id);
+		} else {
+			history.pushState(null,null,'/admin/'+page);
+		}
 	} else {
 		history.pushState(null,null,page);
 	}
@@ -89,11 +98,10 @@ function openAdminTab( newtab ){
 	var title = $("#admin_title");
 	title.innerText = admin_obj[page].kr;
 
-	makeTable();
-	getKeys();
+	getKeys(makeTable);
 }
 
-function getKeys(){
+function getKeys(cb){
 	var tableName = page;
 	var query = {
 		table : tableName[0].toUpperCase() + tableName.substr(1) + 's'
@@ -105,17 +113,16 @@ function getKeys(){
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var schema_keys;
+		var obj_keys;
 		try {
-			schema_keys = JSON.parse(xhr.responseText);
-			if( schema_keys.indexOf('_id') ){
-				schema_keys = schema_keys.splice(0,schema_keys.indexOf('_id')).concat(schema_keys.splice(1));
+			obj_keys = JSON.parse(xhr.responseText);
+			if( obj_keys.indexOf('_id') ){
+				obj_keys = obj_keys.splice(0,obj_keys.indexOf('_id')).concat(obj_keys.splice(1));
 			}
-			if( schema_keys.indexOf('__v') ){
-				schema_keys = schema_keys.splice(0,schema_keys.indexOf('__v')).concat(schema_keys.splice(1));
+			if( obj_keys.indexOf('__v') ){
+				obj_keys = obj_keys.splice(0,obj_keys.indexOf('__v')).concat(obj_keys.splice(1));
 			}
-			return 
-			makeTable(schema_keys)
+			cb(obj_keys);
 		} catch(e){
 			alert(xhr.responseText);
 		}
@@ -123,26 +130,44 @@ function getKeys(){
 	xhr.open("POST", "/api/admin/getkeys", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(params);
 }
 
-function makeTable(schema_keys){
+function makeTable(obj_keys){
+	schema_keys = obj_keys;
 	var tb = $('table');
 	tb.id = "admin_table";
 	tb.appendChild(makeTr(schema_keys,true));
-	$('#admin_wrap').appendChild(tb);
-	getDocs();
+	$('#admin_box').appendChild(tb);
+	if( doc == undefined ){
+		getDocs();
+	} else {
+		$('#admin_table').appendChild(makeTr(doc));
+	}
 }
 
-function makeTr(arr,th){
+var schema_keys;
+function makeTr(obj,th){
+	console.log(obj);
 	var tr = $('tr');
-	for( var i = 0 ; i < arr.length; ++i ){
+	for( var i = 0 ; i < schema_keys.length; ++i ){
 		var td;
-		if( th == "ture" ){
+		if( th == true ){
 			td = $('th');
 			td.className = "admin_table_th";
+			td.innerText = schema_keys[i];
 		} else {
 			td = $('td');
 			td.className = "admin_table_td";
+			var string = obj[schema_keys[i]];
+			if( typeof string == 'object' ){
+				var a = $('a');
+				a.innerText = schema_keys[i];
+				a.href = "/admin/" + schema_keys[i] + "/" + string.id;
+				td.appendChild(a);
+			} else if( string == undefined ){
+				
+			} else {
+				td.innerText = obj[schema_keys[i]];
+			}
 		}
-		td.innerText = arr[i];
 		tr.appendChild(td);
 	}
 	return tr;
@@ -167,14 +192,12 @@ function getDocs(){
 		try {
 			docs = JSON.parse(xhr.responseText);
 			for( var i = 0; i < docs.length; ++i ){
-				console.log(docs[i]);
-				makeTr(docs[i]);
+				$('#admin_table').appendChild(makeTr(docs[i]));
 			}
 		} catch(e){
 			alert(xhr.responseText);
 		}
 	}};
-	console.log(params);
 	xhr.open("POST", "/api/admin/getdocs", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(params);
 }
 
@@ -184,6 +207,7 @@ function makeAdminTab( en, kr ){
 	
 	tab.innerText = kr;
 	tab.onclick = function(){
+		doc = undefined;
 		openAdminTab(en);
 	}
 	

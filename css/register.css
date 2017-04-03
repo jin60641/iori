@@ -1,14 +1,6 @@
-#form_title {
-	display : block;
-	margin : 0px auto 50px auto;
-	font-weight : bold;
-	font-size : 14pt;
-	width : 100%;
-	max-width : 400px;	
-}
 
 #form {
-	width : 100%;
+	width : calc( 100% - 30px );
 	max-width : 370px;
 	display : block;
 	margin : auto;
@@ -17,14 +9,14 @@
 }
 #form label, #form input {
 	margin : auto;
-	margin-bottom : 10px;
 	box-sizing : border-box;
 	display : block;
+	margin-bottom : 10px;
 	width : 100%;
 }
 
 #form input {
-	margin-bottom : 40px;
+	margin-bottom : 20px;
 	padding : 10px;
 }
 

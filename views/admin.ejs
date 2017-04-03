@@ -5,9 +5,16 @@
 		<link rel="stylesheet" type="text/css" href="/css/admin.css">
 		<script>
 			<%
-				if( page == undefined || page.length == 0 ){
+				if( locals.page == undefined || page.length == 0 ){
 					page = "stat"
-					
+				}
+				if( locals.doc != undefined ){
+			%>
+					doc = "<%= doc %>".replace(/&#34;/g,'"');
+	                if( doc.length > 0 ){
+	                    doc = JSON.parse(doc)
+	                }
+			<%
 				}
 			%>
 			page = "<%= page %>";
