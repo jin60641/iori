@@ -4,6 +4,7 @@
 		<% include ./header %>
 		<link rel="stylesheet" type="text/css" href="/css/admin.css">
 		<script>
+			var doc;
 			<%
 				if( locals.page == undefined || page.length == 0 ){
 					page = "stat"

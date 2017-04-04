@@ -18,9 +18,9 @@ function showAdminPage( req, res ){
 		page = "stat";
 	}
 	var obj = { page : page };
-	var oid = req.params['oid'];
+	var oid = parseInt(req.params['oid']);
 	var schema = db[page[0].toUpperCase() + page.substr(1) + 's'];
-	if( oid != undefined && schema != undefined ){
+	if( oid != undefined && schema != undefined && oid > 0 ){
 		schema.findOne({ id : oid }, function( err, result ){
 			if( err ){
 				throw err;
@@ -40,8 +40,13 @@ router.get('/admin/:page/:oid', checkSession, showAdminPage );
 
 router.post( '/api/admin/getkeys', checkSession, function( req, res ){
 	var tb = req.body["table"];
-	var keys = Object.keys(db[tb].schema.tree);
-	res.send(keys);
+	var schema = db[tb];
+	if( schema != undefined ){
+		var keys = Object.keys(db[tb].schema.tree);
+		res.send(keys);
+	} else {
+		res.send([]);
+	}
 });
 
 router.post( '/api/admin/getdocs', checkSession, function( req, res ){
@@ -54,7 +59,7 @@ router.post( '/api/admin/getdocs', checkSession, function( req, res ){
 	}
 	var sort = {}
 	sort[orderby] = (req.body["asc"]=="true")?1:-1;
-	db[tb].find({}).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
+	db[tb].find({},{_id : 0, __v : 0, password : 0 }).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
 		if( err ){
 			throw err;
 		}

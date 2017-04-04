@@ -3,22 +3,30 @@
 }
 
 #admin_wrap {
-	height : calc( 100vh - 80px );
 	width : calc( 100vw - 350px );
+	height : calc( 100vh - 80px );
 }
 
 #wrap2 #admin_box {
 	border: 1px solid #e6ecf0;
+	height : calc( 100vh - 80px );
+	background-color : white;
 }
 
 #wrap2 #admin_table {
 	box-sizing : border-box;
-	background-color : white;
 	width : 100%;
 	margin : 0px;
 	padding : 0px;
 	display : block;
 	border-radius : 0 0 4px 4px;
+}
+
+#wrap2 #admin_table  > tr > *{
+	max-width : 200px;
+	overflow : hidden;
+	white-space : nowrap;
+	padding : 2px 10px 2px 10px;
 }
 
 #wrap1 #admin_tab {

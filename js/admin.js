@@ -65,7 +65,7 @@ function openAdminTab( newtab ){
 	}
 
 	if( admin_obj[page] == undefined ){
-		page = "account";
+		page = "stat";
 	}
 
 	if( $('#admin_table') ){
@@ -74,7 +74,7 @@ function openAdminTab( newtab ){
 	if( document.URL.split('/').length == 4 ){
 		history.pushState(null,null,"/admin/"+page);
 	} else if( document.URL.split('/').length > 4 ){
-		if( doc && doc.id ){
+		if( doc != undefined && doc.id ){
 			history.pushState(null,null,'/admin/'+page+'/'+doc.id);
 		} else {
 			history.pushState(null,null,'/admin/'+page);
@@ -116,14 +116,9 @@ function getKeys(cb){
 		var obj_keys;
 		try {
 			obj_keys = JSON.parse(xhr.responseText);
-			if( obj_keys.indexOf('_id') ){
-				obj_keys = obj_keys.splice(0,obj_keys.indexOf('_id')).concat(obj_keys.splice(1));
-			}
-			if( obj_keys.indexOf('__v') ){
-				obj_keys = obj_keys.splice(0,obj_keys.indexOf('__v')).concat(obj_keys.splice(1));
-			}
-			cb(obj_keys);
+			cb(trFilter(obj_keys));
 		} catch(e){
+			console.log(e);
 			alert(xhr.responseText);
 		}
 	}};
@@ -143,10 +138,61 @@ function makeTable(obj_keys){
 	}
 }
 
+
+function trFilter(obj){
+	var obj_keys = obj;
+	var filtered = ['_id','__v','password'];
+	for( var i = 0; i < filtered.length; ++ i ){
+		if( obj_keys.indexOf(filtered[i]) >= 0 ){
+			obj_keys = obj_keys.splice(0,obj_keys.indexOf(filtered[i])).concat(obj_keys.splice(1));
+		}
+	}
+	return obj_keys;
+}
+
+function wholeCheck(e){
+	var inputs = $(".admin_table_checkbox");
+	var whole = $("#admin_table_wholecheck");
+	if( e.target == whole ){
+		for( var i = 0; i < inputs.length; ++i ){
+			inputs[i].checked = e.target.checked;
+		}
+	} else {
+		var cnt = 0;
+		for( var i = 0; i < inputs.length; ++i ){
+			if( inputs[i].checked == true ){
+				cnt++;
+			}
+		}
+		if( whole.checked ){
+			--cnt;
+		}
+		if( inputs.length - 1 == cnt ){
+			whole.checked = true;
+		} else {
+			whole.checked = false;
+		}
+	}
+}
+
+
 var schema_keys;
 function makeTr(obj,th){
-	console.log(obj);
 	var tr = $('tr');
+	var check_td;
+	var checkbox = $('input');
+	checkbox.type = "checkbox";
+	checkbox.className = "admin_table_checkbox";
+	checkbox.onclick = wholeCheck;
+	if( th == true ){
+		check_td = $('th');
+		checkbox.id = "admin_table_wholecheck";
+	} else {
+		check_td = $('td');
+	}
+	check_td.appendChild(checkbox);
+
+	tr.appendChild(check_td);
 	for( var i = 0 ; i < schema_keys.length; ++i ){
 		var td;
 		if( th == true ){
@@ -164,6 +210,8 @@ function makeTr(obj,th){
 				td.appendChild(a);
 			} else if( string == undefined ){
 				
+			} else if( schema_keys[i] == "date" || schema_keys[i] == "change" ){
+				td.innerText = new Date(obj[schema_keys[i]]).toLocaleString();
 			} else {
 				td.innerText = obj[schema_keys[i]];
 			}
@@ -195,6 +243,7 @@ function getDocs(){
 				$('#admin_table').appendChild(makeTr(docs[i]));
 			}
 		} catch(e){
+			console.log(e);
 			alert(xhr.responseText);
 		}
 	}};
