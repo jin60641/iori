@@ -30,6 +30,8 @@ window.addEventListener('load', function(){
 		}
 		container.style.height = "45vh";
 		wrap.style.height = "45vh";
+	} else {
+		headerimg_back.style.backgroundColor = "#f15c3e";
 	}
 	headerimg_form.appendChild(headerimg_back);
 
@@ -51,6 +53,8 @@ window.addEventListener('load', function(){
 		profileimg_back.onclick = function( event ){
 			viewimg(0,1,new Date(),"/files/profile/" + user.id);
 		}
+	} else {
+		profileimg_back.style.backgroundColor = "#f15c3e";
 	}
 	profileimg_back.style.backgroundImage = "url('/files/profile/" + user.id + "')";
 	profileimg_form.appendChild(profileimg_back);
@@ -499,7 +503,7 @@ function removeImage( evt ){
  	var type = this.parentNode.parentNode.parentNode.id.split('_')[0].replace("img","");
 	var back = $('#' + type + 'img_back');
 	if( type == "header" ){
-		back.style.backgroundImage = "";
+		headerimg_back.style.backgroundColor = "#f15c3e";
 	} else if( type =="profile" ){
 		back.style.backgroundImage = 'url("/img/profile.jpg")';
 	}

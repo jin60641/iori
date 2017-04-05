@@ -55,7 +55,6 @@ form input {
 	margin : auto;
 	margin-bottom : 4vh;
 	text-align : center;
-	font-family: 'NanumGothicL';
 	font-weight : bold;
 }
 
@@ -81,7 +80,6 @@ form .upload_btn {
 
 #wave_wrap {
 	position : relative;
-	font-family : 'NanumGothicL';
 	padding : 0px;
 	height : calc( 100vh - 40px );
 	overflow : hidden;

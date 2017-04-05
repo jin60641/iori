@@ -111,7 +111,6 @@
 
 #head #head_search {
 	margin-top : 2px;
-	font-family : 'NanumGothicL';
 	//background-color : #ff3d00;
 	position : absolute;
 	background : url('/img/search_icon.png') no-repeat;
@@ -246,7 +245,6 @@
 
 #head #navi_tab {
 	font-size : 14px;
-	font-family : 'NanumGothicL';
 	color : #66757f;
 	top : 0px;
 	left : 15px;

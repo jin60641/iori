@@ -29,7 +29,7 @@ textarea {
 	margin : auto;
 	box-sizing : border-box;
 	width : 100%;
-	font-family : 'NanumGothic';
+	font-family : inherit;
 	word-wrap : break-word;
 	background-color : white;
 	position : relative;
