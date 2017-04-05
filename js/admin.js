@@ -277,7 +277,7 @@ function makeTr(obj,th){
 			td.className = "admin_table_td";
 			var string = obj[obj_keys[i]];
 	
-			if( string == undefined ){
+			if( string == undefined && obj_keys[i].indexOf(".") >= 0 ){
 				var sub_keys = obj_keys[i].split('.');
 				var tmp = obj;
 				for( var j = 0; j < sub_keys.length; ++j ){
@@ -286,7 +286,8 @@ function makeTr(obj,th){
 				}
 				string = tmp;
 			}
-			if( typeof string == 'object' ){
+			if( string == undefined ){
+			} else if( typeof string == 'object' ){
 				/*
 				var a = $('a');
 				a.innerText = obj_keys[i];
