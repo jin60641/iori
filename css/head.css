@@ -276,7 +276,7 @@
 }
 
 #head #navi_tab a:hover::after {
-	margin-top : 7px;
+	margin-top : 6px;
 	padding-bottom : 5px;
 }
 

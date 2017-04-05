@@ -249,8 +249,8 @@ profile_wrap #post_wrap {
 }
 
 #user_tab > div:hover::after {
-	margin-top : 8px;
-	height : 5px;
+    margin-top : 7px;
+    padding-bottom : 5px;
 }
 
 #follow_wrap {
@@ -290,3 +290,12 @@ profile_wrap #post_wrap {
 		left : calc( 5vw + 90px );
 	}
 }
+
+
+@media screen and ( max-width : 1300px ) {
+	#wrap1 {
+		display : none;
+	}
+}
+
+
