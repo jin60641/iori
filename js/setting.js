@@ -310,6 +310,7 @@ function makeField( obj ){
 	if( obj.onclick ){
 		input.onclick = obj.onclick;
 	}
+	div.appendChild(text);
 
 
 	return field;

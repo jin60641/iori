@@ -5,6 +5,9 @@
 #admin_wrap {
 	width : calc( 100vw - 350px );
 	height : calc( 100vh - 80px );
+	box-sizing : border-box;
+	padding-left : 10px;
+	padding-right : 10px;
 }
 
 #wrap2 #admin_box {
@@ -20,6 +23,12 @@
 	padding : 0px;
 	display : block;
 	border-radius : 0 0 4px 4px;
+	height : calc( 100vh - 126px );
+	overflow-x : scroll;
+}
+
+#wrap2 #admin_table .admin_table_flip {
+	color : blue;
 }
 
 #wrap2 #admin_table  > tr > *{
@@ -90,7 +99,7 @@
     #admin_title {
         display : none;
     }
-	#admin_table {
+	#admin_wrap {
 		width : calc( 100vw - 30px );
 	}
 }

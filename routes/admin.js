@@ -42,7 +42,8 @@ router.post( '/api/admin/getkeys', checkSession, function( req, res ){
 	var tb = req.body["table"];
 	var schema = db[tb];
 	if( schema != undefined ){
-		var keys = Object.keys(db[tb].schema.tree);
+		//var keys = Object.keys(db[tb].schema.tree);
+		var keys = Object.keys(db[tb].schema.paths);
 		res.send(keys);
 	} else {
 		res.send([]);

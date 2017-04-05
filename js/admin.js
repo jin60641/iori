@@ -1,3 +1,4 @@
+var obj_keys;
 
 var admin_obj = {
 	stat : {
@@ -106,17 +107,17 @@ function getKeys(cb){
 	var query = {
 		table : tableName[0].toUpperCase() + tableName.substr(1) + 's'
 	}
-	var obj_keys = Object.keys(query);
+	var query_keys = Object.keys(query);
 	var params = "";
-	for( var i = 0; obj_keys.length > i; ++i ){
-		params += obj_keys[i] + "=" + query[obj_keys[i]] + "&";
+	for( var i = 0; query_keys.length > i; ++i ){
+		params += query_keys[i] + "=" + query[query_keys[i]] + "&";
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var obj_keys;
 		try {
 			obj_keys = JSON.parse(xhr.responseText);
-			cb(trFilter(obj_keys));
+			trFilter();
+			cb();
 		} catch(e){
 			console.log(e);
 			alert(xhr.responseText);
@@ -125,11 +126,10 @@ function getKeys(cb){
 	xhr.open("POST", "/api/admin/getkeys", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(params);
 }
 
-function makeTable(obj_keys){
-	schema_keys = obj_keys;
+function makeTable(){
 	var tb = $('table');
 	tb.id = "admin_table";
-	tb.appendChild(makeTr(schema_keys,true));
+	tb.appendChild(makeTr(obj_keys,true));
 	$('#admin_box').appendChild(tb);
 	if( doc == undefined ){
 		getDocs();
@@ -138,16 +138,40 @@ function makeTable(obj_keys){
 	}
 }
 
+function findObj(start,objName){
+	var i = start;
+	var deep;
+	if( objName.length > 0  ){
+		deep = objName.split('.').length;
+	} else {
+		deep = 0;
+	}
+	for( ; i < obj_keys.length; ++i ){
+		var splited = obj_keys[i].split('.');
+		splited.pop();
+		if( splited.length < deep ){
+			var first = obj_keys.splice(0,start);
+			var second = [objName];
+			var third = obj_keys.splice(0);
+			obj_keys = first.concat(second).concat(third);
+			if( i != obj_keys.length && deep != 0 ){
+				return i-start;
+			}
+		} else if( splited.length > deep ){
+			var a = findObj(i,splited.join('.'));
+			i+=a;
+		}
+	}
+}
 
-function trFilter(obj){
-	var obj_keys = obj;
+function trFilter(){
 	var filtered = ['_id','__v','password'];
 	for( var i = 0; i < filtered.length; ++ i ){
 		if( obj_keys.indexOf(filtered[i]) >= 0 ){
 			obj_keys = obj_keys.splice(0,obj_keys.indexOf(filtered[i])).concat(obj_keys.splice(1));
 		}
 	}
-	return obj_keys;
+	findObj(0,"")
 }
 
 function wholeCheck(e){
@@ -175,8 +199,53 @@ function wholeCheck(e){
 	}
 }
 
+function openObject(e){
+	var td = e.target;
+	var ths = $('.admin_table_th');
+	var width = ths.length;
+	var index = 1;
+	var parent = td.parentNode;
+	for( ; index < width; ++index ){
+		if( td == parent.childNodes[index] ){
+			break;
+		}
+	}
+	var trs = $('#admin_table').childNodes;
+	var height = trs.length;
+	var objName = ths[index-1].innerText.split('_').pop();
+	var deep = objName.split('.').length;
+	var flag;
+	if( td.innerText == "펼치기" ){
+		flag = true;
+	} else {
+		flag = false;
+	}
+	for( var j = 1; j < height; ++j ){
+		if( flag ){
+			trs[j].childNodes[index].innerText = "접기";
+		} else {
+			trs[j].childNodes[index].innerText = "펼치기";
+		}
+	}
+	for( var i = index; i < width; ++i ){
+		if( ths[i].innerText.indexOf(objName) >= 0 && ( ( flag && ths[i].innerText.split('.').length - 1 == deep ) || !flag ) ){
+			for( var j = 0; j < height; ++j ){
+				var target = trs[j].childNodes[i+1];
+				if( flag ){
+					target.style.display = "table-cell";
+					if( target.innerText == "접기" ){
+						target.innerText = "펼치기";
+					}
+				} else {
+					target.style.display = "none";
+				}
+			}
+		} else {
+			break;
+		}
+	}
+}
 
-var schema_keys;
 function makeTr(obj,th){
 	var tr = $('tr');
 	var check_td;
@@ -193,27 +262,43 @@ function makeTr(obj,th){
 	check_td.appendChild(checkbox);
 
 	tr.appendChild(check_td);
-	for( var i = 0 ; i < schema_keys.length; ++i ){
+	for( var i = 0 ; i < obj_keys.length; ++i ){
 		var td;
 		if( th == true ){
 			td = $('th');
 			td.className = "admin_table_th";
-			td.innerText = schema_keys[i];
+			td.innerText = obj_keys[i];
+			if( obj_keys[i].indexOf('.') >= 1 ){
+				td.style.display = "none";
+			}
 		} else {
 			td = $('td');
 			td.className = "admin_table_td";
-			var string = obj[schema_keys[i]];
+			var string = obj[obj_keys[i]];
+	
+			if( string == undefined ){
+				var sub_keys = obj_keys[i].split('.');
+				var tmp = obj;
+				for( var j = 0; j < sub_keys.length; ++j ){
+					tmp = tmp[sub_keys[j]];
+					td.style.display = "none";
+				}
+				string = tmp;
+			}
 			if( typeof string == 'object' ){
+				/*
 				var a = $('a');
-				a.innerText = schema_keys[i];
-				a.href = "/admin/" + schema_keys[i] + "/" + string.id;
+				a.innerText = obj_keys[i];
+				a.href = "/admin/" + obj_keys[i] + "/" + string.id;
 				td.appendChild(a);
-			} else if( string == undefined ){
-				
-			} else if( schema_keys[i] == "date" || schema_keys[i] == "change" ){
-				td.innerText = new Date(obj[schema_keys[i]]).toLocaleString();
+				*/
+				td.className += " admin_table_flip";
+				td.innerText = "펼치기";
+				td.onclick = openObject;
+			} else if( obj_keys[i] == "date" || obj_keys[i] == "change" ){
+				td.innerText = new Date(string).toLocaleString();
 			} else {
-				td.innerText = obj[schema_keys[i]];
+				td.innerText = string;
 			}
 		}
 		tr.appendChild(td);
@@ -229,10 +314,10 @@ function getDocs(){
 		limit : 20
 	}
 
-	var obj_keys = Object.keys(query);
+	var query_keys = Object.keys(query);
 	var params = "";
-	for( var i = 0; obj_keys.length > i; ++i ){
-		params += obj_keys[i] + "=" + query[obj_keys[i]] + "&";
+	for( var i = 0; query_keys.length > i; ++i ){
+		params += query_keys[i] + "=" + query[query_keys[i]] + "&";
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
