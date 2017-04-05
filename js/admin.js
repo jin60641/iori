@@ -147,9 +147,11 @@ function findObj(start,objName){
 		deep = 0;
 	}
 	for( ; i < obj_keys.length; ++i ){
+		console.log(obj_keys[i]);
 		var splited = obj_keys[i].split('.');
 		splited.pop();
-		if( splited.length < deep ){
+		var newObjName = splited.join('.');
+		if( splited.length <= deep && newObjName != objName ){
 			var first = obj_keys.splice(0,start);
 			var second = [objName];
 			var third = obj_keys.splice(0);
@@ -158,8 +160,7 @@ function findObj(start,objName){
 				return i-start;
 			}
 		} else if( splited.length > deep ){
-			var a = findObj(i,splited.join('.'));
-			i+=a;
+			i += findObj(i,newObjName);
 		}
 	}
 }
