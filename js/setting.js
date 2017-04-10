@@ -64,7 +64,8 @@ var settings = {
 		tabs : [{
 			id : "color",
 			name : "색상 선택",
-			type : "color"
+			type : "color",
+			value : session.color.hex
 		}],
 		kr : "테마 색상"
 	}

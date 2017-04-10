@@ -23,6 +23,17 @@ function makeObj( req, res, ejs, obj ){
 				});	
 			}
 		], function( err, result ){
+			if( req.user.signUp ){
+				obj.color_hex = req.user.color.hex;
+				obj.color_r = req.user.color.r;
+				obj.color_g = req.user.color.g;
+				obj.color_b = req.user.color.b;
+			} else {
+				obj.color_hex = require('./settings.js').defaultColor.hex;
+				obj.color_r = require('./settings.js').defaultColor.r;
+				obj.color_g = require('./settings.js').defaultColor.g;
+				obj.color_b = require('./settings.js').defaultColor.b;
+			}
 			obj.info = JSON.stringify({
 				post : result[0],
 				following : result[1],
@@ -31,7 +42,10 @@ function makeObj( req, res, ejs, obj ){
 			renderPage( res, ejs, obj );
 		});
 	} else {
-	    obj.session = null;
+		obj.color_hex = require('./settings.js').defaultColor.hex;
+		obj.color_r = require('./settings.js').defaultColor.r;
+		obj.color_g = require('./settings.js').defaultColor.g;
+		obj.color_b = require('./settings.js').defaultColor.b;
 	    obj.info = null;
 		renderPage( res, ejs, obj );
 	}

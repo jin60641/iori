@@ -6,7 +6,9 @@ var headerLabelScale = 1;
 window.addEventListener("click", hideLabelMenu);
 
 window.addEventListener('load', function(){
-	$('#user_list_self').style.display = "none";
+	if( session.signUp ){
+		$('#user_list_self').style.display = "none";
+	}
 	var wrap = $("div");
 	wrap.id = "profile_wrap";
 	document.body.insertBefore(wrap,body);
@@ -31,7 +33,7 @@ window.addEventListener('load', function(){
 		container.style.height = "45vh";
 		wrap.style.height = "45vh";
 	} else {
-		headerimg_back.style.backgroundColor = "#f15c3e";
+		headerimg_back.style.backgroundColor = session.color.hex;
 	}
 	headerimg_form.appendChild(headerimg_back);
 
@@ -54,7 +56,7 @@ window.addEventListener('load', function(){
 			viewimg(0,1,new Date(),"/files/profile/" + user.id);
 		}
 	} else {
-		profileimg_back.style.backgroundColor = "#f15c3e";
+		profileimg_back.style.backgroundColor = session.color.hex;
 	}
 	profileimg_back.style.backgroundImage = "url('/files/profile/" + user.id + "')";
 	profileimg_form.appendChild(profileimg_back);
@@ -288,8 +290,12 @@ function settingSave(){
 function sendProfileImage( type, boolean ){
 	var xhr = new XMLHttpRequest();
 	var label = $('#'+type+"img_label");
+	console.log(1);
 	if( user[type] && boolean == false ){
+		console.log(2);
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+			console.log(3);
+			console.log(xhr.responseText);
 			user[type] = false;
 			settingCancel();
 		}}
@@ -412,14 +418,14 @@ function makePhotoHelper( type, boolean ){
 	photohelper_change.className = "photohelper_div";
 	photohelper_menu.appendChild(photohelper_change);
 
-	if( boolean == undefined && user[type] ){
+	if( ( boolean == true || boolean == undefined ) && user[type] ){
 		photohelper_change.innerText = "변경";
 		photohelper_remove = $("div");
 		photohelper_remove.onclick = removeImage;
 		photohelper_remove.className = "photohelper_div";
 		photohelper_remove.innerText = "삭제";
 		photohelper_menu.appendChild(photohelper_remove);
-	} else {
+	} else if( boolean == false ){
 		photohelper_change.innerText = "추가";
 	}
 
@@ -527,7 +533,8 @@ function removeImage( evt ){
  	var type = this.parentNode.parentNode.parentNode.id.split('_')[0].replace("img","");
 	var back = $('#' + type + 'img_back');
 	if( type == "header" ){
-		headerimg_back.style.backgroundColor = "#f15c3e";
+		headerimg_back.style.backgroundColor = session.color.hex;
+		headerimg_back.style.backgroundImage = "";
 	} else if( type =="profile" ){
 		back.style.backgroundImage = 'url("/img/profile.jpg")';
 	}
@@ -586,9 +593,9 @@ function openUserTab( evt ){
 	}
 	history.pushState(null,null,history_str);
 	
-	tab.style.color = "#ff5c3e";
+	tab.style.color = session.color.hex;
 	tab.style.height = "24px";
-	tab.style.borderBottom = "5px solid #ff5c3e";
+	tab.style.borderBottom = "5px solid " + session.color.hex;
 }
 
 function getFollows(limit,type){

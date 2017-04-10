@@ -101,7 +101,7 @@ function dontsee(postid){
 			var dontsee_menu = $("div");
 			dontsee_menu.className = "post";
 			dontsee_menu.style.paddingBottom = "8px";
-			dontsee_menu.innerHTML = "뉴스피드에 이 게시물이 표시되지 않습니다. <span style='color:#34a798;cursor:pointer;' onclick='dontsee_cancle(" + postid + ")'>취소</span>";
+			dontsee_menu.innerHTML = "뉴스피드에 이 게시물이 표시되지 않습니다. <span style='color:" + session.color.hex + ";cursor:pointer;' onclick='dontsee_cancle(" + postid + ")'>취소</span>";
 			dontsee_menu.innerHTML += "<img src='/img/remove_reply.jpg' style='width:16px; float:right; cursor:pointer' onclick='this.parentNode.parentNode.removeChild(this.parentNode)'><br>";
 			postwrap.insertBefore(dontsee_menu,post);
 		}
@@ -557,7 +557,7 @@ function changeReply(pid,id){
 			cancleChange_reply(pid,id);
 		}
 		cancle.innerText = "취소";
-		cancle.style.color = "#f15c3e";
+		cancle.style.color = session.color.hex;
 		cancle.style.cursor = "pointer";
 	});
 	replywrite.focus();

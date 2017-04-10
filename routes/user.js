@@ -335,14 +335,29 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 });
 
 router.post( '/api/user/change/color', checkSession, function( req, res ){
-	var color = req.body['color'];
-	db.Users.update({ id : req.user.id },{ color : color }, function( err, reuslt ){
-		if( err ){
-			throw err;
-		}
-		req.user.color = color;
-		res.send("설정이 저장되었습니다");
+	var code = req.body['color'];
+	var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+	var hex = code.replace( shorthandRegex, function( m, r, g, b ){
+		return r + r + g + g + b + b;
 	});
+
+	var rgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	var color = {
+		hex : hex,
+		r : parseInt( rgb[1], 16 ),
+		g : parseInt( rgb[2], 16 ),
+		b : parseInt( rgb[3], 16 )
+	}
+	
+	if ( color.r >= 0 && color.g >= 0 & color.b >= 0 & color.length != 7 ){
+		db.Users.update({ id : req.user.id },{ color : color }, function( err, reuslt ){
+			if( err ){
+				throw err;
+			}
+			req.user.color = color;
+			res.send("설정이 저장되었습니다");
+		});
+	}
 });
 
 router.post( '/api/user/change/uid', checkSession, function( req, res ){

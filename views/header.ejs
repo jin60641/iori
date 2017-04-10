@@ -6,28 +6,36 @@
 <meta name="description" content="">
 <meta name="format-detection" content="telephone=no">
 <script src="/js/webfont.js"></script>
+<script>
+var session = "";
+var info = "";
+<%
+	if( locals.session != undefined ){
+%>
+		session = "<%= session %>".replace(/&#34;/g,'"');
+		if( session.length > 0 ){
+			session = JSON.parse(session);
+		}
+		info = "<%= info %>".replace(/&#34;/g,'"');
+		if( info.length > 0 ){
+			info = JSON.parse(info);
+		}
+<%
+	}
+%>
+</script>
 <noscript>
 	<link rel="stylesheet" type="text/css" href="/css/webfont_normal.css">
 </noscript>
-<link rel="stylesheet" type="text/css" href="/css/style.css">
-<link rel="stylesheet" type="text/css" href="/css/head.css">
-<link rel="stylesheet" type="text/css" href="/css/popup.css">
+
+<% include ./../css/style %>
+<% include ./../css/head %>
 <link rel="shortcut icon" href="/img/favicon.png">
 <script src="/js/listener.js"></script>
 <script src="/js/socketio.js"></script>
 <script src="/js/socket.js"></script>
 <script src="/js/iori.js"></script>
-<link rel="stylesheet" type="text/css" href="/css/userlist.css">
+<% include ./../css/userlist %>
 <script src="/js/userlist.js"></script>
 <title>iori</title>
-<script>
-session = "<%= session %>".replace(/&#34;/g,'"');
-if( session.length > 0 ){
-	session = JSON.parse(session);
-}
-info = "<%= info %>".replace(/&#34;/g,'"');
-if( info.length > 0 ){
-	info = JSON.parse(info);
-}
-</script>
 <script src="/js/header.js"></script>

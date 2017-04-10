@@ -7,14 +7,6 @@ db.once('open', function callback() {
 	console.log('db connected');
 });
 
-var mongoose = require('mongoose');
-mongoose.createConnection('mongodb://localhost/db')
-var db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'connection error: '));
-db.once('open', function callback() {
-});
-
 var FavoriteSchema = new mongoose.Schema({
     uid : { type : Number },
     pid : { type : Number },
@@ -117,7 +109,12 @@ var UserSchema = new mongoose.Schema({
 		email : { type : Boolean, default : true },
 		web : { type : Boolean, default : true }
 	},
-	color : { type : String, default : "#f15c3e" },
+	color : { 
+		hex : { type : String, default : require('./settings.js').defaultColor.hex },
+		r : { type : Number, default : require('./settings.js').defaultColor.r },
+		g : { type : Number, default : require('./settings.js').defaultColor.g },
+		b : { type : Number, default : require('./settings.js').defaultColor.b }
+	},
 	last : { type : Date },
 	date : { type : Date, default : Date.now }
 });

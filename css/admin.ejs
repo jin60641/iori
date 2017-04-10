@@ -1,0 +1,133 @@
+<style>
+#wrap3 {
+	display : none;
+}
+
+#admin_wrap {
+	width : calc( 100vw - 350px );
+	height : calc( 100vh - 80px );
+	box-sizing : border-box;
+	padding-left : 10px;
+	padding-right : 10px;
+}
+
+#wrap2 #admin_box {
+	border: 1px solid #e6ecf0;
+	height : calc( 100vh - 80px );
+	background-color : white;
+}
+
+#wrap2 #admin_table {
+	box-sizing : border-box;
+	width : 100%;
+	margin : 10px 0 0 10px;
+	padding : 0px;
+	display : block;
+	border-radius : 0 0 4px 4px;
+	height : calc( 100vh - 126px );
+	overflow-x : scroll;
+	border-collapse : collapse;
+}
+
+#wrap2 #admin_table .admin_table_flip {
+	cursor : pointer;
+	color : #ccc;;
+}
+
+#wrap2 #admin_table  > .admin_table_tr > .admin_table_th {
+	background-color : #f3f3f3;
+	position : relative;
+}
+
+#wrap2 #admin_table  > tr > th > .admin_table_resizer {
+	position : absolute;
+	right : 0;
+	top : 0;
+	cursor : col-resize;
+	width : 10px;
+	height : 100%;
+}
+
+#wrap2 #admin_table  > tr > th > .admin_table_resizer:hover {
+	background-color : #AAAABB;
+	height : 100%;
+}
+
+#wrap2 #admin_table  > .admin_table_tr > * {
+	border : 1px solid #ccc;
+	max-width : 76px;
+	overflow : hidden;
+	height : 24px;
+	padding : 2px 5px 2px 5px;
+}
+
+#wrap2 #admin_table  > .admin_table_tr > .admin_table_td {
+	white-space : nowrap;
+}
+
+#wrap1 #admin_tab {
+    border-bottom : 1px solid #e5e6e9;
+    border-radius : 4px;
+}
+
+#admin_tab > div {
+    background-color : white;
+    border : 1px solid #dfe0e4;
+    border-color : #e5e6e9 #dfe0e4 #e5e6e9;
+	border-bottom : 0;
+    padding : 12px;
+    color : #66757f;
+    font-size: 14px;
+}
+
+#wrap2 #admin_tab > div {
+    display : inline-block;
+    width : 90px;
+    box-sizing : border-box;
+    text-align : center;
+	border-left : 0;
+	border-top : 0;
+}
+
+#wrap2 #admin_tab > div:last-of-type {
+    border-right : 1px #dfe0e4 solid;
+}
+
+#wrap1 #admin_tab > div:first-of-type {
+    border-radius : 4px 4px 0 0;
+}
+
+#wrap1 #admin_tab > div:last-of-type {
+    border-radius : 0px 0px 4px 4px;
+}
+
+#wrap1 #admin_tab > div:hover {
+    cursor : pointer;
+    background-color : #f6f6f6;
+    color : #f15c3e;
+}
+
+#admin_tab > .admin_tab_active {
+    color : black;
+    font-weight : bold;
+}
+
+#admin_title {
+    border-bottom : 1px solid #e6ecf0;
+    font-size : 22px;
+    padding : 11px;
+	background-color : white;
+	width : 100%;
+	box-sizing : border-box;
+}
+
+
+@media screen and ( max-width : 1000px ) {
+    #admin_title {
+        display : none;
+    }
+	#admin_wrap {
+		width : calc( 100vw - 30px );
+	}
+}
+</style>

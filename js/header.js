@@ -217,13 +217,13 @@ window.addEventListener('load',function(){
 	var path = location.pathname.substr(1);
 	var navi_tab_now = $("#navi_tab_" + path);
 	if( navi_tab_now ){
-		navi_tab_now.style.color = "#ff5c3e";
+		navi_tab_now.style.color = session.color.hex;
 		navi_tab_now.style.height = "24px";
-		navi_tab_now.style.borderBottom = "5px solid #ff5c3e";
+		navi_tab_now.style.borderBottom = "5px solid " + session.color.hex;
 	} else if ( path == "" ){
-		navi_tab_home.style.color = "#ff5c3e";
+		navi_tab_home.style.color = session.color.hex;
 		navi_tab_home.style.height = "24px";
-		navi_tab_home.style.borderBottom = "5px solid #ff5c3e";
+		navi_tab_home.style.borderBottom = "5px solid " + session.color.hex;
 	}
 
 	var search = $("input");
