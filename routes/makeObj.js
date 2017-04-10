@@ -1,6 +1,7 @@
 var fs = require('fs-extra');
 var db = require('./dbconfig.js');
 var async = require('async');
+var color = require('./settings.js').defaultColor;
 
 function makeObj( req, res, ejs, obj ){
     if( obj == undefined ){
@@ -29,10 +30,10 @@ function makeObj( req, res, ejs, obj ){
 				obj.color_g = req.user.color.g;
 				obj.color_b = req.user.color.b;
 			} else {
-				obj.color_hex = require('./settings.js').defaultColor.hex;
-				obj.color_r = require('./settings.js').defaultColor.r;
-				obj.color_g = require('./settings.js').defaultColor.g;
-				obj.color_b = require('./settings.js').defaultColor.b;
+				obj.color_hex = color.hex;
+				obj.color_r = color.r;
+				obj.color_g = color.g;
+				obj.color_b = color.b;
 			}
 			obj.info = JSON.stringify({
 				post : result[0],
@@ -42,10 +43,11 @@ function makeObj( req, res, ejs, obj ){
 			renderPage( res, ejs, obj );
 		});
 	} else {
-		obj.color_hex = require('./settings.js').defaultColor.hex;
-		obj.color_r = require('./settings.js').defaultColor.r;
-		obj.color_g = require('./settings.js').defaultColor.g;
-		obj.color_b = require('./settings.js').defaultColor.b;
+	    obj.session = JSON.stringify({ "color" : color });
+		obj.color_hex = color.hex;
+		obj.color_r = color.r;
+		obj.color_g = color.g;
+		obj.color_b = color.b;
 	    obj.info = null;
 		renderPage( res, ejs, obj );
 	}

@@ -278,7 +278,7 @@ function settingSave(){
 	if( $('#profileimg_file').value != "" ){
 		sendProfileImage( "profile" );
 		flag = true;
-	} else if( $('#profileimg_back').style.backgroundImage == 'url("/img/profile.jpg")' && user.profile ){
+	} else if( $('#profileimg_back').style.backgroundImage == 'url("/img/profile.png")' && user.profile ){
 		sendProfileImage( "profile", false );
 	}
 	
@@ -536,7 +536,7 @@ function removeImage( evt ){
 		headerimg_back.style.backgroundColor = session.color.hex;
 		headerimg_back.style.backgroundImage = "";
 	} else if( type =="profile" ){
-		back.style.backgroundImage = 'url("/img/profile.jpg")';
+		back.style.backgroundImage = 'url("/img/profile.png")';
 	}
 	this.parentNode.style.display = "none";
 	evt.stopPropagation();

@@ -54,6 +54,7 @@ textarea {
 	border-left : 0px;
 	border-right : 0px;
 	border-radius : 0px;
+	color : white;
 	overflow-y : hidden;
 	display : block;
 	font-size : 14px;
@@ -144,7 +145,7 @@ textarea {
 	width : 23px;
 	height : 23px;
 	top : 7px;
-	background : url('/img/imageupload_reply.jpg') right no-repeat;
+	background : url('/img/imageupload_reply.png') right no-repeat;
 	background-size : 26px 26px;
 }
 
@@ -189,7 +190,7 @@ textarea {
 	width : 32px;
 	height : 33px;
 	float : right;
-	background : url('/img/imageupload.jpg');
+	background : url('/img/imageupload.png');
 	background-size : 32px 33px;
 }
 
@@ -354,7 +355,7 @@ textarea {
 	cursor : pointer;
 	top : 1px;
 	right : 1px;
-	background : #000000 url('/img/delete_replyimg.jpg');
+	background : #000000 url('/img/delete_replyimg.png');
 	opacity : 0.5;
 	width : 60px;
 	height : 60px;
@@ -421,11 +422,17 @@ textarea {
 .post > #post_write_button {
 	margin-right : 4px;
 	margin-top : 8px;
+	float : right;
+	color : white;
+	border-radius : 2px;
+	box-sizing : border-box;
+	text-align : center;
+	line-height : 32px;
+	background-color :  rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,.9);
+	border-bottom : 2px solid rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,1);
+	font-size : 16px;
 	width : 60px;
 	height : 33px;
-	background : url('/img/postwrite.jpg');
-	background-size : 60px 33px;
-	float : right;
 }
 	
 .post #post_none {
@@ -601,7 +608,7 @@ textarea {
 	width : 32px;
 	height : 33px;
 	float : right;
-	background : url('/img/imageupload.jpg');
+	background : url('/img/imageupload.png');
 	background-size : 32px 33px;
 }
 
@@ -610,15 +617,18 @@ textarea {
 }
 
 #post_wrap .post .post_change_button {
+	color : white;
+	border-radius : 2px;
+	box-sizing : border-box;
+	text-align : center;
+	line-height : 32px;
+	background-color :  rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,.9);
+	border-bottom : 2px solid rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,1);
+	font-size : 16px;
 	width : 60px;
 	height : 33px;
-	background : url('/img/postwrite.jpg') no-repeat;
-	background-size : 60px 33px;
 	margin-right : -5px;
 	float : right;
-}
-
-#post_wrap .post .post_change_button {
 	cursor : pointer;
 }
 
@@ -631,7 +641,7 @@ textarea {
 	padding-left : 23px;
 	margin-left : 7px;
 	padding-bottom : 20px;
-	background : url('/img/postimg.jpg') no-repeat;
+	background : url('/img/postimg.png') no-repeat;
 	background-size : 22px 25px;
 }
 
@@ -890,11 +900,23 @@ textarea {
 }
 
 #post_slider > #slide_left {
+	background-image : url('/img/leftbtn.png');
+	background-size : 100% 100%;
 	left : 70px;
 }
 
+#post_slider > #slide_left:hover {
+	background-image : url('/img/leftbtn_hover.png');
+}
+
 #post_slider > #slide_right {
+	background-image : url('/img/rightbtn.png');
+	background-size : 100% 100%;
 	right : 70px;
+}
+
+#post_slider > #slide_right:hover {
+	background-image : url('/img/rightbtn_hover.png');
 }
 
 #bottom_btn {

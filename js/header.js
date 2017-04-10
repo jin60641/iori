@@ -268,9 +268,8 @@ window.addEventListener('load',function(){
 	search_result.appendChild(search_none);
 	head.appendChild(search_result);
 
-	var head_logo = $("img");
+	var head_logo = $("div");
 	head_logo.id = "head_logo";
-	head_logo.src = "/img/logo_orange.png";
 	head_logo.onclick = function(){ 
 		goTop();
 	}
@@ -284,7 +283,7 @@ window.addEventListener('load',function(){
 	var navi_search = $("div");
 	navi_search.id = "navi_search";
 	navi_search.className = "navi_menu";
-	navi_search.innerHTML = "<a href='/search' ><img src='/img/navi_search.jpg'></a>";
+	navi_search.innerHTML = "<a href='/search' ><img src='/img/navi_search.png'></a>";
 	head.appendChild(navi_search);
 
 	var navi_profile = $("div");

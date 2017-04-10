@@ -69,7 +69,7 @@ window.addEventListener('load', function(){
     form_alert.innerText = "'";
     form.appendChild(form_alert);
 
-	if( session ){
+	if( session.signUp && ( session.name || session.email || session.uid ) ){
 		if( session.name ){
 			form_name.value = session.name;
 //			form_name.readOnly = true;

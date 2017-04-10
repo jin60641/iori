@@ -48,10 +48,8 @@ window.addEventListener('load', function(){
 	form_alert.innerText = "'";
 	form.appendChild(form_alert);
 
-	if( session ){
-		if( session.uid ){
-			form_uid.value =  session.uid;
-		}
+	if( session.signUp && ( session.name || session.email || session.uid ) ){
+		form_uid.value =  session.uid;
 	} else {
 		var form_facebook_btn = $("div");
 		form_facebook_btn.id = "form_facebook_btn";

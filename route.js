@@ -87,7 +87,7 @@ router.get( '/files/header/:uid', function( req, res ){
 						if( exists ){
 							res.sendfile(__dirname + '/files/header/' + user.id );
 						} else {
-							res.sendfile(__dirname + '/img/profile.jpg' );
+							res.sendfile(__dirname + '/img/profile.png' );
 						}
 					});
 				} else {
@@ -104,7 +104,7 @@ router.get( '/files/group/:gid', function( req, res ){
 		if( exists ){
 			res.sendfile(__dirname + '/files/profile/' + parseInt(gid) );
 		} else {
-			res.sendfile(__dirname + '/img/profile.jpg' );
+			res.sendfile(__dirname + '/img/profile.png' );
 		}
 	});
 });
@@ -123,11 +123,11 @@ router.get( '/files/profile/:uid', function( req, res ){
 						if( exists ){
 							res.sendfile(__dirname + '/files/profile/' + user.id );
 						} else {
-							res.sendfile(__dirname + '/img/profile.jpg' );
+							res.sendfile(__dirname + '/img/profile.png' );
 						}
 					});
 				} else {
-					res.sendfile(__dirname + '/img/profile.jpg' );
+					res.sendfile(__dirname + '/img/profile.png' );
 				}
 			});
 		}

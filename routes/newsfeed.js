@@ -389,7 +389,7 @@ router.post( '/api/newsfeed/changereply/:replyid' , checkSession, function( req,
 	var date = new Date();
 	var filecount = 0;
 	var text = "";
-	db.Replys.findOne({ id : replyid, uid : req.user.id }, function( err, reply ){
+	db.Replys.findOne({ id : replyid, "user.id" : req.user.id }, function( err, reply ){
 		if( err ){
 			throw err;
 		} else if( reply ){
@@ -404,7 +404,7 @@ router.post( '/api/newsfeed/changereply/:replyid' , checkSession, function( req,
 			});
 			req.busboy.on( 'field', function( fieldname, val ){
 				if( fieldname == "text" ){
-					text = val.trim().xssFilter;
+					text = val.trim().xssFilter();
 				}
 			});
 			req.busboy.on( 'finish', function(){
