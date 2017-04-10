@@ -6,7 +6,7 @@ function makeObj( req, res, ejs, obj ){
     if( obj == undefined ){
         obj = new Object();
     }
-	if( req.user && req.user.signUp == true ){
+	if( req.user ){
 	    obj.session = JSON.stringify(req.user);
 		async.parallel([
 			function(cb){

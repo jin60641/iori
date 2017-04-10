@@ -59,6 +59,14 @@ var settings = {
 			onclick : checkChangeWebNotify
 		}],
 		kr : "알림"
+	},
+	color : {
+		tabs : [{
+			id : "color",
+			name : "색상 선택",
+			type : "color"
+		}],
+		kr : "테마 색상"
 	}
 }
 
@@ -157,10 +165,20 @@ function openSettingTab( newtab ){
 			checkChangePassword("true");
 		};
 	} else if( page == "notice" ){
-		submit.onclick = function(){
-			checkChangeNotice();
-		};
+		submit.onclick = checkChangeNotice;
+	} else if( page == "color" ){
+		submit.onclick = checkChangeColor;
 	}
+}
+
+function checkChangeColor(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		alert(xhr.responseText);
+		location.reload();
+	}};
+	xhr.open("POST", "/api/user/change/color", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+	xhr.send('color='+setting_input_color.value);
 }
 
 function checkChangeNotice(){
@@ -218,6 +236,10 @@ function checkChangeUid(save){
 	$('#setting_text_uid').innerText = "iori.kr/@" + $('#setting_input_uid').value;
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		if( xhr.responseText == "success" ){
+			alert("아이디가 변경되었습니다. 다시 로그인해주세요.");
+			sessionLogOut();
+		}
 		$('#setting_info_uid').innerText = xhr.responseText;
 	}};
 	xhr.open("POST", "/api/user/change/uid", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 

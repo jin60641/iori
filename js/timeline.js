@@ -44,8 +44,8 @@ document.addEventListener('webkitfullscreenchange', function(){
 function getAudio( pid ){
 	alert("영상에 따라 추출 시 약간의 시간이 소요될 수 있습니다.");
 	var vid = $('#link_preview_' + pid).href.split('v=')[1];
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		var obj;
 		try {
 			obj = JSON.parse(xhr.responseText);
@@ -57,8 +57,8 @@ function getAudio( pid ){
 		} catch(e){
 			alert(xhr.responseText);
 		}
-    }};
-    xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+	}};
+	xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 
 }
 
@@ -557,7 +557,7 @@ function changeReply(pid,id){
 			cancleChange_reply(pid,id);
 		}
 		cancle.innerText = "취소";
-		cancle.style.color = "#34a798";
+		cancle.style.color = "#f15c3e";
 		cancle.style.cursor = "pointer";
 	});
 	replywrite.focus();
@@ -614,6 +614,13 @@ function changeReply_apply(pid,id){
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (evt){ if(xhr.readyState == 4 && xhr.status == 200){
 			reply.childNodes[1].childNodes[2].data = tmp;
+			var reply_menu_btn = reply.childNodes[1].childNodes[0];
+			console.log(reply_menu_btn);
+			reply_menu_btn.onclick = function(event){
+				event.stopPropagation();
+				event.preventDefault();
+				this.firstElementChild.style.display="block"
+			}	
 			for( var i = reply.childElementCount - 1; i >= 2; --i ){
 				reply.removeChild(reply.childNodes[i]);
 			}

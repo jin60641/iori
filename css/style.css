@@ -128,7 +128,7 @@ textarea {
     background-color : #f5f5f5;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=email] {
 	-webkit-appearance : none;
 	outline : none;
 	border : 1px solid #ccc;

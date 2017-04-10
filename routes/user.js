@@ -334,6 +334,17 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 	});
 });
 
+router.post( '/api/user/change/color', checkSession, function( req, res ){
+	var color = req.body['color'];
+	db.Users.update({ id : req.user.id },{ color : color }, function( err, reuslt ){
+		if( err ){
+			throw err;
+		}
+		req.user.color = color;
+		res.send("설정이 저장되었습니다");
+	});
+});
+
 router.post( '/api/user/change/uid', checkSession, function( req, res ){
 	var uid = req.body['uid'];
 	var save = req.body['save'];

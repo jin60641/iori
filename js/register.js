@@ -83,7 +83,7 @@ window.addEventListener('load', function(){
 		form_facebook_btn.id = "form_facebook_btn";
 		form_facebook_btn.className = "form_btn";
 		form_facebook_btn.onclick = function(){
-			location.href = "/api/login/facebook";
+			location.href = "/api/auth/facebook";
 		};
 		form_facebook_btn.innerHTML = "<img src='/img/login/ic_sns.png' />페이스북으로 회원가입";
 		form.appendChild(form_facebook_btn);

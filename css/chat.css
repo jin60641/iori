@@ -127,9 +127,11 @@ body {
 #chat_wrap #chat_dialog #chat_dialog_box {
 	overflow : hidden;
 	height : calc( 100% - 54px );
+	padding-right : 2px;
 }
 
 #chat_wrap #chat_dialog #chat_dialog_box:hover {
+	padding-right : 0px;
 	overflow-y : scroll;
 }
 
@@ -235,10 +237,12 @@ input.chat_search:focus {
 
 #chat_wrap #chat_box #chat_panel {
 	overflow : hidden;
+	padding-right : 2px;
 	height : calc( 100% - 50px );
 }
 
 #chat_wrap #chat_box #chat_panel:hover {
+	padding-right : 0px;
 	overflow-y : scroll;
 }
 

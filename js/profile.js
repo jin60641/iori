@@ -168,6 +168,7 @@ window.addEventListener('load', function(){
 
 	window.addEventListener('scroll', resizeContainer );
 	window.addEventListener('resize', resizeContainer );
+	resizeContainer();
 	
 	var follow_wrap = $('div');
 	follow_wrap.id = "follow_wrap";
@@ -190,14 +191,33 @@ function resizeContainer(){
 	var max_scroll = 200;
 	var save_size = 108;
 	var wrap = $('#profile_wrap');
+	var form = $('#profileimg_form');
+	var size = 170;
+	var border_size = -20;
 	if( document.body.scrollTop <= wrap.clientHeight - save_size ){
 		$('#profile_container').style.top = header_size - document.body.scrollTop + "px";
+		size = 170;
+		if( document.body.clientWidth <= 1000 ){
+			size = 40;
+		}
 	} else {
 		$('#profile_container').style.top = -wrap.clientHeight + header_size + save_size + "px";
+		size = 40;
 	}
 	changeLabelSize("profile");
 	changeLabelSize("header");
 	
+	var bottom = size/2 + border_size;
+	var left = document.body.clientWidth/100*12 - size;
+	form.style.width = size + "px";
+	form.style.height = size + "px";
+	form.style.bottom = -bottom + "px";
+	if( left < 10 ){
+		left = 10;
+	}
+	form.style.left = left + "px";
+	$('#user_name').style.left = left + size + 15 + "px";
+	$('#user_userid').style.left = left + size + 15 + "px";
 	
 }
 
@@ -286,6 +306,10 @@ function sendProfileImage( type, boolean ){
 		
 		var x = -parseInt( label.style.backgroundPositionX.replace("px","") ) ;
 		var y = -parseInt( label.style.backgroundPositionY.replace("px","") ) ;
+		if( label.style.backgroundSize.split(' ')[1] == undefined ){
+			alert("적절하지 않은 파일 형식입니다");
+			return;
+		}
 		var w = parseInt( label.style.backgroundSize.split(' ')[0].replace("px","") ) / img.width;
 		var h = parseInt( label.style.backgroundSize.split(' ')[1].replace("px","") ) / img.height;
 	

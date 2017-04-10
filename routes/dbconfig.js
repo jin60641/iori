@@ -117,6 +117,7 @@ var UserSchema = new mongoose.Schema({
 		email : { type : Boolean, default : true },
 		web : { type : Boolean, default : true }
 	},
+	color : { type : String, default : "#f15c3e" },
 	last : { type : Date },
 	date : { type : Date, default : Date.now }
 });

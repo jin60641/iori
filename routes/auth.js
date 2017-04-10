@@ -61,8 +61,8 @@ passport.use(new FacebookStrategy({
 	clientSecret: require('./settings.js').facebookClientSecret,
 	callbackURL: "http://iori.kr/api/auth/facebook/callback",
 	profileFields: ['id', 'emails', 'displayName']
-}, function(accessToken, refreshToken, profile, done) {
-	return done(null, profile);
+}, function( accessToken, refreshToken, profile, done ){
+	return done( null, profile );
 }));
 
 /*
@@ -172,6 +172,7 @@ router.post('/api/auth/local', function( req, res, next ){
 		}
 	})( req, res, next );
 });
+
 /*
 router.get('/api/auth/token', passport.authenticate('facebook-token', { scope : ['email'] }), function( req, res ){
 	res.send(req.user?req.user:401);
@@ -185,9 +186,10 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 			return next(err);
 		} else if( !user ){
 			return res.redirect('/');
-		} else if ( req.user && req.user.signUp ){
+		} else if ( req.user != undefined && req.user.signUp == true ){
 			return res.redirect('/');
 		} else {
+			console.log(user._json);
 			db.Users.findOne({ email : user._json.email, signUp : true }, function( err, account ){
 				if( err ){
 					throw err;
@@ -208,6 +210,8 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 									return res.redirect('/');
 								}
 							} else {
+								req.user = user._json;
+								req.user.signUp = false;
 								return res.redirect('/register');
 							}
 						}

@@ -40,8 +40,8 @@ if( session == "" && document.cookie ){
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send(params);
 	}
-} else if ( session != "" && session.signUp == 0 ){
-	location.href = "/api/auth/facebook/" + register;
+} else if ( session != "" && session.signUp == 0 && location.pathname.split('/')[1] != "register" ){
+//	location.href = "/register";
 }
 if( session.level >= 9 ){
 	//관리자
@@ -341,10 +341,9 @@ window.addEventListener('load',function(){
 		}
 	});
 	*/
-
 });
 
-if( session.notice.web == true ){
+if( session.notice && session.notice.web == true ){
 	socket.on( 'notice_new', function( notice ){
 		console.log(notice);
 		var options = {
@@ -374,5 +373,4 @@ if( session.notice.web == true ){
 		}
 	});
 }
-
 

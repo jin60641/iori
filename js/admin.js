@@ -127,7 +127,7 @@ function getKeys(cb){
 }
 
 function makeTable(){
-	var tb = $('table');
+	var tb = $('div');
 	tb.id = "admin_table";
 	tb.appendChild(makeTr(obj_keys,true));
 	$('#admin_box').appendChild(tb);
@@ -147,7 +147,6 @@ function findObj(start,objName){
 		deep = 0;
 	}
 	for( ; i < obj_keys.length; ++i ){
-		console.log(obj_keys[i]);
 		var splited = obj_keys[i].split('.');
 		splited.pop();
 		var newObjName = splited.join('.');
@@ -249,6 +248,7 @@ function openObject(e){
 
 function makeTr(obj,th){
 	var tr = $('tr');
+	tr.className = "admin_table_tr";
 	var check_td;
 	var checkbox = $('input');
 	checkbox.type = "checkbox";
@@ -272,6 +272,10 @@ function makeTr(obj,th){
 			if( obj_keys[i].indexOf('.') >= 1 ){
 				td.style.display = "none";
 			}
+			var resizer = $('div');
+			resizer.addEventListener('mousedown',colResizeDown,false);
+			resizer.className = "admin_table_resizer";
+			td.appendChild(resizer);
 		} else {
 			td = $('td');
 			td.className = "admin_table_td";
@@ -297,7 +301,7 @@ function makeTr(obj,th){
 				td.className += " admin_table_flip";
 				td.innerText = "펼치기";
 				td.onclick = openObject;
-			} else if( obj_keys[i] == "date" || obj_keys[i] == "change" ){
+			} else if( obj_keys[i] == "date" || obj_keys[i] == "change" || obj_keys[i] == "last"){
 				td.innerText = new Date(string).toLocaleString();
 			} else {
 				td.innerText = string;
@@ -350,3 +354,32 @@ function makeAdminTab( en, kr ){
 	return tab;
 }
 
+var clicked = null;
+var new_padding = 0;
+function colResizeDown(e){
+	clicked = e.target.parentNode;
+	console.log(clicked);
+	if( clicked.style.paddingRight ){
+		new_padding = parseInt(clicked.style.paddingRight.split('px')[0]);
+	} else {
+		new_padding = 0;
+	}
+}
+
+function colResizeUp(e){
+	if( clicked ){
+		clicked.style.paddingRight = new_padding + 'px';
+	}
+	new_width = 0;
+	clicked = null;
+}
+
+function colResizeMove(e){
+	if( e.buttons && clicked ){
+		new_padding += e.movementX;
+		console.log(new_padding);
+	}
+}
+
+document.addEventListener('mousemove',colResizeMove,false);
+document.addEventListener('mouseup',colResizeUp,false);
