@@ -1,0 +1,127 @@
+<style>
+#post_slider {
+	overflow : hidden;
+	margin-top : 42px;
+	display: table;
+	position : relative;
+	vertical-align : middle;
+	width : 100vw;
+	height : calc( 100vh - 42px );
+	letter-spacing : 0px;
+	word-spacing : 0px;
+	font-size : 0px;
+}
+#post_slider * {
+	text-align : center;
+}
+
+#post_slider > #slide_imgs {
+	white-space : nowrap;
+	letter-spacing : 0px;
+	word-spacing : 0px;
+	font-size : 0px;
+	width : 100vw;
+	height : calc( 100vh - 42px );
+	position : absolute;
+	display : inline-block;
+	vertical-align : top;
+	margin : 0px;
+	padding : 0px;
+	left : 0px;
+	transition : left .5s;
+}
+#post_slider > #slide_imgs > .slide {
+	transition : left .5s, margin-left .5s;
+	position : relative;
+	width : 100vw;
+	height : calc( 100vh - 42px );
+	max-width : 100%;
+	display : inline-block;
+	vertical-align : top;
+	margin : 0px;
+	padding : 0px;
+}
+
+#post_slider > #slide_box {
+	padding-top :
+	text-align : center;
+	vertical-align : middle;
+	white-space : nowrap;
+	position : relative;
+	font-size : 14pt;
+	word-spacing : initial;
+	letter-spacing : 0.2em;
+	line-height : 40px;
+	color : white;
+	cursor : default;
+	width : 100vw;
+	margin-top : calc( 50vh - 150px );
+}
+
+#post_slider > #slide_box > #slide_logo {
+	display : block;
+	margin : 0 auto 10px auto;
+	background-size : 100% 100%;
+	background-image : url('/svg/logo_white.svg');
+	width : 80px;
+	height : 40px;
+}
+
+#post_slider > #slide_box > #slide_line {
+	display : block;
+	margin : 0 auto 30px auto;
+	background-color : white;
+	width : 77px;
+	height : 3px;
+}
+
+#post_slider > #slide_box > #slide_btn {
+	border : 1px solid white;
+	font-size : 18pt;
+	line-height : 66px;
+	font-weight: bold;
+	cursor : pointer;
+	letter-spacing : 12pt;
+	max-width : 470px;
+	width : calc( 100vw - 30px );
+	height : 66px;
+	background-color : rgba(0,0,0,.2);
+	display : block;
+	margin : 10px auto 0 auto;
+}
+
+#post_slider > .slide_arrow {
+	width : 16px;
+	height : 32px;
+	position : absolute;
+	top : calc( 50% - 16px );
+	display : none;
+	cursor : pointer;
+}
+
+#post_slider > #slide_left {
+	background-image : url('/img/leftbtn.png');
+	background-size : 100% 100%;
+	left : 70px;
+}
+
+#post_slider > #slide_left:hover {
+	background-image : url('/img/leftbtn_hover.png');
+}
+
+#post_slider > #slide_right {
+	background-image : url('/img/rightbtn.png');
+	background-size : 100% 100%;
+	right : 70px;
+}
+
+#post_slider > #slide_right:hover {
+	background-image : url('/img/rightbtn_hover.png');
+}
+
+@media screen and ( max-width : 669px ){
+	#post_slider > #slide_box > #slide_btn {
+		display : none;
+	}
+}
+</style>

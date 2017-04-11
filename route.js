@@ -30,7 +30,11 @@ function checkAdmin( req, res, next ){
 }
 
 router.get('/', function( req, res ){
-	makeObj( req, res, "index" );
+	if( req.user && req.user.signUp ){
+		makeObj( req, res, "index" );
+	} else {
+		makeObj( req, res, "slider" );
+	}
 });
 
 router.get('/login', function( req, res ){
