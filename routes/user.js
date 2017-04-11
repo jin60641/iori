@@ -140,18 +140,12 @@ router.post('/@:uid(*)/favorite', function( req, res ){
 
 function getProfilePage( req, res ){
 	var uid = req.params['uid'];
-	db.Users.findOne({ uid : uid }, function( err, user ){
+	db.Users.findOne({ uid : uid },{id:1,name:1,uid:1,profile:1,header:1,color:1}).lean().exec( function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
-			var obj = {
-				id : user.id,
-				name : user.name,
-				uid : user.uid,
-				profile : user.profile,
-				header : user.header,
-				following : false
-			}
+			var obj = user;
+			obj.following = false;
 			if( req.user && req.user.id ){
 				db.Follows.findOne({ "to.id" : user.id, "from.id" : req.user.id }, function( err2, following ){
 					if( err2 ){
@@ -160,11 +154,11 @@ function getProfilePage( req, res ){
 						if( following ){
 							obj.following = true;
 						}
-						makeObj( req, res, "profile", { "user" : JSON.stringify(obj) } );
+						makeObj( req, res, "profile", { "user" : obj } );
 					}
 				});
 			} else {
-				makeObj( req, res, "profile", { "user" : JSON.stringify(obj) } );
+				makeObj( req, res, "profile", { "user" : obj } );
 			}
 		} else {
 			//makeObj( req, res, "anyone" );

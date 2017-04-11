@@ -116,7 +116,6 @@
 
 #head #head_search {
 	margin-top : 2px;
-	//background-color : #ff3d00;
 	position : absolute;
 	background : url('/img/search_icon.png') no-repeat;
 	background-position : right 5px center;
@@ -156,7 +155,7 @@
 
 #head_search_result a {
 	text-decoration : none;
-	color : #ff3d00;
+	color : <%= color_hex %>;
 	margin-bottom : 1px;
 }
 
@@ -164,7 +163,7 @@
 	text-align : center;
 	padding : 12px 5px 12px 5px;
 	font-size : 15px;
-	color : #ff3d00;
+	color : <%= color_hex %>;
 }
 
 #head_search_result #head_search_none:hover {

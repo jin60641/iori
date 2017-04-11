@@ -189,7 +189,6 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 		} else if ( req.user != undefined && req.user.signUp == true ){
 			return res.redirect('/');
 		} else {
-			console.log(user._json);
 			db.Users.findOne({ email : user._json.email, signUp : true }, function( err, account ){
 				if( err ){
 					throw err;

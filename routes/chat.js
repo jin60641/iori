@@ -76,7 +76,7 @@ router.get('/chat', checkSession, function( req, res ){
 			if( error ){
 				throw error;
 			}
-			makeObj( req, res, "chat", { dialogs : JSON.stringify(result) });
+			makeObj( req, res, "chat", { dialogs : result });
 		});
 	});
 });

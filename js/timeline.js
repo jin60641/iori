@@ -815,6 +815,7 @@ var posts = 0;
 //덧글 불러오기
 function getReplys(obj,limit){
 	var replywrap = obj.parentNode;
+	replywrap.style.display = "";
 	var reply_skip = 0;
 	if(obj.id.substr(10,1) == '_'){
 		var pid = obj.id.substr(11);
@@ -1116,6 +1117,9 @@ function makePost( Post ){
 	var replywrap = $("div");
 	replywrap.className = 'replywrap';
 	div.appendChild(replywrap);
+	if( Replys.length == 0 ){
+		replywrap.style.display = "none";
+	}
 	for( var i = Replys.length - 1; i >=0; i-- ){
 		if(typeof(Replys[i]) == "string"){
 			var reply = $("div");

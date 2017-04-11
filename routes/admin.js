@@ -25,7 +25,7 @@ function showAdminPage( req, res ){
 			if( err ){
 				throw err;
 			} else {
-				obj.doc = JSON.stringify(result);
+				obj.doc = result;
 				makeObj( req, res, "admin", obj );
 			}
 		})

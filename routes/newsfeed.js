@@ -85,7 +85,7 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 
 router.get( '/post/:pid', function( req, res ){
 	getPost( req, function( post ){
-		makeObj( req, res, "post", { "Post" : JSON.stringify(post) });
+		makeObj( req, res, "post", { "Post" : post });
 	});
 });
 

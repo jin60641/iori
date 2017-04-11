@@ -10,7 +10,7 @@ var checkSession = require('./auth.js').checkSession;
 
 router.get( '/notice', checkSession, function( req, res ){
 	getNotices( req, function( result ){
-		makeObj( req, res, "notice", { notices : JSON.stringify(result) } );
+		makeObj( req, res, "notice", { notices : result } );
 	});
 });
 
