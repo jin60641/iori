@@ -201,6 +201,9 @@ function wholeCheck(e){
 
 function openObject(e){
 	var td = e.target;
+	if( td.tagName == "DIV" ){
+		td = e.target.parentNode;
+	}
 	var ths = $('.admin_table_th');
 	var width = ths.length;
 	var index = 1;
@@ -212,19 +215,19 @@ function openObject(e){
 	}
 	var trs = $('#admin_table').childNodes;
 	var height = trs.length;
-	var objName = ths[index-1].innerText.split('_').pop();
+	var objName = ths[index-1].firstElementChild.innerText.split('_').pop();
 	var deep = objName.split('.').length;
 	var flag;
-	if( td.innerText == "펼치기" ){
+	if( e.target.innerText == "펼치기" ){
 		flag = true;
 	} else {
 		flag = false;
 	}
 	for( var j = 1; j < height; ++j ){
 		if( flag ){
-			trs[j].childNodes[index].innerText = "접기";
+			trs[j].childNodes[index].firstElementChild.innerText = "접기";
 		} else {
-			trs[j].childNodes[index].innerText = "펼치기";
+			trs[j].childNodes[index].firstElementChild.innerText = "펼치기";
 		}
 	}
 	for( var i = index; i < width; ++i ){
@@ -268,7 +271,9 @@ function makeTr(obj,th){
 		if( th == true ){
 			td = $('th');
 			td.className = "admin_table_th";
-			td.innerText = obj_keys[i];
+			var div = $('div');
+			div.innerText = obj_keys[i];
+			td.appendChild(div);
 			if( obj_keys[i].indexOf('.') >= 1 ){
 				td.style.display = "none";
 			}
@@ -279,6 +284,7 @@ function makeTr(obj,th){
 		} else {
 			td = $('td');
 			td.className = "admin_table_td";
+			var div = $('div');
 			var string = obj[obj_keys[i]];
 	
 			if( string == undefined && obj_keys[i].indexOf(".") >= 0 ){
@@ -299,13 +305,14 @@ function makeTr(obj,th){
 				td.appendChild(a);
 				*/
 				td.className += " admin_table_flip";
-				td.innerText = "펼치기";
+				div.innerText = "펼치기";
 				td.onclick = openObject;
 			} else if( obj_keys[i] == "date" || obj_keys[i] == "change" || obj_keys[i] == "last"){
-				td.innerText = new Date(string).toLocaleString();
+				div.innerText = new Date(string).toLocaleString();
 			} else {
-				td.innerText = string;
+				div.innerText = string;
 			}
+			td.appendChild(div);
 		}
 		tr.appendChild(td);
 	}
@@ -355,31 +362,45 @@ function makeAdminTab( en, kr ){
 }
 
 var clicked = null;
-var new_padding = 0;
+var startPageX = null;
 function colResizeDown(e){
-	clicked = e.target.parentNode;
-	console.log(clicked);
-	if( clicked.style.paddingRight ){
-		new_padding = parseInt(clicked.style.paddingRight.split('px')[0]);
-	} else {
-		new_padding = 0;
-	}
+	clicked = e.target;
+	clicked.id = "admin_table_resizer_clicked";
+	clicked.style.top = "1px"
+	clicked.style.opacity = "1";
+	clicked.style.zIndex = "500";
+	clicked.style.right = "initial";
+	clicked.style.left = e.pageX - $('#admin_table').offsetLeft - 2 + "px";
+	var dotline = $('div');
+	dotline.style.height = $('#admin_table').clientHeight + "px";
+	clicked.appendChild(dotline);
+	var div = clicked.previousElementSibling;
+	div.parentNode.style.position = "inherit";
+	div.style.maxWidth = "none";
+	startPageX = e.pageX;
 }
 
 function colResizeUp(e){
 	if( clicked ){
-		clicked.style.paddingRight = new_padding + 'px';
+		var div = clicked.previousElementSibling;
+		div.parentNode.style.position = "";
+		div.style.width = div.clientWidth + e.pageX-startPageX + "px";
+		clicked.id = "";
+		clicked.removeChild(clicked.firstElementChild);
+		clicked.style.left = "";
+		clicked.style.right = "";
+		clicked.style.top = "0px"
+		clicked.style.opacity = "";
+		clicked.style.zIndex = "";
 	}
-	new_width = 0;
 	clicked = null;
 }
 
 function colResizeMove(e){
 	if( e.buttons && clicked ){
-		new_padding += e.movementX;
-		console.log(new_padding);
+		clicked.style.left = e.pageX - $('#admin_table').offsetLeft - 2 + "px";
 	}
 }
 
-document.addEventListener('mousemove',colResizeMove,false);
-document.addEventListener('mouseup',colResizeUp,false);
+window.addEventListener('mousemove',colResizeMove,false);
+window.addEventListener('mouseup',colResizeUp,false);
