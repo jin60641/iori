@@ -135,7 +135,7 @@ function favorite(postid,add){
 			menu_favorite.innerText="관심글해제";
 			var span = $("span")
 			span.className="post_favorite";
-			span.innerHTML="<img src='/img/star.png'>";
+			span.innerHTML="<img src='/svg/star.svg'>";
 			span.id="post_favorite_"+postid;
 			$("#post_"+postid).insertBefore(span,$("#post_inside_"+postid));
 			imgmenu_favorite.src='/img/favorite_remove.png';
@@ -1085,7 +1085,7 @@ function makePost( Post ){
 		*/
 	}
 	if( Post.isfavorite ){
-		div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Post.id + "' ><img src='/img/star.png'></span>";
+		div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Post.id + "' ><img src='/svg/star.svg'></span>";
 	}
 	inside.className="post_inside";
 	div.appendChild(inside);

@@ -91,11 +91,13 @@ router.get( '/files/header/:uid', function( req, res ){
 						if( exists ){
 							res.sendfile(__dirname + '/files/header/' + user.id );
 						} else {
-							res.sendfile(__dirname + '/img/profile.png' );
+							res.end();
+//							res.sendfile(__dirname + '/svg/profile.svg' );
 						}
 					});
 				} else {
-					res.sendfile(__dirname + '/img/profile_back.png' );
+					res.end();
+//					res.sendfile(__dirname + '/img/profile_back.png' );
 				}
 			});
 		}
@@ -108,7 +110,7 @@ router.get( '/files/group/:gid', function( req, res ){
 		if( exists ){
 			res.sendfile(__dirname + '/files/profile/' + parseInt(gid) );
 		} else {
-			res.sendfile(__dirname + '/img/profile.png' );
+			res.sendfile(__dirname + '/svg/profile.svg' );
 		}
 	});
 });
@@ -127,11 +129,21 @@ router.get( '/files/profile/:uid', function( req, res ){
 						if( exists ){
 							res.sendfile(__dirname + '/files/profile/' + user.id );
 						} else {
-							res.sendfile(__dirname + '/img/profile.png' );
+							var file = fs.readFileSync( __dirname + '/svg/profile.svg', 'utf8' );
+							file = file.replace("#000000",user.color.hex);
+							type = "image/svg+xml";
+							res.writeHead(200, { 'Content-Type' : type });
+							res.end( file );
+							//res.sendfile(__dirname + '/svg/profile.svg' );
 						}
 					});
 				} else {
-					res.sendfile(__dirname + '/img/profile.png' );
+					var file = fs.readFileSync( __dirname + '/svg/profile.svg', 'utf8' );
+					file = file.replace("#000000",require('./routes/settings.js').defaultColor.hex);
+					type = "image/svg+xml";
+					res.writeHead(200, { 'Content-Type' : type });
+					res.end( file );
+					//res.sendfile(__dirname + '/svg/profile.svg' );
 				}
 			});
 		}
@@ -168,7 +180,17 @@ router.get('/:dir/:filename', function( req, res ){
 		var url = __dirname + '/' + dir + '/' + filename;
 		fs.exists( url, function( exists ){	
 			if( exists == true && fs.lstatSync(url).isFile() ){
-				var file = fs.readFileSync( url );
+				var file;
+				if( dir == "svg" ){
+					file = fs.readFileSync( url, 'utf8' );
+					if( req.user && req.user.signUp == 1 ){
+						file = file.replace("#000000",req.user.color.hex);
+					} else {
+						file = file.replace("#000000",require('./routes/settings.js').defaultColor.hex);
+					}
+				} else {
+					file = fs.readFileSync( url );
+				}
 				res.writeHead(200, { 'Content-Type' : type });
 				res.end( file );
 			} else {

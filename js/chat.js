@@ -462,7 +462,7 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				} else if ( chats[i].file ){
 					var chat_body_file = $("img");
 					chat_body_file.className = "chat_body_file";
-					chat_body_file.src = "/files/chat/" + chats[i].id + '?' + new Date();
+					chat_body_file.src = "/files/chat/" + chats[i].id + '?' + new Date(chats[i].date);
 					if( scroll ){
 						chat_body_file.onload = function(){
 							chat_panel.scrollTop = chat_panel.scrollHeight;
@@ -568,7 +568,7 @@ function makeDialog( chat ){
 
 	if( chat.type == "g" ){
 		dialog.id = "chat_dialogs_g_" + chat.to.id;
-		img.src = "/files/group/" + chat.to.id + '?' + new Date();
+		img.src = "/files/group/" + chat.to.id;
 		name.innerText = chat.to.name;
 		if( chat.from.id == session.id ){
 			message_wrap.innerHTML += "<span>나:</span>";
@@ -577,14 +577,15 @@ function makeDialog( chat ){
 		}
 	} else if( chat.to.id != session.id ){ 									// 내가 -> 남에게
 		dialog.id = "chat_dialogs_u_" + chat.to.uid;
-		img.src = "/files/profile/" + chat.to.uid + '?' + new Date();
+		img.src = "/files/profile/" + chat.to.uid;
 		name.innerText = chat.to.name;
 		message_wrap.innerHTML += "<span>나:</span>";
 	} else {													// 남이 -> 나에게
 		dialog.id = "chat_dialogs_u_" + chat.from.uid;
-		img.src = "/files/profile/" + chat.from.id + '?' + new Date();
+		img.src = "/files/profile/" + chat.from.id;
 		name.innerText = chat.from.name;
 	}
+	img.src += '?' + new Date(chat.date);
 
 	message_wrap.innerHTML += chat.text;
 	if( !(chat.text && chat.text.length > 0) ){

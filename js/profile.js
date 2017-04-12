@@ -278,7 +278,7 @@ function settingSave(){
 	if( $('#profileimg_file').value != "" ){
 		sendProfileImage( "profile" );
 		flag = true;
-	} else if( $('#profileimg_back').style.backgroundImage == 'url("/img/profile.png")' && user.profile ){
+	} else if( $('#profileimg_back').style.backgroundImage == 'url("/svg/profile.svg")' && user.profile ){
 		sendProfileImage( "profile", false );
 	}
 	
@@ -418,14 +418,16 @@ function makePhotoHelper( type, boolean ){
 	photohelper_change.className = "photohelper_div";
 	photohelper_menu.appendChild(photohelper_change);
 
-	if( ( boolean == true || boolean == undefined ) && user[type] ){
+	
+	if( boolean == true || ( boolean == undefined && user[type] == true ) ) {
+	//if( ( boolean == true || boolean == undefined ) && user[type] ){
 		photohelper_change.innerText = "변경";
 		photohelper_remove = $("div");
 		photohelper_remove.onclick = removeImage;
 		photohelper_remove.className = "photohelper_div";
 		photohelper_remove.innerText = "삭제";
 		photohelper_menu.appendChild(photohelper_remove);
-	} else if( boolean == false ){
+	} else {
 		photohelper_change.innerText = "추가";
 	}
 
@@ -536,7 +538,7 @@ function removeImage( evt ){
 		headerimg_back.style.backgroundColor = session.color.hex;
 		headerimg_back.style.backgroundImage = "";
 	} else if( type =="profile" ){
-		back.style.backgroundImage = 'url("/img/profile.png")';
+		back.style.backgroundImage = 'url("/svg/profile.svg")';
 	}
 	this.parentNode.style.display = "none";
 	evt.stopPropagation();
