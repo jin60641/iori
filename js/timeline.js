@@ -1117,7 +1117,7 @@ function makePost( Post ){
 	var replywrap = $("div");
 	replywrap.className = 'replywrap';
 	div.appendChild(replywrap);
-	if( Replys.length == 0 ){
+	if( Replys.length == 0 && session.signUp != true ){
 		replywrap.style.display = "none";
 	}
 	for( var i = Replys.length - 1; i >=0; i-- ){

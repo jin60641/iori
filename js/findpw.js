@@ -1,8 +1,4 @@
 window.addEventListener('load', function(){
-	var form_title = $("div");	
-	form_title.innerText = "비밀번호 찾기";
-	form_title.id = "form_title";
-	document.body.appendChild(form_title)
 	var form = $("form");
 	form.id = "form";
 	form.onkeydown = form_onkeydown;
@@ -58,7 +54,8 @@ function send_submit(){
 				show_alert(xhr.responseText);
 			}
 		}
-		xhr.open("POST", "/findpw", false);
+		show_alert("서버의 응답을 기다리는 중입니다.");
+		xhr.open("POST", "/api/auth/findpw", true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send('email='+email);
 	}

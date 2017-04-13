@@ -69,13 +69,10 @@ router.get('/register', function( req, res ){
 });
 router.post('/register', require('./routes/register.js'));
 
-router.get('/findpw', function( req, res ){
-	if( req.user && req.user.signUp ){
-		res.redirect('/');
-	} else {
-		makeObj( req, res, "findpw" );
-	}
+router.get('/changepw/:email/:link',function( req, res){
+	makeObj( req, res, "changepw" );
 });
+
 
 router.get( '/files/header/:uid', function( req, res ){
 	var uid = req.params['uid'];

@@ -56,7 +56,7 @@ window.addEventListener('load', function(){
 			viewimg(0,1,new Date(),"/files/profile/" + user.id);
 		}
 	} else {
-		profileimg_back.style.backgroundColor = session.color.hex;
+		profileimg_back.style.backgroundColor = "white";
 	}
 	profileimg_back.style.backgroundImage = "url('/files/profile/" + user.id + "')";
 	profileimg_form.appendChild(profileimg_back);

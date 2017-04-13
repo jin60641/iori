@@ -45,15 +45,15 @@ body {
 	width : 31%;
 	vertical-align : top;
 	position : relative;
+	background-image : url('/svg/logo_white.svg');
+	background-size : 45px 30px;
+	background-position : 10px 9px;
+	background-repeat : no-repeat;
 }
 
 #chat_wrap #chat_header #chat_menu_text {
-	background-image : url('/svg/logo_white.svg');
 	padding-top : 1px;
-	background-size : 45px 30px;
 	width : 100%;
-	background-position : 10px 9px;
-	background-repeat : no-repeat;
 	position : relative;
 	text-align : left; 
 	padding-left : 70px;
@@ -188,6 +188,7 @@ input.chat_search:focus {
 }
 
 .chat_dialogs img {
+	background-color : white;
 	width : 48px;
 	height : 48px;
 	vertical-align : middle;
@@ -257,6 +258,8 @@ input.chat_search:focus {
 }
 
 #chat_wrap #chat_box #chat_panel .chat .chat_profileimg {
+	background-size : 100% 100%;
+	cursor : pointer;
 	width : 50px;
 	height : 50px;
 	border-radius : 50%;
@@ -277,9 +280,19 @@ input.chat_search:focus {
 }
 
 #chat_wrap #chat_box #chat_panel .chat .chat_body .chat_body_name {
+	margin-left : 9px;
+	margin-bottom : 5px;
+	display : block;
+	text-decoration : none;
+	cursor : pointer;
 	color : rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,8);
 	font-weight : 600;
 	margin-top : 2px;
+}
+
+#chat_wrap #chat_box #chat_panel .my_chat .chat_body .chat_body_name {
+	margin-left : 0px;
+	margin-right : 9px;
 }
 
 .chat_body_caret {
@@ -400,7 +413,7 @@ input.chat_search:focus {
 	width : 35px;
 	height : 35px;
 	border-radius : 4px;
-	background-image : url('/img/imageupload.png');
+	background-image : url('/svg/imageupload.svg');
 	margin-right : 10px;
 	margin-top : 6px;
 }
@@ -411,7 +424,7 @@ input.chat_search:focus {
 	margin-top : 6px;
 	background-color : rgb(<%= color_r %>,<%= color_g %>,<%= color_b %>);
 	color : white;
-	padding: 9.5px 16px;
+	padding: 9px 16px;
 	font-size : 14px;
 	font-weight : bold;
 	border-radius : 4px;
@@ -771,9 +784,29 @@ input.chat_search:focus {
 	height : 100%;
 }
 
+
+@media screen and ( max-width : 600px ){
+	#chat_wrap #chat_dialog {
+		width : 100%;
+	}
+	#chat_wrap #chat_box {
+		display : none;
+		width : 100%;
+	}
+	#chat_wrap {
+		height : calc( 100vh - 47px );
+	}
+}
+
+@media screen and ( max-width : 500px ){
+	#chat_wrap #chat_header #chat_menu_text {
+		display : none;
+	}
+}
+
 @media screen and ( max-height : 600px ){
 	#chat_wrap {
-		height : calc( 100vh - 42px );
+		height : calc( 100vh - 47px );
 	}
 }
 

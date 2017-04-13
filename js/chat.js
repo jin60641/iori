@@ -10,15 +10,15 @@ window.addEventListener('load', function(){
 
 	var chat_menu = $("div");
 	chat_menu.id = "chat_menu";
+	chat_menu.onclick = function( event ){
+		event.stopPropagation();
+		showChatMenu( true );
+	};
 	
 	var chat_menu_text = $("div");
 	chat_menu_text.id = "chat_menu_text";
 	chat_menu.appendChild(chat_menu_text)
 	chat_menu_text.innerText = "새 메시지";
-	chat_menu_text.onclick = function( event ){
-		event.stopPropagation();
-		showChatMenu( true );
-	};
 
 	chat_menu.appendChild(chat_menu_text);
 
@@ -427,7 +427,13 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				var chat = $("div");
 				chat.id = "chat_" + chats[i].id;
 				chat.className = "chat";
+				var my_chat = false;
+
+				if( chats[i].from.id == session.id ){
+					my_chat = true;
+				}
 			
+
 				if( chats[i].html ){
 					chat.className = "chat_system";
 					chat.innerHTML = chats[i].html;
@@ -440,15 +446,28 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 					continue;
 				}
 	
-				var chat_profileimg = $("img");
-				chat_profileimg.src = "/files/profile/" + chats[i].from.uid + '?' + new Date();
+				var chat_profileimg;
+				if( my_chat ){
+					chat_profileimg = $("span");
+				} else {
+					chat_profileimg = $("a");
+					chat_profileimg.href = "/@"+chats[i].from.uid;
+				}
+				chat_profileimg.style.backgroundImage = "url('/files/profile/" + chats[i].from.uid + '?' + new Date() + "')";
 				chat_profileimg.className = "chat_profileimg";
 				chat.appendChild(chat_profileimg);
 				
 				var chat_body = $("div");
 				chat_body.className = "chat_body";
 	
-				var chat_body_name = $("div");
+				var chat_body_name;
+				if( my_chat ){
+					chat_body_name = $("span");
+				} else {
+					chat_body_name = $("a");
+					chat_body_name.href = "/@"+chats[i].from.uid;
+				}
+				
 				chat_body_name.className = "chat_body_name";
 				chat_body_name.innerText = chats[i].from.name
 				chat_body.appendChild(chat_body_name);
@@ -475,11 +494,11 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				}
 	
 				chat.appendChild(chat_body);
-	
-				if( chats[i].from.id == session.id ){
+				if( my_chat ){
 					chat.className += " my_chat";
-					chat.appendChild( chat_profileimg );
+					chat.appendChild(chat_profileimg);
 				}
+	
 	/*
 				var previous = chat.previousElementSibling
 	*/
@@ -678,6 +697,12 @@ function openDialog(text){
 	
 	$("#default_dialog").style.display = "none";
 	$("#send_panel").style.display = "block";
+	if( $('#chat_box').clientWidth == 0 || $('#chat_box').style.display == "none"){
+		$('#chat_dialog').style.display = "none";
+		$('#chat_box').style.display = "block";
+		$('#chat_menu').style.backgroundImage = "url('/img/leftbtn.png')";
+		$('#chat_menu').style.backgroundSize = "19px 30px";
+	}
 
 	updateTitle();
 }
@@ -779,6 +804,16 @@ function chatWrite(){
 }
 
 function showChatMenu( boolean ){
+	if( $('#chat_dialog').style.display == "none" && boolean != false ){
+		$('#chat_dialog').style.display = "block";
+		$('#chat_box').style.display = "none";
+		$('#chat_title').innerText = "";
+		$('.chat_dialogs_selected')[0].className = "chat_dialogs";
+		$('#chat_menu').style.backgroundImage = "";
+		$('#chat_menu').style.backgroundSize = "";
+		location.hash = "";
+		return;
+	}
 	var chat_menu_box = $("#chat_menu_box");
 	if( boolean ){
 		chat_menu_box.style.display = "block";

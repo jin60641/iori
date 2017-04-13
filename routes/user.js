@@ -415,7 +415,7 @@ router.post( '/api/user/change/email', checkSession, function( req, res ){
 					from: 'iori <iori.kr>',
 					to: email,
 					subject : 'iori.kr 인증 메일',
-					html : '<div style="width : 100%; text-align : center; font-size : 10pt; line-height : 24px;"><img src="http://iori.kr/img/logo_color.png" style="width : 200px; margin : 30px 0 30px 0;"><div style="border-top : 1px solid #4c0e25; border-bottom : 1px solid #4c0e25; padding-top : 60px; padding-bottom : 60px; margin-bottom : 20px;">안녕하세요. iori.kr입니다.<br>이메일 정보를 변경하시려면 아래의 링크를 클릭해주세요.<br><a href="' + string + '" style="display : block; margin-top : 20px; text-decoration:none;color:#ce410a;font-weight:bold;">여기를 눌러 이메일 인증</a><br>인증이 완료되면 정상적으로 서비스 이용이 가능합니다.<br>감사합니다.<br>오늘도 좋은 하루되세요.<br>iori.kr 운영진 드림.<br></div>더 궁금한 사항이 있으시면 support@iori.kr로 문의 바랍니다.</div>'
+					html : '<div style="width : 100%; text-align : center; font-size : 10pt; line-height : 24px;"><img src="http://iori.kr/svg/logo.svg" style="width : 100px; margin : 30px 0 30px 0;"><div style="border-top : 1px solid #4c0e25; border-bottom : 1px solid #4c0e25; padding-top : 60px; padding-bottom : 60px; margin-bottom : 20px;">안녕하세요. iori.kr입니다.<br>이메일 정보를 변경하시려면 아래의 링크를 클릭해주세요.<br><a href="' + string + '" style="display : block; margin-top : 20px; text-decoration:none;color:' + require('./settings.js').defaultColor.hex + ';font-weight:bold;">여기를 눌러 이메일 인증</a><br>인증이 완료되면 정상적으로 서비스 이용이 가능합니다.<br>감사합니다.<br>오늘도 좋은 하루되세요.<br>iori.kr 운영진 드림.<br></div>더 궁금한 사항이 있으시면 support@iori.kr로 문의 바랍니다.</div>'
 				}, function(err3,response){
 					if( err3 ){
 						throw err3;
