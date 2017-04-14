@@ -26,7 +26,7 @@ function changePage(num){
 	for( var i = 0; i < pages.length; ++i ){
 		pages[i].id = "";
 	}
-	pages[num%10-1].id = "current_page";
+	pages[(num-1)%10].id = "current_page";
 	getDocs((num-1));
 }
 
@@ -85,7 +85,7 @@ function makePages(){
 		var left = $('div');
 		left.innerText = "<";
 		left.onclick = function(){
-			changePages(Math.floor((getCurrentPage()-1)/10)*10+10);
+			changePages(Math.floor( ( getCurrentPage() - 1 ) / 10 ) * 10 );
 		}
 		left.className = "pages_btn";
 		left.id = "pages_left";
@@ -106,7 +106,7 @@ function makePages(){
 		}
 		var right = $('div');
 		right.addEventListener('click',function(){
-			changePages(getCurrentPage()+10);
+			changePages( Math.floor( ( getCurrentPage() - 1 ) / 10 )*10+11 );
 		});
 		right.className = "pages_btn";
 		right.id = "pages_right";
