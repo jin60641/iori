@@ -53,16 +53,16 @@ textarea {
 	border-left : 0px;
 	border-right : 0px;
 	border-radius : 0px;
-	color : white;
 	overflow-y : hidden;
 	display : block;
 	font-size : 14px;
 	margin : 0px 4px 0px 4px;
-	width : 606px;
+	width : 100%;
 	height : 100px;
 	vertical-align : top;
 	padding-left : 3px;
 	transition : border-top .1s linear, border-bottom .1s linear;
+	box-sizing : border-box;
 }
 
 #post_wrap > .post > .post_name {
@@ -79,17 +79,18 @@ textarea {
 	margin-top : 0px;
 }
 
-.post .postimg {
+.post .postimg_img {
 	max-height : 600px;
 	display : block;
 	max-width : 100%;
 	margin-top : 10px;
 	border : 1px solid #e1e2e3;
-}
-
-.post .postimg:hover {
+	-moz-transition : all 0.3s;
+	-webkit-transition : all 0.3s;
+	transition : all 0.3s;
 	cursor : pointer;
 }
+
 
 
 .post > .date {
@@ -198,7 +199,7 @@ textarea {
 }
 
 #output_post {
-	width : 616px;
+	width : 100%;
 	white-space : nowrap;
 	height : auto;
 	overflow-y : hidden;
@@ -217,12 +218,12 @@ textarea {
 	margin-right : 5px;
 	position : relative;
 	display : inline-block;
-	margin-bottom : 7px;
 }
 
 .delete_postimg {
 	cursor : pointer;
-	background : url('/img/deletebtn.png') no-repeat;
+	background : url('/svg/deletebtn.svg') no-repeat;
+	background-color : white;
 	background-size : 18px;
 	top : 3px;
 	right : 3px;
@@ -439,7 +440,7 @@ textarea {
 }
 
 .post .post_inside {
-	padding : 9px 10px 3px 10px;
+	padding : 9px 10px 8px 10px;
 }
 
 .post .textmore_btn {
@@ -662,7 +663,15 @@ textarea {
 }
 
 #post_wrap > .post > .post_favorite {
+	display : inline-block;
+	vertical-align : middle;
 	position : relative;
+	background-image : url("/svg/star.svg");
+	background-size : 100% 100%;
+	margin-left : 7px;
+	margin-top : -8px;
+	width : 20px;
+	height : 20px;
 }
 
 #post_wrap > .post > .post_favorite > img {
@@ -812,6 +821,20 @@ textarea {
 	bottom : 0;
 }
 
+.dontsee_span {
+	color : <$= color_hex %>;
+	cursor : pointer;
+}
+
+.dontsee_btn {
+	width : 16px;
+	height : 16px;
+	float : right;
+	cursor : pointer;
+	background-image : url('/img/remove_reply.png');
+	background-size : 100% 100%;
+}
+
 @media screen and ( max-width : 669px ){
 	html {
 	}
@@ -823,12 +846,6 @@ textarea {
 	}
 	#post_wrap > .post .reply_text {
 		width : calc( 100vw - 140px );
-	}
-	#post_wrap > .post #post_write {
-		width : calc( 100vw - 54px );
-	}
-	#post_wrap > .post #output_post {
-		width : calc( 100% - 41px );
 	}
 	#post_wrap > .post .post {
 		max-height : 100vw;

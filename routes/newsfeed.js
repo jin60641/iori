@@ -51,7 +51,7 @@ router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 	var postid = parseInt(req.body['postid']);
 	if( postid ){
-		db.Posts.findOne({ id : postid }, function( err2, post ){
+		db.Posts.findOne({ id : postid, be : true }, function( err2, post ){
 			if( err2 ){
 				throw err2;
 			} else if( post == undefined ){
@@ -182,6 +182,7 @@ function getPost( req, cb ){
 			} else {
 				query = { id : { $nin : dontsee_posts }, "user.id" : { $in : tos } };
 			}
+			query.be = true;
 			db.Posts.find( query ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
 				if( err ){
 					throw err;
@@ -195,7 +196,7 @@ function getPost( req, cb ){
 			throw err;
 		} else if( posts.length > 0 ){
 			async.forEach( posts , function( post, key, callback ){
-				db.Replys.find({ id : { $nin : dontsee_replys }, pid : post.id }).sort({ id : -1 }).exec( function( err, reply ){
+				db.Replys.find({ id : { $nin : dontsee_replys }, pid : post.id, be : true }).sort({ id : -1 }).exec( function( err, reply ){
 					var replys;
 					if( reply.length > 4 ){
 						replys = reply.slice(0,4)
@@ -235,7 +236,7 @@ router.post( '/api/newsfeed/getreplys', function( req, res ){
 	var postid = parseInt(req.body['postid']);
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
-	db.Replys.find({ pid : postid }).skip( skip ).sort({ id : -1 }).exec( function( err, reply ){
+	db.Replys.find({ pid : postid, be : true }).skip( skip ).sort({ id : -1 }).exec( function( err, reply ){
 		if( reply && reply.length == 0 ){
 			res.end();
 		} else if( limit > 4 && reply.length > 4 ){
@@ -253,21 +254,13 @@ router.post( '/api/newsfeed/getreplys', function( req, res ){
 
 router.post( '/api/newsfeed/removereply' , checkSession, function( req, res){
 	var reply_id = req.body['reply_id'];
-	db.Replys.findOne( { id : reply_id }, function( err, reply ){
+	db.Replys.findOne( { id : reply_id, be : true }, function( err, reply ){
 		if( reply ){
 			if( req.user.id == reply.user.id ){
 				var pid = reply.pid
 				var uploadedFile = __dirname + '/files/post/' + pid + '/reply/' + reply_id;
-				reply.remove( function(){
-					fs.exists( uploadedFile , function( exists ){
-						if( exists ){
-							fs.unlink( uploadedFile, function( err ){
-								res.send("댓글이 삭제되었습니다.");
-							});
-						} else {
-							res.send("댓글이 삭제되었습니다.");
-						}
-					});
+				reply.update({ be : false }, function(){
+					res.send("댓글이 삭제되었습니다.");
 				});
 			} else {
 				res.send("본인의 댓글만 지울 수 있습니다.");
@@ -280,16 +273,11 @@ router.post( '/api/newsfeed/removereply' , checkSession, function( req, res){
 
 router.post( '/api/newsfeed/removepost' , checkSession, function( req, res){
 	var pid = req.body['pid'];
-	db.Posts.findOne( { id : pid }, function( err, post ){
+	db.Posts.findOne( { id : pid, be : true }, function( err, post ){
 		if( post ){
 			if( req.user.id == post.user.id ){
-				post.remove( function( err2, result ){
-					db.Replys.remove( { pid : pid }, function( error ){
-						var rimraf = require('rimraf');
-						rimraf( __dirname + '/../files/post/' + pid , function(){
-							res.send("게시글이 삭제되었습니다.");
-						});
-					});
+				post.update({ be : false }, function(){
+					res.send("게시글이 삭제되었습니다.");
 				});
 			} else {
 				res.send("본인의 게시글만 지울 수 있습니다.");
@@ -308,7 +296,7 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 	var post;
 	async.waterfall([
 		function( callback ){
-			db.Posts.findOne({ id : pid }, function( err, result ){
+			db.Posts.findOne({ id : pid, be : true }, function( err, result ){
 				if( err ){
 					throw err;
 				} else if( result ){
@@ -389,7 +377,7 @@ router.post( '/api/newsfeed/changereply/:replyid' , checkSession, function( req,
 	var date = new Date();
 	var filecount = 0;
 	var text = "";
-	db.Replys.findOne({ id : replyid, "user.id" : req.user.id }, function( err, reply ){
+	db.Replys.findOne({ id : replyid, "user.id" : req.user.id, be : true }, function( err, reply ){
 		if( err ){
 			throw err;
 		} else if( reply ){
@@ -434,7 +422,7 @@ router.post( '/api/newsfeed/changepost/:postid/:change' , checkSession, function
 	} else {
 		change = change.split(',');
 	}
-	db.Posts.findOne({ id : postid, "user.id" : req.user.id }, function( err, post ){
+	db.Posts.findOne({ id : postid, "user.id" : req.user.id, be : true }, function( err, post ){
 		if( err ){
 			throw err;
 		} else if( post ){

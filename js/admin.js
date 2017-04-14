@@ -21,6 +21,17 @@ var admin_obj = {
 	}
 }
 
+function changeLimit(){
+	var limit = $('#admin_limit');
+	if( limit.value >= 100 ){
+		limit.value = 100;
+	} else if( limit.value <= 1 ){
+		limit.value = 1;
+	}
+	cleanTable();
+	getDocs(0);
+}
+
 window.addEventListener('load', function(){
 	var wrap = $('div');
 	wrap.id = "admin_wrap";
@@ -42,6 +53,19 @@ window.addEventListener('load', function(){
 	}
 	$('#wrap1').appendChild(tabs);
 	
+	var limit = $('input');
+	limit.id = "admin_limit";
+	limit.value = 20;
+	limit.min = "1";
+	limit.max = "100";
+	limit.type = "number";
+	limit.addEventListener('focusout',changeLimit);
+	limit.addEventListener('change',changeLimit);
+	$('#admin_box').appendChild(limit);
+	var text = $('text');
+	text.innerText = "개씩 보기";
+	$('#admin_box').appendChild(text);
+
 	openAdminTab();
 	window.addEventListener('resize', adminResize );
 	adminResize();
@@ -103,9 +127,8 @@ function openAdminTab( newtab ){
 }
 
 function getKeys(cb){
-	var tableName = page;
 	var query = {
-		table : tableName[0].toUpperCase() + tableName.substr(1) + 's'
+		table : getTableName()
 	}
 	var query_keys = Object.keys(query);
 	var params = "";
@@ -126,9 +149,20 @@ function getKeys(cb){
 	xhr.open("POST", "/api/admin/getkeys", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(params);
 }
 
+function cleanTable(){
+	var tb = $('#admin_table');
+	var trs = tb.childNodes;
+	for( var i = trs.length - 1; i >= 1; --i ){
+		tb.removeChild(trs[i]);
+	}
+}
+
 function makeTable(){
 	var tb = $('div');
 	tb.id = "admin_table";
+	tb.addEventListener('mousedown', function(e){
+		e.preventDefault();
+	});
 	tb.appendChild(makeTr(obj_keys,true));
 	$('#admin_box').appendChild(tb);
 	if( doc == undefined ){
@@ -136,6 +170,7 @@ function makeTable(){
 	} else {
 		$('#admin_table').appendChild(makeTr(doc));
 	}
+	
 }
 
 function findObj(start,objName){
@@ -218,7 +253,7 @@ function openObject(e){
 	var objName = ths[index-1].firstElementChild.innerText.split('_').pop();
 	var deep = objName.split('.').length;
 	var flag;
-	if( e.target.innerText == "펼치기" ){
+	if( td.firstElementChild.innerText == "펼치기" ){
 		flag = true;
 	} else {
 		flag = false;
@@ -256,6 +291,9 @@ function makeTr(obj,th){
 	var checkbox = $('input');
 	checkbox.type = "checkbox";
 	checkbox.className = "admin_table_checkbox";
+	if( obj.id ){
+		checkbox.id = "admin_table_checkbox_" + obj.id;
+	}
 	checkbox.onclick = wholeCheck;
 	if( th == true ){
 		check_td = $('th');
@@ -267,6 +305,9 @@ function makeTr(obj,th){
 
 	tr.appendChild(check_td);
 	for( var i = 0 ; i < obj_keys.length; ++i ){
+		if( obj_keys[i] == "be" ){
+			continue;
+		}
 		var td;
 		if( th == true ){
 			td = $('th');
@@ -310,7 +351,7 @@ function makeTr(obj,th){
 			} else if( obj_keys[i] == "date" || obj_keys[i] == "change" || obj_keys[i] == "last"){
 				div.innerText = new Date(string).toLocaleString();
 			} else {
-				div.innerText = string;
+				div.innerText = string.toString().replace(/(\r\n|\n|\r)/gm,". ");
 			}
 			td.appendChild(div);
 		}
@@ -319,13 +360,37 @@ function makeTr(obj,th){
 	return tr;
 }
 
-function getDocs(){
-	var tableName = page;
-	var query = {
-		skip : $('.admin_table_document').length,
-		table : tableName[0].toUpperCase() + tableName.substr(1) + 's',
-		limit : 20
+function getTableName(){
+	return page[0].toUpperCase() + page.substr(1) + 's';
+}
+
+function removeDocs(){
+	var params = "table=" + getTableName() + "&id=";
+	var cbs = $('.admin_table_checkbox');
+	for( var i = 0; i < cbs.length; ++i ){
+		if( cbs[i].id.indexOf("whole") >= 0 ){
+		} else if( cbs[i].checked == true ){
+			params += cbs[i].id.split('_').pop() + ',';
+		}
 	}
+	if( params[params.length-1] != "=" ){
+		params = params.substr(0,params.length-1);
+	}
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+	}};
+	xhr.open("POST", "/api/admin/removedocs", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(params);
+}
+
+function getDocs(skip){
+	if( skip == undefined ){
+		skip = 0;
+	}
+	var query = {
+		table : getTableName(),
+		limit : $('#admin_limit').value
+	}
+	query.skip = skip*query.limit;
 
 	var query_keys = Object.keys(query);
 	var params = "";
@@ -379,6 +444,7 @@ function colResizeDown(e){
 	div.style.maxWidth = "none";
 	startPageX = e.pageX;
 }
+
 
 function colResizeUp(e){
 	if( clicked ){

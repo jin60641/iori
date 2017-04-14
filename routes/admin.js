@@ -3,6 +3,8 @@ var router = express.Router();
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
 var busboy = require('connect-busboy');
+var async = require('async');
+
 
 router.use(require('body-parser').urlencoded());
 router.use(busboy())
@@ -60,13 +62,37 @@ router.post( '/api/admin/getdocs', checkSession, function( req, res ){
 	}
 	var sort = {}
 	sort[orderby] = (req.body["asc"]=="true")?1:-1;
-	db[tb].find({},{_id : 0, __v : 0, password : 0 }).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
-		if( err ){
-			throw err;
-		}
-		res.send( objs );	
-	});
+	if( db[tb] ){
+		db[tb].find({be:true},{_id : 0, __v : 0, password : 0 }).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
+			if( err ){
+				throw err;
+			}
+			res.send( objs );	
+		});
+	} else {
+		res.end();
+	}
 });
 
+router.post( '/api/admin/removedocs', checkSession, function( req, res ){
+	var tb = req.body["table"];
+	var ids = req.body["id"].split(',');
+	async.map(ids,function(value,cb){
+		var a = parseInt(value);
+		if( a >= 1 ){
+			cb(null,parseInt(value));
+		} else {
+			res.send("error");
+		}
+	}, function( e, r ){
+		db[tb].update( { id : { $in : ids } }, { be : false },{ multi : true }, function( err, result ){
+			if( err ){
+				throw err;
+			} else {
+				res.send(result);
+			}
+		});
+	});
+});
 
 module.exports = router;

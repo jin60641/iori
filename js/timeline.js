@@ -100,12 +100,21 @@ function dontsee(postid){
 		} else {
 			var post = $("#post_"+postid);
 			post.style.display="none";
-			var dontsee_menu = $("div");
-			dontsee_menu.className = "post";
-			dontsee_menu.style.paddingBottom = "8px";
-			dontsee_menu.innerHTML = "뉴스피드에 이 게시물이 표시되지 않습니다. <span style='color:" + session.color.hex + ";cursor:pointer;' onclick='dontsee_cancle(" + postid + ")'>취소</span>";
-			dontsee_menu.innerHTML += "<img src='/img/remove_reply.png' style='width:16px; float:right; cursor:pointer' onclick='this.parentNode.parentNode.removeChild(this.parentNode)'><br>";
-			postwrap.insertBefore(dontsee_menu,post);
+			var menu = $("div");
+			menu.className = "post";
+			menu.style.paddingBottom = "8px";
+			menu.innerText = "뉴스피드에 이 게시물이 표시되지 않습니다.";
+			var span = $('span');
+			span.className = "dontsee_span";
+			span.innerText = "취소";
+			menu.appendChild(span);
+			var btn = $('span');
+			btn.className = "dontsee_btn";
+			btn.addEventListener('click', function(){	
+				this.parentNode.parentNode.removeChild(this.parentNode);
+			});
+			menu.appendChild(btn);
+			postwrap.insertBefore(menu,post);
 		}
 	}}
 	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+postid);
@@ -135,7 +144,6 @@ function favorite(postid,add){
 			menu_favorite.innerText="관심글해제";
 			var span = $("span")
 			span.className="post_favorite";
-			span.innerHTML="<img src='/svg/star.svg'>";
 			span.id="post_favorite_"+postid;
 			$("#post_"+postid).insertBefore(span,$("#post_inside_"+postid));
 			imgmenu_favorite.src='/img/favorite_remove.png';
@@ -378,7 +386,11 @@ function cancleChange(postid){
 	}
 	var post_span = inside.parentNode.childNodes[1];
 	if(post_span.className == "post_span"){
-		inside.innerHTML+="<img src='/files/post/" + postid + "/1" + "?" + new Date() + "' id='postimg_" + postid + "' class='postimg' onclick='viewimg(" + postid + "," + post_span.innerText + ",\"" + new Date() + "\")' >";
+		var div = $('div');
+		div.className = "postimg_div";
+		inside.appendChild(div);
+		inside.innerHTML+="<img src='/files/post/" + postid + "/1" + "?" + new Date() + "' id='postimg_" + postid + "' class='postimg_img' onclick='viewimg(" + postid + "," + post_span.innerText + ",\"" + new Date() + "\")' >";
+		
 	}
 }
 
@@ -1074,7 +1086,7 @@ function makePost( Post ){
 			inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.change + "' id='postimg_" + Post.id + "' class='postimg' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.change + "\")' >";
 		} else {
 		*/
-		inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.date + "' id='postimg_" + Post.id + "' class='postimg' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.date + "\")' >";
+		inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.date + "' id='postimg_" + Post.id + "' class='postimg_img' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.date + "\")' >";
 		//}
 	} else {
 		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
@@ -1085,7 +1097,7 @@ function makePost( Post ){
 		*/
 	}
 	if( Post.isfavorite ){
-		div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Post.id + "' ><img src='/svg/star.svg'></span>";
+		div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Post.id + "' ></span>";
 	}
 	inside.className="post_inside";
 	div.appendChild(inside);
@@ -1342,8 +1354,8 @@ function viewfull(obj){
 
 // 이미지 자세히보기
 function viewimg(postid,filecount,date,url){
-	document.body.style.overflowY = "scroll";
-	document.body.style.position = "fixed";
+//	document.body.style.overflowY = "scroll";
+//	document.body.style.position = "fixed";
 	imgviewing = 1;
 	imglayer.style.zIndex="300";
 	imglayer.style.visibility="visible";

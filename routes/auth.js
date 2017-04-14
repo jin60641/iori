@@ -42,7 +42,7 @@ passport.serializeUser(function(user, done) {
 		db.Users.findOne({ email : user._json.email }).lean().exec( function( err, result ){
 			if( err ){
 				throw err;
-			} else if( result && result.signUp ){
+			} else if( result && result.signUp && result.be ){
 				delete result.password;
 				user = result;
 				done(null, user);
@@ -217,7 +217,7 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 		} else if ( req.user != undefined && req.user.signUp == true ){
 			return res.redirect('/');
 		} else {
-			db.Users.findOne({ email : user._json.email, signUp : true }, function( err, account ){
+			db.Users.findOne({ email : user._json.email, signUp : true, be : true }, function( err, account ){
 				if( err ){
 					throw err;
 				} else {
