@@ -21,6 +21,114 @@ var admin_obj = {
 	}
 }
 
+function changePage(num){
+	var pages = $('.pages_num');
+	for( var i = 0; i < pages.length; ++i ){
+		pages[i].id = "";
+	}
+	pages[num%10-1].id = "current_page";
+	getDocs((num-1));
+}
+
+function changePages(num,limitChange){
+	if( getCurrentPage() == num && limitChange != true ){
+		return 0;
+	}
+	var cnt = parseInt($('#pages_max').innerText);
+	var limit = $('#admin_limit').value;
+	var page_cnt = Math.ceil(cnt/limit);
+	if( num > page_cnt ){
+		num = page_cnt;
+	} else if( num < 1 ){
+		num = 1;
+	}
+	var dec = Math.floor((num-1)/10);
+	if( (getCurrentPage()-1)/10 != dec || limitChange == true ){
+		var pages = $('.pages_num');
+		for( var i = 0; i <= 9; ++i ){
+			if( dec*10+(i+1) <= page_cnt ){
+				pages[i].style.display = "";
+			} else {
+				pages[i].style.display = "none";
+			}
+			pages[i].innerText = dec*10+(i+1);
+		}
+	}
+	changePage(num);
+}
+
+function getCurrentPage(){
+	return parseInt($('#current_page').innerText);
+}
+
+
+function makePages(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		var cnt = xhr.responseText;
+		var pages = $('div');
+		pages.id = "admin_pages";
+		var limit = $('#admin_limit').value;
+		var page_cnt = Math.ceil(cnt/limit);
+		var max_cnt = $('div');
+		max_cnt.id = "pages_max";
+		max_cnt.innerText = cnt;
+		pages.appendChild(max_cnt);
+		var first = $('div');
+		first.className = "pages_btn";
+		first.id = "pages_first";
+		first.onclick = function(){
+			changePages(1);
+		}
+		first.innerText = "<<";
+		pages.appendChild(first);
+		var left = $('div');
+		left.innerText = "<";
+		left.onclick = function(){
+			changePages(Math.floor((getCurrentPage()-1)/10)*10+10);
+		}
+		left.className = "pages_btn";
+		left.id = "pages_left";
+		pages.appendChild(left);
+		for( i = 0; i < 10; ++i ){
+			var pages_num = $('span');
+			if( page_cnt > i ){
+				pages_num.style.display = "";
+			} else {
+				pages_num.style.display = "none";
+			}
+			pages_num.innerText = i + 1;
+			pages_num.className="pages_num";
+			pages_num.addEventListener('click', function(){
+				changePages(parseInt(this.innerText));
+			});
+			pages.appendChild(pages_num);
+		}
+		var right = $('div');
+		right.addEventListener('click',function(){
+			changePages(getCurrentPage()+10);
+		});
+		right.className = "pages_btn";
+		right.id = "pages_right";
+		right.innerText = ">";
+		pages.appendChild(right);
+		var last = $('div');
+		last.className = "pages_btn";
+		last.id = "pages_last";
+		last.addEventListener('click', function(){
+			var cnt = parseInt($('#pages_max').innerText);
+			var limit = $('#admin_limit').value;
+			var page_cnt = Math.ceil(cnt/limit);
+			changePages( page_cnt );
+		});
+		last.innerText = ">>";
+		pages.appendChild(last);
+		$('#admin_box').appendChild(pages);
+		changePage(1);
+	}};
+	xhr.open("POST", "/api/admin/getcnt", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send("table="+getTableName());
+}
+
 function changeLimit(){
 	var limit = $('#admin_limit');
 	if( limit.value >= 100 ){
@@ -28,8 +136,7 @@ function changeLimit(){
 	} else if( limit.value <= 1 ){
 		limit.value = 1;
 	}
-	cleanTable();
-	getDocs(0);
+	changePages(getCurrentPage(),true);
 }
 
 window.addEventListener('load', function(){
@@ -65,6 +172,12 @@ window.addEventListener('load', function(){
 	var text = $('text');
 	text.innerText = "개씩 보기";
 	$('#admin_box').appendChild(text);
+	var remove = $('div');
+	remove.id = "admin_remove"
+	remove.className = "admin_btn"
+	remove.addEventListener('click', removeDocs);
+	remove.innerText="삭제";
+	$('#admin_box').appendChild(remove);
 
 	openAdminTab();
 	window.addEventListener('resize', adminResize );
@@ -95,6 +208,9 @@ function openAdminTab( newtab ){
 
 	if( $('#admin_table') ){
 		$('#admin_box').removeChild($('#admin_table'));
+	}
+	if( $('#admin_pages') ){
+		$('#admin_box').removeChild($('#admin_pages'));
 	}
 	if( document.URL.split('/').length == 4 ){
 		history.pushState(null,null,"/admin/"+page);
@@ -166,11 +282,11 @@ function makeTable(){
 	tb.appendChild(makeTr(obj_keys,true));
 	$('#admin_box').appendChild(tb);
 	if( doc == undefined ){
-		getDocs();
+//		getDocs(0);
 	} else {
 		$('#admin_table').appendChild(makeTr(doc));
 	}
-	
+	makePages();
 }
 
 function findObj(start,objName){
@@ -365,6 +481,9 @@ function getTableName(){
 }
 
 function removeDocs(){
+	if( confirm("정말로 삭제하시겠습니까?") == false ){
+		return 0;
+	}
 	var params = "table=" + getTableName() + "&id=";
 	var cbs = $('.admin_table_checkbox');
 	for( var i = 0; i < cbs.length; ++i ){
@@ -378,13 +497,15 @@ function removeDocs(){
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		getDocs();
 	}};
 	xhr.open("POST", "/api/admin/removedocs", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(params);
 }
 
 function getDocs(skip){
+	cleanTable();
 	if( skip == undefined ){
-		skip = 0;
+		skip = getCurrentPage-1;
 	}
 	var query = {
 		table : getTableName(),

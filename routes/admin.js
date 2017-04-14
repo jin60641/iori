@@ -95,4 +95,18 @@ router.post( '/api/admin/removedocs', checkSession, function( req, res ){
 	});
 });
 
+router.post( '/api/admin/getcnt', checkSession, function( req, res ){
+	var tb = req.body["table"];
+	if( db[tb] != undefined ){
+		db[tb].find({be:true}).count( function( err, result ){
+			if( err ){
+				throw err;
+			}
+			res.send(result.toString());
+		});
+	} else {
+		res.end();
+	}
+});
+
 module.exports = router;
