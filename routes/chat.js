@@ -45,7 +45,7 @@ router.get('/chat', checkSession, function( req, res ){
 				}
 			});
 		}, function( callback ){
-			db.Chats.find({ $or : [{ type : "u", "from.uid" : req.user.uid },{ type : "g", "to.id" : { $in : group_ids } }, { type : "u", "to.uid" : req.user.uid }] }).sort({ id : -1 }).exec( function( err, chats ){
+			db.Chats.find({ be : true, $or : [{ type : "u", "from.uid" : req.user.uid },{ type : "g", "to.id" : { $in : group_ids } }, { type : "u", "to.uid" : req.user.uid }] }).sort({ id : -1 }).exec( function( err, chats ){
 				if( err ){
 					throw err;
 				} else {
@@ -409,7 +409,7 @@ router.post('/api/chat/getchats', checkSession, function( req, res ){
 			if( error ){
 				throw error;
 			} else if( group ){
-				db.Chats.find({ type : type, "to.id" : dialog_id }).sort({ id : -1 }).skip( skip ).limit( limit ).exec( function( err, result ){
+				db.Chats.find({ type : type, "to.id" : dialog_id, be : true }).sort({ id : -1 }).skip( skip ).limit( limit ).exec( function( err, result ){
 					if( err ){
 						throw err;
 					} else {
@@ -425,7 +425,7 @@ router.post('/api/chat/getchats', checkSession, function( req, res ){
 			if( err ){
 				throw err;
 			} else if( user ){
-				db.Chats.find({ type : type, $or : [{ "to.id" : user.id , "from.id" : req.user.id },{ "to.id" : req.user.id , "from.id" : user.id }] }).skip( skip ).limit( limit ).sort({ id : -1 }).exec( function( err, chats ){
+				db.Chats.find({ be : true, type : type, $or : [{ "to.id" : user.id , "from.id" : req.user.id },{ "to.id" : req.user.id , "from.id" : user.id }] }).skip( skip ).limit( limit ).sort({ id : -1 }).exec( function( err, chats ){
 					if( err ){
 						throw err;
 					} else {

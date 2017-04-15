@@ -346,7 +346,6 @@ router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, r
 					},
 					pid : pid,
 					text : text,
-					be : true,
 					file : filecount
 				});
 				current.save( function( error ){
@@ -510,7 +509,6 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 						name : req.user.name,
 					},
 					text : text,
-					be : true,
 					file : filecount
 				});
 				current.save( function( error ){

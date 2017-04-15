@@ -41,14 +41,14 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 	var user;
 	async.waterfall([ 
 		function( cb ){
-			db.Users.findOne({ uid : req.params['uid'] }, function( err, result ){
+			db.Users.findOne({ uid : req.params['uid'], be : true }, function( err, result ){
 				if( err ){
 					throw err;
 				} else if( result ){
 					user = result;
 					cb( null );
 				} else {
-					res.send("없는 사용자입니다.");
+					res.send("존재하지 않는 사용자입니다.");
 				}
 			});
 		}, function( cb ){
@@ -76,7 +76,7 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 				}
 			});
 		}, function( uids, cb ){
-			db.Users.find({ id : { $in : uids } },{ id : 1, name : 1, uid : 1, profile : 1, header : 1 }).lean().exec( function( err, result ){
+			db.Users.find({ be : true, id : { $in : uids } },{ id : 1, name : 1, uid : 1, profile : 1, header : 1 }).lean().exec( function( err, result ){
 				if( err ){
 					throw err;
 				} else {
@@ -120,7 +120,7 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 });
 
 router.post('/@:uid(*)/favorite', function( req, res ){
-	db.Users.findOne({ uid : req.params['uid'] }, function( err, user ){
+	db.Users.findOne({ be : true, uid : req.params['uid'] }, function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
@@ -132,7 +132,7 @@ router.post('/@:uid(*)/favorite', function( req, res ){
 				}
 			});
 		} else {
-			res.send("없는 사용자입니다.");
+			res.send("존재하지 않는 사용자입니다.");
 		}
 	});
 });
@@ -140,7 +140,7 @@ router.post('/@:uid(*)/favorite', function( req, res ){
 
 function getProfilePage( req, res ){
 	var uid = req.params['uid'];
-	db.Users.findOne({ uid : uid },{id:1,name:1,uid:1,profile:1,header:1,color:1}).lean().exec( function( err, user ){
+	db.Users.findOne({ uid : uid, be : true },{ id : 1, name : 1, uid : 1, profile : 1, header : 1, color : 1 }).lean().exec( function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
@@ -171,7 +171,7 @@ router.get('/@:uid(*)/:tab', getProfilePage );
 router.get('/@:uid(*)', getProfilePage );
 
 router.post('/@:uid(*)', function( req, res ){
-	db.Users.findOne({ uid : req.params['uid'], signUp : true }, function( err, user ){
+	db.Users.findOne({ be : true, uid : req.params['uid'], signUp : true }, function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
@@ -218,7 +218,7 @@ router.post('/@:uid(*)', function( req, res ){
 router.post( '/api/user/search', function( req, res){
 	var query = req.body['query'];
 	if( query ){
-		db.Users.find({ $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true },{ __v : 0, _id : 0, signUp : 0, email : 0, password : 0 }, function( err, result ){
+		db.Users.find({ be : true, $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true },{ __v : 0, _id : 0, signUp : 0, email : 0, password : 0 }, function( err, result ){
 			if( result ){
 				res.send( result );
 			} else {
@@ -292,7 +292,7 @@ router.post( '/api/user/:imgtype(*)img', checkSession, function( req, res ){
 
 router.post( '/api/user/follow', checkSession, function( req, res ){
 	var uid = req.body['uid'];
-	db.Users.findOne({ id : uid }, { _id : 0, id : 1, name : 1, uid : 1 }, function( err, user ){
+	db.Users.findOne({ be : true, id : uid }, { _id : 0, id : 1, name : 1, uid : 1 }, function( err, user ){
 		if( err ){
 			throw err;
 		} else if ( user ){
@@ -466,7 +466,7 @@ router.get( '/api/user/change/email/:email/:link', checkSession, function( req, 
 });
 
 router.post( '/api/user/change/notice', checkSession, function( req, res ){
-	db.Users.findOne({ id : req.user.id }, function( err, user ){
+	db.Users.findOne({ be : true, id : req.user.id }, function( err, user ){
 		if( err ){
 			throw err;
 		}
@@ -505,7 +505,7 @@ router.post( '/api/user/change/password', checkSession, function( req, res ){
 		shasum.update(password);
 		password = shasum.digest('hex');
 		if( oldpw != null ){
-			db.Users.findOne({ id : req.user.id }, function( err, user ){
+			db.Users.findOne({ be : true, id : req.user.id }, function( err, user ){
 				if( err ){
 					throw err;
 				}

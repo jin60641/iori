@@ -37,7 +37,7 @@ var ChatSchema = new mongoose.Schema({
 	text : { type : String },
 	file : { type : Boolean, default : false },
 	date : { type : Date, default : Date.now },
-	be : { type : Boolean, defualt : true }
+	be : { type : Boolean, default : true }
 });
 
 var GroupSchema = new mongoose.Schema({
@@ -62,7 +62,7 @@ var PostSchema = new mongoose.Schema({
     date : { type : Date, default : Date.now },
     change :  { type : Date },
     file :  { type : Number },
-	be : { type : Boolean, defualt : true }
+	be : { type : Boolean, default : true }
 });
 
 var ReplySchema = new mongoose.Schema({
@@ -77,7 +77,7 @@ var ReplySchema = new mongoose.Schema({
     date : { type: Date, default : Date.now },
     change : { type : Date },
     file : { type : Number },
-	be : { type : Boolean, defualt : true }
+	be : { type : Boolean, default : true }
 });
 
 var FollowSchema = new mongoose.Schema({
@@ -120,7 +120,7 @@ var UserSchema = new mongoose.Schema({
 	},
 	last : { type : Date },
 	date : { type : Date, default : Date.now },
-	be : { type : Boolean, defualt : true }
+	be : { type : Boolean, default : true }
 });
 
 var NoticeSchema = new mongoose.Schema({
