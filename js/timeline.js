@@ -1354,6 +1354,7 @@ function viewfull(obj){
 
 // 이미지 자세히보기
 function viewimg(postid,filecount,date,url){
+	imgmenu_resize();
 //	document.body.style.overflowY = "scroll";
 //	document.body.style.position = "fixed";
 	imgviewing = 1;
@@ -1413,13 +1414,14 @@ function viewimg(postid,filecount,date,url){
 
 //이미지 메뉴 리사이징
 function imgmenu_resize(){
+	/*
 	if(window.innerWidth < 530 ){
 		imgmenu.style.display="none";
 	} else {
 		imgmenu.style.display="block";
 	}
-	imgmenu.style.left=(window.innerWidth - imgmenu.clientWidth - 20 )/2 + "px";
-	//imgmenuhover.style.left=(window.innerWidth - imgmenu.clientWidth)/2 + "px";
+	*/
+	imgmenu.style.left = ( $('#imglayer').clientWidth - imgmenu.clientWidth ) / 2 + "px"
 }
 
 window.addEventListener('load',function(){
