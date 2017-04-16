@@ -60,10 +60,13 @@ router.post( '/api/admin/getdocs', checkSession, function( req, res ){
 	if( orderby == undefined ){
 		orderby = "id";
 	}
-	var sort = {}
-	sort[orderby] = (req.body["asc"]=="true")?1:-1;
+	var asc = req.body["asc"];
+	var sort = {};
+	sort[orderby] = (asc=="true")?1:-1;
+	var query = { be : true };
+	
 	if( db[tb] ){
-		db[tb].find({be:true},{_id : 0, __v : 0, password : 0 }).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
+		db[tb].find(query,{_id : 0, __v : 0, password : 0 }).limit( limit ).skip( skip ).sort( sort ).exec( function( err, objs ){
 			if( err ){
 				throw err;
 			}

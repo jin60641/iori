@@ -682,132 +682,6 @@ textarea {
 	height : 20px;
 }
 
-#imglayer {
-	height : 100%;
-	position : fixed !important;
-	top : 0;
-	visibility : hidden;
-	opacity : 0;
-	transition : opacity 0.4s linear;
-	z-index : 200;
-	width : 100%;
-	text-align : center;
-	background-color : rgba(0,0,0,0.6)
-}
-
-#imglayer #imgbox {
-	white-space : nowrap;
-	z-index : 300;
-	display : inline-block;
-	position : relative;
-	height : 80%;
-	top : 10%;
-	vertical-align : middle;
-	text-align : center;
-}
-
-#imglayer #leftbtn, #imglayer #rightbtn {
-	z-index : 700;
-	position : absolute;
-	width : 100px;
-	top : 0px;
-	height : 100%;
-}
-
-#imglayer #lefthover, #imglayer #righthover {
-	z-index : 700;
-	width : 100px;
-	height : 100%;
-	position : absolute;
-}
-
-#imglayer #righthover {
-	right : 0px;
-}
-
-#imglayer #leftbtn {
-	background : rgba(0,0,0,0.5) url("/img/leftbtn.png") no-repeat 25px center;
-	transition : left .5s;
-	left : -100px;
-}
-
-#imglayer #lefthover:hover + #leftbtn, #imglayer #leftbtn:hover {
-	background : rgba(0,0,0,0.5) url("/img/leftbtn_hover.png") no-repeat 25px center;
-	left : 0px;
-	cursor : pointer;
-}
-
-#imglayer #rightbtn {
-	background : rgba(0,0,0,0.5) url("/img/rightbtn.png") no-repeat center center;
-	right : -100px;
-	transition : right .5s;
-}
-
-#imglayer #righthover:hover + #rightbtn, #imglayer #rightbtn:hover {
-	background : rgba(0,0,0,0.5) url("/img/rightbtn_hover.png") no-repeat center center;
-	cursor : pointer;
-	right : 0px;
-}
-
-#imglayer #imgbox img {
-	z-index : 500;
-	border : 10px solid white;
-	background-color : white;
-	max-width : calc( 100% - 60px );
-	max-height : calc( 100% - 60px );
-	display : none;
-	vertical-align : middle;
-}
-
-#imglayer > #imgmenuhover {
-	z-index : 700;
-	width : 100%;
-	height : 100px;
-	position : absolute;
-	bottom : 0px;
-	opacity : 0;
-}
-
-#imglayer > #imgmenu {
-	text-align : left;
-	z-index : 700;
-	height : 100px;
-	position : absolute;
-	bottom : -100px;
-	transition : bottom .5s;
-	background-color : rgba(0,0,0,0.7);
-}
-
-#imglayer > #imgmenu img {
-	width : 60px;
-	height : 60px;
-	margin : 22.5px;
-	margin-right : 0px;
-}
-
-#imglayer > #imgmenu > *:last-child {
-	margin-right : 22.5px;
-}
-
-#imglayer > #imgmenu img:hover {
-	cursor : pointer;
-}
-
-#imglayer #imgmenuhover:hover + #imgmenu, #imglayer #imgmenu:hover {
-	bottom : 0px;
-}
-
-#imglayer #imgbox img:hover {
-	cursor : pointer;
-}
-
-#imglayer > #imgbox > #helper {
-	vertical-align : middle;
-	display : inline-block;
-	width : 0;
-	height : 100%;
-}
-
 #bottom_btn {
 	width : 100vw;
 	padding : 10px 0 10px 0;
@@ -841,27 +715,11 @@ textarea {
 	#body {
 		width : calc( 100vw );
 	}
-	#imglayer #leftbtn, #imglayer #rightbtn {
-		display : none;
-	}
 	#post_wrap > .post .reply_text {
 		width : calc( 100vw - 140px );
 	}
 	#post_wrap > .post .post {
 		max-height : 100vw;
-	}
-	#imglayer {
-		background : rgba(0,0,0,.8);
-	}
-	#imglayer #imgbox {
-		top : 0px;
-		left : 0px;
-		width : 100vw;
-		height : 100vh;
-		background : 0;
-	}
-	#imglayer #imgbox img {
-		border : 0;
 	}
 	#post_wrap > .post .post_name {
 		font-size : 18px;

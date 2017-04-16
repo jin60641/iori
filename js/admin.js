@@ -403,6 +403,7 @@ function openObject(e){
 function makeTr(obj,th){
 	var tr = $('tr');
 	tr.className = "admin_table_tr";
+	var ths = $('.admin_table_th');
 	var check_td;
 	var checkbox = $('input');
 	checkbox.type = "checkbox";
@@ -429,11 +430,13 @@ function makeTr(obj,th){
 			td = $('th');
 			td.className = "admin_table_th";
 			var div = $('div');
+			div.id = "admin_table_th_div_" + obj_keys[i];
 			div.innerText = obj_keys[i];
 			td.appendChild(div);
 			if( obj_keys[i].indexOf('.') >= 1 ){
 				td.style.display = "none";
 			}
+			div.addEventListener('click',changeSort,false);
 			var resizer = $('div');
 			resizer.addEventListener('mousedown',colResizeDown,false);
 			resizer.className = "admin_table_resizer";
@@ -449,6 +452,8 @@ function makeTr(obj,th){
 				var tmp = obj;
 				for( var j = 0; j < sub_keys.length; ++j ){
 					tmp = tmp[sub_keys[j]];
+				}
+				if( $("#admin_table_th_div_"+obj_keys[i]).parentNode.style.display == "none" ){
 					td.style.display = "none";
 				}
 				string = tmp;
@@ -476,6 +481,24 @@ function makeTr(obj,th){
 	return tr;
 }
 
+var orderby = "id";
+var asc = false;
+function changeSort(event){
+	var ths = $('.admin_table_th');
+	var div = event.target;
+	orderby = div.innerText;
+	if( div.parentNode.style.backgroundColor != "" && asc == false ){
+		asc = true;
+	} else {
+		asc = false;
+	}
+	getDocs(0);
+	for( var i = 0; i < ths.length; ++i ){
+		ths[i].style.backgroundColor = "";
+	}
+	div.parentNode.style.backgroundColor = "#d3d3d3";
+}
+
 function getTableName(){
 	return page[0].toUpperCase() + page.substr(1) + 's';
 }
@@ -488,6 +511,7 @@ function removeDocs(){
 	var cbs = $('.admin_table_checkbox');
 	for( var i = 0; i < cbs.length; ++i ){
 		if( cbs[i].id.indexOf("whole") >= 0 ){
+			continue;
 		} else if( cbs[i].checked == true ){
 			params += cbs[i].id.split('_').pop() + ',';
 		}
@@ -509,7 +533,9 @@ function getDocs(skip){
 	}
 	var query = {
 		table : getTableName(),
-		limit : $('#admin_limit').value
+		limit : $('#admin_limit').value,
+		asc : asc,
+		orderby : orderby
 	}
 	query.skip = skip*query.limit;
 
@@ -550,6 +576,7 @@ function makeAdminTab( en, kr ){
 var clicked = null;
 var startPageX = null;
 function colResizeDown(e){
+	e.stopPropagation();
 	clicked = e.target;
 	clicked.id = "admin_table_resizer_clicked";
 	clicked.style.top = "1px"

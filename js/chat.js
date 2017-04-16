@@ -182,7 +182,7 @@ window.addEventListener('load', function(){
 	window.addEventListener('resize', imgmenu_resize );
 	window.addEventListener('keydown', imgmenu_keydown );
 
-	window.addEventListener('click', function(){
+	window.addEventListener('click', function(e){
 		showChatMenu(false);
 	});
 
@@ -839,6 +839,8 @@ function showChatLayer( boolean, type ){
 		showChatLayer(false);
 	}
 
+	showChatMenu(false);
+
 	var layer = $("div");
 	layer.onclick = function(){
 		showChatLayer(false);
@@ -1058,7 +1060,10 @@ function showChatLayer( boolean, type ){
 	} else {
 		list.style.height = "calc( 100% - 203px )";
 	}
-
+	if( event ){
+		showChatMenu(false);
+		event.stopPropagation();
+	}
 }
 
 function updateList( type, param ){
@@ -1242,13 +1247,7 @@ function viewimg(url,controller){
 
 //이미지 메뉴 리사이징
 function imgmenu_resize(){
-	if(window.innerWidth < 530 ){
-		imgmenu.style.display = "none";
-	} else {
-		imgmenu.style.display = "block";
-	}
-	imgmenu.style.left=(window.innerWidth - imgmenu.clientWidth - 20 )/2 + "px";
-	//imgmenuhover.style.left=(window.innerWidth - imgmenu.clientWidth)/2 + "px";
+    imgmenu.style.left = ( $('#imglayer').clientWidth - imgmenu.clientWidth ) / 2 + "px"
 }
 
 
