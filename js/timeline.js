@@ -146,10 +146,12 @@ function favorite(postid,add){
 			span.className="post_favorite";
 			span.id="post_favorite_"+postid;
 			$("#post_"+postid).insertBefore(span,$("#post_inside_"+postid));
-			imgmenu_favorite.src='/img/favorite_remove.png';
-			imgmenu_favorite.onclick = function(){
-				event.stopPropagation();
-				favorite(postid,0)
+			if( $('#imgmenu_favorite') ){
+				$('#imgmenu_favorite').src='/img/favorite_remove.png';
+				$('#imgmenu_favorite').onclick = function(){
+					event.stopPropagation();
+					favorite(postid,0)
+				}
 			}
 		} else {
 			menu_favorite.onclick=function(){
@@ -157,9 +159,11 @@ function favorite(postid,add){
 			}
 			menu_favorite.innerText = "관심글등록";
 			$("#post_"+postid).removeChild($("#post_favorite_"+postid));
-			imgmenu_favorite.src='/img/favorite.png';
-			imgmenu_favorite.onclick = function(){
-				favorite(postid,1)
+			if( $('#imgmenu_favorite') ){
+				$('#imgmenu_favorite').src='/img/favorite.png';
+				$('#imgmenu_favorite').onclick = function(){
+					favorite(postid,1)
+				}
 			}
 		}
 	}}
@@ -1250,7 +1254,7 @@ function keydown(e){
 		} else if(e.keyCode==37 || e.keyCode == 38){
 			event.preventDefault();
 			$('#leftbtn').click();
-		} else if(e.keyCode==27){
+		} else if( e.keyCode==27 ){
 			event.preventDefault();
 			$('#imglayer').style.opacity="0";
 			$('#lefthover').style.display="none";
@@ -1330,99 +1334,6 @@ function DragOver(evt){
 	obj.paddingLeft = "2px";
 }
 
-// 이미지 전체화면
-function viewfull(obj){
-	if(document.webkitIsFullScreen){
-		document.webkitCancelFullScreen();
-		obj.src="/img/imgfull.png";
-		event.stopPropagation();
-		event.preventDefault();
-	} else {
-		imgbox.style.width="100%";
-		imgbox.style.height="100%";
-		imgbox.style.top="0";
-		imgbox.style.left="0";
-		imgbox.style.position="absolute";
-		imglayer.webkitRequestFullScreen();
-		for( var j=imgbox.childNodes.length - 1 ; j>=1; --j ){
-			imgbox.childNodes[j].style.border="0";
-		}
-		obj.src="/img/imgfull_exit.png";
-	}
-}
-
-// 이미지 자세히보기
-function viewimg(postid,filecount,date,url){
-	imgmenu_resize();
-//	document.body.style.overflowY = "scroll";
-//	document.body.style.position = "fixed";
-	imgviewing = 1;
-	imglayer.style.zIndex="300";
-	imglayer.style.visibility="visible";
-	imglayer.style.opacity="1";
-	imgbox.innerHTML="<div id='helper'></div>";
-	imgmenuhover.style.display="block";
-	imgmenu.style.display = "block";
-	if( url ){
-		imgmenu.style.display = "none";
-	} else if( $("#post_favorite_"+postid) ){
-		imgmenu_favorite.src = '/img/favorite_remove.png';
-		imgmenu_favorite.onclick = function(){
-			favorite(postid,0);
-		}
-	} else {
-		imgmenu_favorite.src = '/img/favorite.png';
-		imgmenu_favorite.onclick = function(){
-			favorite(postid,1);
-		}
-	}
-	if(filecount == 1 || (/(BB|iPad|iPhone|iPod|Android)/i.test( navigator.userAgent )) ){
-		lefthover.style.display="none";
-		righthover.style.display="none";
-	} else if (filecount >= 1){
-		lefthover.style.display="block";
-		righthover.style.display="block";
-	}
-	for(var i = 1; i<=filecount; ++i){
-		var img = $("img");
-		img.src="/files/post/" + postid + "/" + i + "?" + date;
-		if( url ){
-			img.src = url + '?' + date;
-		}
-		imgdownload.href=img.src;
-		imgdownload.download=postid+'_'+1+'';
-		img.onclick = function(){
-			event.stopPropagation();
-			event.preventDefault();
-			rightbtn.click();
-		}
-		/* 이미지 호버시 오른쪽버튼 등장!
-		if( !(/(BB|iPad|iPhone|iPod|Android)/i.test( navigator.userAgent )) ){
-			img.onmouseover = function(){
-				rightbtn.style.right = "0px";
-			}
-			img.onmouseout = function(){
-				rightbtn.style.right = "";
-			}
-		}
-		*/
-		imgbox.appendChild(img);
-	}
-	imgbox.childNodes[1].style.display="inline-block";
-}
-
-//이미지 메뉴 리사이징
-function imgmenu_resize(){
-	/*
-	if(window.innerWidth < 530 ){
-		imgmenu.style.display="none";
-	} else {
-		imgmenu.style.display="block";
-	}
-	*/
-	imgmenu.style.left = ( $('#imglayer').clientWidth - imgmenu.clientWidth ) / 2 + "px"
-}
-
 window.addEventListener('load',function(){
 
 	var postwrap = $("div");
@@ -1463,121 +1374,6 @@ window.addEventListener('load',function(){
 			postwrap.appendChild(write);
 		}
 	}
-
-	imgviewing = 0;
-	var imglayer = $("div");
-	imglayer.id="imglayer";
-	imglayer.addEventListener('transitionend', function(){ if(this.style.opacity=="0"){
-		this.style.zIndex="-500";
-	} else {
-		this.style.visibility="visibile";
-	}});
-	imglayer.onclick = function(evt){ 
-		if(document.webkitIsFullScreen){
-			evt.stopPropagation();
-			evt.preventDefault();
-		} else {
-			imglayer.style.zIndex="300";
-			imglayer.style.opacity="0"; 
-			imgviewing=0;
-			lefthover.style.display="none";
-			righthover.style.display="none";
-			imgmenuhover.style.display="none";
-			document.body.style.overflowY = "";
-			document.body.style.position = "";
-		}
-	}
-	var rightbtn = $("div");
-	rightbtn.onclick = function(e){
-		e.stopPropagation();
-		e.preventDefault();
-		for( var j=imgbox.childNodes.length - 1 ; j>=1; --j ){
-			if(imgbox.childNodes[j].style.display == "inline-block" ){
-				var postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
-				imgbox.childNodes[j].style.display = "none";
-				if(imgbox.childNodes[j+1]){
-					imgbox.childNodes[j+1].style.display = "inline-block";
-					imgdownload.download=postid+'_'+ ( j + 1 ) +''
-					imgdownload.href=imgbox.childNodes[j + 1].src;
-					break;
-				} else {
-					imgbox.childNodes[1].style.display = "inline-block";
-					imgdownload.download=postid+'_'+ 1 +''
-					imgdownload.href=imgbox.childNodes[1].src;
-					break;
-				}
-			}
-		}
-	}
-	var righthover = $("div");
-	righthover.onclick = rightbtn.onclick;
-	righthover.id = "righthover";
-	imglayer.appendChild(righthover);
-	rightbtn.id = "rightbtn";
-	imglayer.appendChild(rightbtn);
-	var leftbtn = $("div");
-	leftbtn.onclick = function(e){
-		e.stopPropagation();
-		e.preventDefault();
-		for( var j=1; j<imgbox.childNodes.length; ++j ){
-			if(imgbox.childNodes[j].style.display == "inline-block" ){
-				var postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
-				imgbox.childNodes[j].style.display = "none";
-				if(j==1){
-					imgbox.childNodes[imgbox.childNodes.length-1].style.display = "inline-block";
-					imgdownload.download=postid+'_'+ ( imgbox.childNodes.length - 1 ) +''
-					imgdownload.href=imgbox.childNodes[imgbox.childNodes.length - 1].src;
-					break;
-				} else {
-					imgbox.childNodes[j-1].style.display = "inline-block";
-					imgdownload.download=postid+'_'+(j-1)+''
-					imgdownload.href=imgbox.childNodes[j-1].src;
-					break;
-				}
-			}
-		}
-	}
-	var lefthover = $("div");
-	lefthover.onclick = leftbtn.onclick;
-	lefthover.id = "lefthover";
-	imglayer.appendChild(lefthover);
-	leftbtn.id = "leftbtn";
-	imglayer.appendChild(leftbtn);
-	var imgmenuhover = $("div");
-	imgmenuhover.id = "imgmenuhover";
-	imgmenuhover.onclick = function(){
-	}
-	imglayer.appendChild(imgmenuhover);
-	var imgmenu = $("div");
-	imgmenu.id = "imgmenu";
-	imgmenu.onclick = function(event){
-		event.stopPropagation();
-//		event.preventDefault();
-	}
-	leftbtn.addEventListener('transitionend', function(){
-		event.stopPropagation();
-		event.preventDefault();
-	});
-	rightbtn.addEventListener('transitionend', function(){
-		event.stopPropagation();
-		event.preventDefault();
-	});
-	imgmenu.addEventListener('transitionend', function(){
-		event.stopPropagation();
-		event.preventDefault();
-	});
-	imgmenu.innerHTML="<img id='imgmenu_favorite' src='/img/favorite.png'>";
-	imgmenu.innerHTML+="<a id='imgdownload' download><img src='/img/download.png'></a>"; //<img src='/img/share.png'>";
-	if( !(/(BB|iPad|iPhone|iPod|Android|\.NET)/i.test( navigator.userAgent )) ){
-		imgmenu.innerHTML += "<img src='/img/imgfull.png' onclick='viewfull(this)' >";
-	} else {
-		imglayer.onclick = function(){ document.body.style.overflowY=""; imglayer.style.opacity="0";imgviewing=0;}
-	}
-	imglayer.appendChild(imgmenu);
-	imgbox = $("div");
-	imgbox.id = "imgbox";
-	imglayer.appendChild(imgbox);
-	document.body.appendChild(imglayer);
 	output_post = $("#output_post");
 	post_file = $("#post_file");
 
@@ -1592,7 +1388,7 @@ window.addEventListener('load',function(){
 
 	if( location.pathname.substr(0,6) == "/post/" ){
 		if( Post.length ){
-			Post = Post[0]
+		Post = Post[0]
 			postwrap.appendChild(makePost(Post));
 		} else {
 			location.href = "/";
@@ -1608,13 +1404,6 @@ window.addEventListener('load',function(){
 			postwrap.removeChild($("#post_"+postid));	
 		});
 	}
-
-	imgmenu_resize();
-	
-	window.addEventListener('resize', function(){
-		
-		imgmenu_resize();
-	});
 
 
 	socket.on( 'connect_failed', function(){
