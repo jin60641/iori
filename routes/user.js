@@ -532,4 +532,5 @@ router.post( '/api/user/change/password', checkSession, function( req, res ){
 		res.send("대소문자, 특수문자, 숫자 등을 혼용해주세요");
 	}
 });
+
 module.exports = router;

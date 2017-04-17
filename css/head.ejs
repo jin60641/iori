@@ -124,10 +124,11 @@
 	background-size : 20px 20px;
 	border : 1px solid #f2f2f2;
 	padding : 4px 33px 5px 7px;
+	box-sizing : border-box;
 	border-radius : 2px;
 	font-size : 15px;
-	max-width : 200px;
-	width : calc( 50vw - 177px );
+	max-width : 260px;
+	width : calc( 50vw - 157px );
 	-webkit-transition: background-color .1s linear;
 	-moz-transition: background-color .1s linear;
 	-o-transition: background-color .1s linear;
@@ -144,13 +145,14 @@
 	position : absolute;
 	top : 38px;
 	display : none;
-	max-width : 240px;
-	width : calc( 50vw - 97px );
+	max-width : 260px;
+	width : calc( 50vw - 157px );
 	background-color : white;
 	border : 1px solid rgba( 0, 0, 0, .1 );
 	box-shadow : 0 2px 2px -2px rgba( 0, 0, 0, .42 );
 	z-index : 100;
 	margin-left : auto;
+	box-sizing : border-box;
 	left : 0;
 }
 
@@ -328,6 +330,7 @@
 		display : block;
 	}
 	#head #head_search_result {
+		display : none;
 //		top : 42px;
 //		width : calc( 100vw );
 //		margin : 0px;

@@ -1,16 +1,16 @@
 postLoading = false;
 
 //모바일을 위한 터치 이벤트 리스너
-	/*
-		if( !document.webkitIsFullScreen ){
-			imglayer.style.opacity="0";
-			lefthover.style.display="none";
-			righthover.style.display="none";
-			imgmenuhover.style.display="none";
-			imgviewing=0;
-		} else {
-		}
-	*/
+/*
+	if( !document.webkitIsFullScreen ){
+		imglayer.style.opacity="0";
+		lefthover.style.display="none";
+		righthover.style.display="none";
+		imgmenuhover.style.display="none";
+		imgviewing=0;
+	} else {
+	}
+*/
 
 window.addEventListener("click", hidemenu);
 window.addEventListener("keydown",keydown);
@@ -1241,7 +1241,7 @@ function getPosts(limit){
 var select;
 function keydown(e){
 	var postwrap = $('#post_wrap');
-	if(imgviewing){
+	if( imgviewing != undefined && imgviewing == true ){
 		event.stopPropagation();
 	//	event.preventDefault();
 		if(e.keyCode==39 || e.keyCode == 40){
