@@ -43,13 +43,8 @@ function waveformRender() {
 				waveformCtx.fillStyle = "#D0D9DD";
 			}
 		
-			var height;
-			if( max > waveform.height * (7/10) ){
-				height = waveformArray[i] / (max/(waveform.height*(7/10)))
-			} else {
-				height = waveformArray[i];
-			}
-			waveformCtx.fillRect( i*6 + listenstart, ( waveform.height - height ) * (7/10), 4, height * (7/10) + 2 );
+			var height = waveformArray[i];
+			waveformCtx.fillRect( i*6 + listenstart, ( waveform.height*0.7 - height ) , 4, height );
 //			waveformCtx.fillRect( i*6 + listenstart, ( waveform.height - waveformArray[i]/max * ( waveform.height ) ) * (7/10), 4, waveformArray[i]/max * (7/10) * ( waveform.height ) + 2 );
 			waveformCtx.fillStyle = "#000000";
 			if( i%10 == 0 && i ){
@@ -234,6 +229,13 @@ window.addEventListener('load',function(){
 	name.innerText = "업로드";
 	name.id = "upload_name";
 	document.body.appendChild(name);
+
+	var wave_wrap = $("div");
+	wave_wrap.id = "wave_wrap";
+	wave_wrap.style.display = "none";
+	document.body.appendChild( wave_wrap );
+
+
 	var body = $("div");
 	body.id = "upload_wrap";
 	document.body.appendChild(body);
@@ -301,21 +303,15 @@ window.addEventListener('load',function(){
 	}
 	form.appendChild(ytsend);
 	body.appendChild(form);
-});
 
-function gameStart(){
-	var wrap = $("div");
-	wrap.id = "wave_wrap";
-	document.body.appendChild( wrap );
-	$('#upload_wrap').style.display = "none";
+	var waveform = $("canvas");
+	waveform.id = "waveform";
+	wave_wrap.appendChild(waveform);
 
 	var play_btn = $("div");
 	play_btn.innerHTML = "<img src='/img/play.jpg'>"
 	play_btn.id = "play_btn";
- 
-	var waveform = $("canvas");
-	waveform.id = "waveform";
-	wrap.appendChild(waveform);
+	wave_wrap.appendChild(play_btn);
 
 	window.onresize = function(){
 		var waveform = $('#waveform');
@@ -366,13 +362,22 @@ function gameStart(){
 	if( waveformRenderId == null ){
 		waveformRenderId = setInterval( waveformRender, 1000 / FPS );
 	}
+});
 
-	wrap.appendChild(play_btn);
-	wrap.appendChild($('#upload_form'));
+function gameStart(){
+	var wrap = $('#wave_wrap');
+	wrap.style.display = "block";
+	$('#upload_wrap').className = "wrap_started";
 }
 
 
+var uploading = false;
 function uploadMusic( url ){
+	if( uploading == true ){
+		alert("현재 업로드가 완료된 뒤 시도해주세요");
+		return false;
+	}
+	uploading = true;
 	waveformArray = [];
 	audio.pause();
 	if( url ){
@@ -397,14 +402,17 @@ function uploadMusic( url ){
 				try {
 					var obj = JSON.parse( xhr.responseText );
 					getMusic(vid);
-					loadMusicArray(obj.vals);
+					loadMusicArray(obj.vals,vid);
 				} catch(e){
+					console.log(e);
 					alert(xhr.responseText);
 				}
 			}
 		}};
 		xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 		xhr.send();
+		gameStart();
+		$('#play_btn').onclick = null;
 	} else if( $('#upload_file').files[0] != null ){
 		var formdata = new FormData();
 		formdata.append("file",$('#upload_file').files[0]);
@@ -418,8 +426,6 @@ function uploadMusic( url ){
 			if( xhr.responseText && xhr.responseText.length ){
 				try {
 					var obj = JSON.parse( xhr.responseText );
-					console.log("end");
-					console.log("obj");
 					loadMusicArray(obj.vals);
 				} catch(e){
 					alert(xhr.responseText);
@@ -428,8 +434,10 @@ function uploadMusic( url ){
 		}};
 		xhr.open("POST","/api/audio/add", true); xhr.send(formdata);
 		getMusic();
+		gameStart();
+		$('#play_btn').onclick = null;
 	}
-	gameStart();
+	
 }
 
 function getMusic( vid ){
@@ -468,11 +476,15 @@ function getMusic( vid ){
 }
 
 
-function loadMusicArray( data ){
+function loadMusicArray( data, vid ){
+	uploading = false;
 	waveformArray = data;
+	var waveform = $('#waveform');
 	listenstart = (-(waveformArray.length * (2.5))) + (window.innerWidth/2);
 	max = waveformArray.max();
-	var waveform = $('#waveform');
+	for( var i = 0; i < waveformArray.length; ++i ){
+		waveformArray[i] = waveformArray[i]/max*waveform.height*(7/10);
+	}
 	waveform.style.cursor = "move";
 	if( waveformRenderId != null ){
 		clearInterval( waveformRenderId );
@@ -482,7 +494,11 @@ function loadMusicArray( data ){
 	var play_btn = $('#play_btn');
 	play_btn.style.cursor = "pointer";
 	play_btn.onclick = function(){
-		audio.src = "/api/audio/getaudio/1/" + (( -listenstart + waveform.width / 2 ) / 6) + "?" + new Date().getTime();
+		if( vid ){
+			audio.src = "/api/audio/getaudio/youtube/" + vid + "/" + (( -listenstart + waveform.width / 2 ) / 6) + "?" + new Date().getTime();
+		} else {
+			audio.src = "/api/audio/getaudio/1/" + (( -listenstart + waveform.width / 2 ) / 6) + "?" + new Date().getTime();
+		}
 		//audio.currentTime = ( -listenstart + waveform.width / 2 ) / 6;
 		audio.play();
 	};

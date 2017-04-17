@@ -29,6 +29,14 @@ form {
 	width : 100%;
 }
 
+.wrap_started form {
+	box-shadow : 0 1px 3px rgba(0,0,0,0.2);
+	background-color : white;
+}
+
+.wrap_started #helper {
+	display : none;
+}
 
 form label {
 	height : 250px;
@@ -39,9 +47,9 @@ form label {
 }
 
 form label img {
+	margin-top : 20px;
 	width : 250px;
-	height : 100%;
-	margin-bottom : 5vh;
+	margin-bottom : 20px;
 }
 
 form input {
@@ -66,8 +74,8 @@ form .upload_btn {
 	cursor : pointer;
 	background-color : #f15c3e;
 	width : 250px;
-	padding-top : 2vh;
-	padding-bottom : 2vh;
+	padding-top : 20px;
+	padding-bottom : 20px;
 	color : white;
 	border-radius : 2px;
 	margin : auto;
@@ -76,20 +84,19 @@ form .upload_btn {
 #upload_youtube {
 	margin-top : 10px;
 	background-color : rgb(216,23,40);
+	margin-bottom : 20px;
 }
 
 #wave_wrap {
 	position : relative;
 	padding : 0px;
-	height : calc( 100vh - 40px );
 	overflow : hidden;
 	width: 100%;
-	background-color : #e9eaed;
 	margin-top : 40px;
 }
 
 canvas {
-	padding-top : 2vh;
+	padding-top : 20px;
 	background-color : #ffffff;
 	box-shadow : 0 1px 7px rgba(0,0,0,0.2);
 }
@@ -105,8 +112,8 @@ canvas {
 	width : 10vh;
 	display : block;
 	margin : auto;
-	margin-top : 2vh;
-	margin-bottom : 2vh;
+	margin-top : 15px;
+	margin-bottom : 20px;
 	border-radius : 0.7vh;
 	background-color : #f15c3e;
 	text-align : center;
