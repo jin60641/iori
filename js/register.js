@@ -92,7 +92,7 @@ window.addEventListener('load', function(){
 	var form_login = $("text");
 	form_login.innerHTML = "이미 회원이신가요?<a href='/login'>로그인하기</a>"
 	form.appendChild(form_login);
-	document.body.appendChild(form);
+	$('#wrap_mid').appendChild(form);
 });
 
 function show_alert(msg){

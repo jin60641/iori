@@ -3,14 +3,6 @@
 	<head>
 		<% include ./header %>
 		<% include ./../css/search %>
-		<script>
-			<%
-				if( locals.docs == undefined || docs.length == 0 ){
-					docs = ""
-				}
-			%>
-			docs = "<%= docs %>".replace(/&#34;/g,'"');
-		</script>
 		<script src="/js/search.js"></script>
 		<% include ./footer %>
 	</head>

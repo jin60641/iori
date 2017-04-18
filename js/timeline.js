@@ -1221,7 +1221,7 @@ function getPosts(limit){
 			}
 		}
 	}
-	xhr.open("POST","/api/newsfeed/getposts", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+	xhr.open("POST","/api/newsfeed/getposts", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 	var params = "skip=";
 	if( limit ){
 		params += skip + "&limit=" + limit;
@@ -1338,7 +1338,7 @@ window.addEventListener('load',function(){
 
 	var postwrap = $("div");
 	postwrap.id = 'post_wrap'
-	$('#wrap2').appendChild(postwrap);
+	$('#wrap_mid').appendChild(postwrap);
 
 	if( session && postOption.uid == null ){
 		var write = $("div");
@@ -1388,7 +1388,7 @@ window.addEventListener('load',function(){
 
 	if( location.pathname.substr(0,6) == "/post/" ){
 		if( Post.length ){
-		Post = Post[0]
+			Post = Post[0]
 			postwrap.appendChild(makePost(Post));
 		} else {
 			location.href = "/";

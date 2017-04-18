@@ -81,7 +81,7 @@ window.addEventListener('load', function(){
 	title.id = "setting_title";
 	box.appendChild(title);
 	wrap.appendChild(box);
-	$('#wrap2').appendChild(wrap);
+	$('#wrap_mid').appendChild(wrap);
 
 	var tabs = $('div');
 	tabs.id = "setting_tab";

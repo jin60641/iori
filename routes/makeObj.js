@@ -49,7 +49,6 @@ function makeObj( req, res, ejs, obj ){
 	    obj.info = null;
 		renderPage( res, ejs, obj );
 	}
-
 }
 
 function renderPage( res, ejs, obj ){

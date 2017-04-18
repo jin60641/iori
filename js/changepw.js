@@ -34,7 +34,7 @@ window.addEventListener('load', function(){
 	form_alert.innerText = "'";
 	form.appendChild(form_alert);
 
-	document.body.appendChild(form);
+	$('#wrap_mid').appendChild(form);
 	
 });
 

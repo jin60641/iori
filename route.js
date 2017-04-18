@@ -192,11 +192,11 @@ router.get('/:dir/:filename', function( req, res ){
 				res.writeHead(200, { 'Content-Type' : type });
 				res.end( file );
 			} else {
-				res.end();
+				defaultRoute( req, res, "error" );
 			}
 		});
 	} else {
-		res.end();
+		defaultRoute( req, res, "error" );
 	}
 });
 
@@ -214,19 +214,27 @@ router.get('/:dir/:link([a-zA-Z0-9]*)', function( req, res ){
 				res.writeHead(200, { 'Content-Type' : type });
 				res.end( file );
 			} else {
-				res.end();
+				defaultRoute( req, res, "error" );
 			}
 		});
 	}
 });
 
 router.get('/:link(*)', function( req, res ){
-	if( req.params['link'] == "favicon.ico" ){
+	defaultRoute( req, res, req.params['link'] );
+});
+
+function defaultRoute( req, res, url ){
+	if( url == "favicon.ico" ){
 		res.end();
 	} else {
-		makeObj( req, res, req.params['link'] );
+		if( url == undefined || url == "" ){
+			makeObj( req, res, "error" );
+		} else {
+			makeObj( req, res, url );
+		}
 	}
-});
+}
 
 
 module.exports = router;

@@ -149,7 +149,7 @@ window.addEventListener('load', function(){
 	title.id = "admin_title";
 	box.appendChild(title);
 	wrap.appendChild(box);
-	$('#wrap2').appendChild(wrap);
+	$('#wrap_mid').appendChild(wrap);
 
 	var tabs = $('div');
 	tabs.id = "admin_tab";
@@ -158,7 +158,7 @@ window.addEventListener('load', function(){
 	for( var i = 0; i < keys.length; ++i ){
 		tabs.appendChild(makeAdminTab(keys[i],admin_obj[keys[i]].kr));
 	}
-	$('#wrap1').appendChild(tabs);
+	$('#wrap_left').appendChild(tabs);
 	
 	var limit = $('input');
 	limit.id = "admin_limit";
@@ -185,10 +185,10 @@ window.addEventListener('load', function(){
 });
 
 function adminResize(){
-	if( $("#wrap1").clientWidth == 0 ){
+	if( $("#wrap_left").clientWidth == 0 ){
 		$("#admin_wrap").insertBefore( $('#admin_tab'), $("#admin_wrap").firstElementChild );
 	} else {
-		$("#wrap1").appendChild( $('#admin_tab') );
+		$("#wrap_left").appendChild( $('#admin_tab') );
 	}
 }
 

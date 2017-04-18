@@ -215,20 +215,6 @@ router.post('/@:uid(*)', function( req, res ){
 	});
 });
 
-router.post( '/api/user/search', function( req, res){
-	var query = req.body['query'];
-	if( query ){
-		db.Users.find({ be : true, $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true },{ __v : 0, _id : 0, signUp : 0, email : 0, password : 0 }, function( err, result ){
-			if( result ){
-				res.send( result );
-			} else {
-				res.end();
-			}
-		});
-	} else {
-		res.send("검색어를 입력하여 주십시오.");
-	}
-});
 
 router.post( '/api/user/removeimg', checkSession, function( req, res ){
 	var type = req.body['imgtype'];

@@ -95,9 +95,9 @@ window.addEventListener('load',function(){
 				query += param_key[i] + '=' + params[param_key[i]] + "&";
 			}
 			var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 				if( xhr.responseText ){
-				var src = "/files/chat/" + xhr.responseText;
+					var src = "/files/chat/" + xhr.responseText;
 					img.src = src;
 				}
 			}}

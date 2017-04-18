@@ -75,7 +75,7 @@ window.addEventListener('load', function(){
 	form_register.innerHTML = "아직 회원이 아니신가요?<a href='/register'>회원가입</a>"
 	form.appendChild(form_findpw);
 	form.appendChild(form_register);
-	document.body.appendChild(form);
+	$('#wrap_mid').appendChild(form);
 });
 
 function show_alert(msg){

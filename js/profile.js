@@ -11,7 +11,7 @@ window.addEventListener('load', function(){
 	}
 	var wrap = $("div");
 	wrap.id = "profile_wrap";
-	document.body.insertBefore(wrap,body);
+	$('#wrap_top').appendChild(wrap);
 
 	var container = $("div");
 	container.id = "profile_container";
@@ -163,9 +163,9 @@ window.addEventListener('load', function(){
 	user_tab.id = "user_tab";
 	
 	if($('#post_wrap')){
-		$('#wrap2').insertBefore(user_tab,$('#post_wrap'));
+		$('#wrap_mid').insertBefore(user_tab,$('#post_wrap'));
 	} else {
-		$('#wrap2').appendChild(user_tab);
+		$('#wrap_mid').appendChild(user_tab);
 	}
 
 	window.addEventListener('scroll', resizeContainer );
@@ -174,7 +174,7 @@ window.addEventListener('load', function(){
 	
 	var follow_wrap = $('div');
 	follow_wrap.id = "follow_wrap";
-	$('#wrap2').appendChild(follow_wrap);
+	$('#wrap_mid').appendChild(follow_wrap);
 
 	openUserTab();
 });
@@ -182,16 +182,16 @@ window.addEventListener('load', function(){
 function resizeContainer(){
 	/*
 	// for absolute
-	if( document.body.scrollTop <= $('#wrap2').clientHeight + 42 - 130 ){
+	if( document.body.scrollTop <= $('#wrap_mid').clientHeight + 42 - 130 ){
 		container.style.top = "42px";
 	} else {
-		container.style.top = document.body.scrollTop + 42 - $('#wrap2').clientHeight + 80 + "px";
+		container.style.top = document.body.scrollTop + 42 - $('#wrap_mid').clientHeight + 80 + "px";
 	}
 	*/
 
 	var header_size = 42;
 	var max_scroll = 200;
-	var save_size = 108;
+	var save_size = 150;
 	var wrap = $('#profile_wrap');
 	var form = $('#profileimg_form');
 	var size = 170;
@@ -220,7 +220,11 @@ function resizeContainer(){
 	form.style.left = left + "px";
 	$('#user_name').style.left = left + size + 15 + "px";
 	$('#user_userid').style.left = left + size + 15 + "px";
-	
+	if( document.body.clientWidth >= 1000 ){
+		$('#profile_container').appendChild($('#user_tab'));
+	} else {
+		$('#wrap_mid').insertBefore(user_tab,$('#post_wrap'));
+	}
 }
 
 function changeLabelSize(type){
@@ -596,7 +600,6 @@ function openUserTab( evt ){
 	history.pushState(null,null,history_str);
 	
 	tab.style.color = session.color.hex;
-	tab.style.height = "24px";
 	tab.style.borderBottom = "5px solid " + session.color.hex;
 }
 

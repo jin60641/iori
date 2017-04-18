@@ -164,8 +164,6 @@ window.addEventListener('load', function(){
 
 	chat_box.appendChild(send_panel);
 	
-
-
 	var default_dialog = $("div");
 	default_dialog.id = "default_dialog";
 	default_dialog.innerText = "채팅을 선택해주세요";
@@ -413,7 +411,7 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			chat_panel.scrollTop = chat_panel.scrollHeight;
 		}
 	}};
-	xhr.open("POST", "/api/chat/getchats", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
+	xhr.open("POST", "/api/chat/getchats", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
 }
 
 function makeDialog( chat ){

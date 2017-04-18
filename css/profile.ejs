@@ -1,22 +1,32 @@
 <style>
 #profile_wrap {
 	width : 100vw;
-	padding-top : 42px;
 	min-height : 198px;
 	height : 25vh;
 	transition : height .6s ease;
-	margin-bottom : -53px;
 }
 
 #profile_wrap #profile_container {
 	z-index : 100;
-	width : 100vw;
 	position : fixed;
 	min-height : 198px;
 	height : 25vh;
+	width : 100vw;
 	box-shadow : 0px 4px 8px rgba(0,0,0,.2);
 	background-color : white;
 	transition : height .6s ease;
+}
+
+#profile_wrap #profile_container #user_tab {
+	padding-left : 0px;
+	border : 0;
+	text-align : left;
+}
+#profile_wrap #profile_container #user_tab > div {
+	box-sizing : initial;
+	font-size : 17px;
+	padding-top : 15px;
+	height : 30px;
 }
 
 #profile_wrap #profile_container #user_box {
@@ -138,12 +148,12 @@
 //	left : calc( 5vw + 15vh + 40.2px );
 }
 #profile_wrap #profile_container #user_name {
-	bottom : 6px;
+	bottom : 5px;
 	font-size : 19px;
 }
 
 #profile_wrap #profile_container #user_userid {
-	bottom : 31px;
+	bottom : 30px;
 	font-size : 13px;
 	color : rgba(0,0,0,.7)
 }
@@ -171,7 +181,7 @@
 	cursor : pointer;
 	font-size : 14px;
 	font-weight : bold;
-	margin-top : 7px;
+	margin-top : 6px;
 	margin-right : 7px;
 }
 
@@ -231,7 +241,8 @@ profile_wrap #post_wrap {
 	width : 70px;
 	text-align : center;
 	padding-top : 13px;
-	height : 28px;
+	height : 42px;
+	box-sizing : border-box;
 	text-decoration : none;
 }
 
@@ -290,11 +301,19 @@ profile_wrap #post_wrap {
 	}
 }
 
-
 @media screen and ( max-width : 1300px ) {
-	#wrap1 {
-		display : none;
+	#profile_wrap #profile_container #user_tab {
+		padding-left : 155px !important;
 	}
 }
+
+@media screen and ( max-width : 650px ) {
+	.user_list_div {
+		display : block;
+		margin-left : auto;
+		margin-right : auto;
+	}
+}
+
 
 </style>

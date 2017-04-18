@@ -171,16 +171,20 @@ window.addEventListener('load',function(){
 	document.body.appendChild(body);
 	body.id = "body";
 
+	var wrap0 = $("div");
+	wrap0.id = "wrap_top";
+	body.appendChild(wrap0);
+	
 	var wrap1 = $("div");
-	wrap1.id = "wrap1";
+	wrap1.id = "wrap_left";
 	body.appendChild(wrap1);
 
 	var wrap2 = $("div");
-	wrap2.id = "wrap2";
+	wrap2.id = "wrap_mid";
 	body.appendChild(wrap2);
 
 	var wrap3 = $("div");
-	wrap3.id = "wrap3";
+	wrap3.id = "wrap_right";
 	body.appendChild(wrap3);
 
 	if( session != null && session.signUp == true  ){
@@ -230,8 +234,12 @@ window.addEventListener('load',function(){
 	search.id = "head_search";
 	search.type = "text";
 	search.name = "query";
-	search.onkeyup = function(){
-		sendData_search(this.value);
+	search.onkeyup = function(e){
+		if( e.keyCode == 13 ){
+			location.href = "/search/"+this.value;
+		} else {
+			sendData_search(this.value);
+		}
 	}
 	search.placeholder = "친구 찾기";
 	search.onfocus = function(){

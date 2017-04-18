@@ -93,7 +93,7 @@ window.addEventListener('load', function(){
 	}
 
 	if( $('#post_wrap') ){
-		$('#wrap2').removeChild($('#post_wrap'));
+		$('#wrap_mid').removeChild($('#post_wrap'));
 	}
 	$('#body').style.display = "none";
 	document.body.style.minHeight = "0";

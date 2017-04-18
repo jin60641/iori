@@ -10,7 +10,7 @@
 		<%
 			} else {
 		%>
-				Post = "<%= Post %>".replace(/&#34;/g,'"');
+				Post = "<%= Post %>".replace(/&#34;/g,'"').replace(/(\r\n|\n|\r)/gm,"<br />");
 				if( Post.length > 0 ){
 					Post = JSON.parse(Post)
 				}
@@ -21,6 +21,7 @@
 		<script src="/js/timeline.js"></script>
 		<script src="/js/imglayer.js"></script>
 		<% include ./../css/timeline.ejs %>
+		<% include ./../css/imglayer.ejs %>
 		<% include ./footer %>
 	</head>
 	<body>

@@ -95,17 +95,25 @@ textarea {
 
 #body > * {
 	text-align : left;
-	margin-top : 18px;
+	margin-top : 10px;
 	display : inline-block;
 	vertical-align : top;
 	min-width : 300px;
 }
 
-#wrap1 {
+#wrap_top {
+	display : block;
+	vertical-align : initial;
+	max-width : initial;
+	margin-top : 0;
+	text-align : center;
+}
+
+#wrap_left {
 	margin-right :15px;
 }
 
-#wrap3 {
+#wrap_right {
 	margin-left :15px;
 }
 .user_follow_btn {
@@ -136,13 +144,13 @@ input[type=text], input[type=password], input[type=email], input[type=number] {
 }
 
 @media screen and ( max-width : 1300px ) {
-	#wrap3 {
+	#wrap_right {
 		display : none;
 	}
 }
 
 @media screen and ( max-width : 1000px ) {
-	#wrap1 {
+	#wrap_left {
 		display : none;
 	}
 }
