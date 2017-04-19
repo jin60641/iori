@@ -298,7 +298,7 @@ function changePost_apply(inside){
 	}
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		inside.style.paddingBottom="3px";
-		inside.innerHTML="<span>"+inside.firstChild.value.replace(/(\r\n|\n|\r)/gm,"<br />") +"</span><br />";  
+		inside.innerHTML="<span>"+inside.firstChild.value.replace(/((\r\n)|\n|\r)/gm,"<br />") +"</span><br />";  
 		if(xhr.responseText){ 
 			var xhrResult = JSON.parse( xhr.responseText );
 			var date = new Date( xhrResult.date ).getTime();

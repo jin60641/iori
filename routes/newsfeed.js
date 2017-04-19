@@ -15,7 +15,7 @@ var makeNotice = require('./notice.js').makeNotice;
 var checkSession = require("./auth.js").checkSession;
 
 String.prototype.trim = function() {
-	return this.replace(/(^\s*)|(\s*$)/gi, "");
+	return this.replace(/(^\s*)|(\s*$)/gi, "").replace(/(^\n*)|(\s*$)/gi, "");
 }
 
 String.prototype.xssFilter = function() {
@@ -500,7 +500,7 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 			});
 			req.busboy.on( 'field', function( fieldname, val ){
 				if( fieldname == "text" ){
-					text = val.trim().xssFilter();
+					text = val.trim().xssFilter().substr(0,120).replace(/((\r\n)|\n|\r){3,}/g,"\r\n\r\n");
 				}
 			});
 			req.busboy.on( 'finish', function(){

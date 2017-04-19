@@ -472,7 +472,7 @@ function makeTr(obj,th){
 			} else if( obj_keys[i] == "date" || obj_keys[i] == "change" || obj_keys[i] == "last"){
 				div.innerText = new Date(string).toLocaleString();
 			} else {
-				div.innerText = string.toString().replace(/(\r\n|\n|\r)/gm,". ");
+				div.innerText = string.toString().replace(/((\r\n)|\n|\r)/gm,". ");
 			}
 			td.appendChild(div);
 		}
