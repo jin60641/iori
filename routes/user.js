@@ -451,6 +451,27 @@ router.get( '/api/user/change/email/:email/:link', checkSession, function( req, 
 	}
 });
 
+router.post( '/api/user/search', function( req, res ){
+	getUsers( req, function( users ){
+		res.send(users);
+	});
+});
+
+function getUsers( req, cb ){
+	var query = req.body['query'];
+	if( query ){
+		db.Users.find({ be : true, $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true, id : { $ne : req.user.id } },{ __v : 0, _id : 0, admin : 0, be : 0, signUp : 0, notice : 0 }, function( err, result ){
+			if( result ){
+				cb( result );
+			} else {
+				cb([]);
+			}
+		});
+	} else {
+		cb([]);
+	}
+};
+
 router.post( '/api/user/change/notice', checkSession, function( req, res ){
 	db.Users.findOne({ be : true, id : req.user.id }, function( err, user ){
 		if( err ){
@@ -519,4 +540,7 @@ router.post( '/api/user/change/password', checkSession, function( req, res ){
 	}
 });
 
-module.exports = router;
+module.exports = {
+	router : router,
+	getUsers : getUsers
+}

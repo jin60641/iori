@@ -4,9 +4,10 @@ function makeUserCard( obj, popup ){
 	
 	var header = $('a');
 	header.href = "/@" + obj.uid;
-	if( obj.header ){
-		header.style.backgroundColor = session.color.hex;
-	}
+	header.style.backgroundColor = obj.color.hex;
+	if( obj.header == true ){
+		header.style.backgroundImage = "url('/files/header/" + user.id + "?')";
+	} 
 	header.className = "user_list_header";
 	div.appendChild(header);
 	

@@ -5,13 +5,14 @@ var async = require('async');
 
 router.use(require('body-parser').urlencoded());
 var makeObj = require('./makeObj.js');
+var getPosts = require('./newsfeed.js').getPosts;
+var getUsers = require('./user.js').getUsers;
 
 var checkSession = require('./auth.js').checkSession;
 router.get('/search', function( req, res ){
 	makeObj( req, res, "error" );
 });
 router.get('/search/:query/:tb', findDocs );
-router.get('/search/:query', findDocs );
 router.post( '/api/search', findDocs );
 
 function findDocs( req, res ){
@@ -22,41 +23,40 @@ function findDocs( req, res ){
 		function( callback ){
 			if( req.method == "GET" ){
 				query = req.params['query'];
-				if( query != undefined && query.length >= 1 ){
+				tb = req.params['tb'];
+				if( query != undefined && query.length >= 1 && ( tb == "user" || tb == "post" ) ){
 					makeObj( req, res, "search" );
 				} else {
 					makeObj( req, res, "error" );
 				}
 			} else if( req.method == "POST" && req.body['query'] != undefined && req.body['query'].length >= 1 ){
 				query = req.body['query'];
-				if( req.body['tb'] != undefined ){
-					tb = req.body['tb'];
+				tb = req.body['tb'];
+				if( query != undefined && query.length >= 1 && ( tb == "user" || tb == "post" ) ){
+					callback( null );
+				} else {
+					res.send("");
 				}
-				callback( null );
 			} else {
 				res.send("검색어를 입력해 주십시오.");
 			}
 		}, function( callback ){
-			if( tb == undefined || tb == "user" ){
-				db.Users.find({ be : true, $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true },{ id :1 , uid : 1 }).lean().exec( function( err, result ){
-					if( err ){
-						throw err;
-					}
-					docs.users = result;
+			if( tb == "user" ){
+				getUsers( req, function( result ){
+					docs = result;
 					callback( null );
 				});
 			} else {
 				callback( null );
 			}
 		}, function( callback ){
-			if( tb == undefined || tb == "post" ){
-				db.Posts.find({ be : true, $or : [{ text : { $regex : query } }, { html : { $regex : query } }]  }).lean().exec( function( err, result ){
-					if( err ){
-						throw err;
-					}
-					docs.posts = result;
+			if( tb == "post" ){
+				getPosts( req, function( result ){
+					docs = result;
 					callback( null );
 				});
+			} else {
+				callback( null );
 			}
 		}
 	], function( err ){

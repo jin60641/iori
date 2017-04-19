@@ -1335,12 +1335,10 @@ function DragOver(evt){
 }
 
 window.addEventListener('load',function(){
-
 	var postwrap = $("div");
 	postwrap.id = 'post_wrap'
 	$('#wrap_mid').appendChild(postwrap);
-
-	if( session && postOption.uid == null ){
+	if( session && postOption.uid == null && postOption.search == null){
 		var write = $("div");
 		write.id = "write";
 		write.innerHTML+='<div id="output_post"></div>';
@@ -1393,7 +1391,7 @@ window.addEventListener('load',function(){
 		} else {
 			location.href = "/";
 		}
-	} else if( postOption.uid != null ){
+	} else if( postOption.uid != null || postOption.search != null ){
 		
 	} else {
 		getPosts(10);

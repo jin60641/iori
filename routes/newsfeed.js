@@ -84,18 +84,18 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 });
 
 router.get( '/post/:pid', function( req, res ){
-	getPost( req, function( post ){
+	getPosts( req, function( post ){
 		makeObj( req, res, "post", { "Post" : post });
 	});
 });
 
 router.post( '/api/newsfeed/getposts', function( req, res ){
-	getPost( req, function( posts ){
+	getPosts( req, function( posts ){
 		res.send( posts );
 	});
 });
 
-function getPost( req, cb ){
+function getPosts( req, cb ){
 	if( req.user && req.user.id ){
 	} else {
 		req.user = { id : 0 };
@@ -107,6 +107,7 @@ function getPost( req, cb ){
 	var limit = parseInt(req.body['limit']);
 	var uid = req.body['uid'];
 	var pid = parseInt(req.params['pid']);
+	var search = req.body['search'];
 	var tos = new Array();
 	var favorites = new Array();
 	if( skip >= 0 == false ){
@@ -175,7 +176,9 @@ function getPost( req, cb ){
 			}
 		}, function( callback ){
 			var query;
-			if( pid > 0 ){
+			if( search != undefined && search.length >= 1 ){
+				query = { $or : [{ text : { $regex : search } }, { html : { $regex : search } }]  }
+			} else if( pid > 0 ){
 				query = { id : pid };
 			} else if( req.body['favorite'] == "true" && uid != null ){
 				query = { id : { $in : favorites } };
@@ -606,5 +609,8 @@ router.post( '/api/newsfeed/linkpreview', function( req, res ){
 });
 
 
-module.exports = router;
+module.exports = {
+	router : router,
+	getPosts : getPosts
+}
 

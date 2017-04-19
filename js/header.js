@@ -47,26 +47,30 @@ if( session.level >= 9 ){
 	//관리자
 }
 
+function getUsers( query, limit, cb ){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		var xhrResult = JSON.parse( xhr.responseText );
+		cb(xhrResult);
+	}}
+	xhr.open("POST", "/api/user/search", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('query='+query+'&tb=user');
+}
 
 //유저검색(헤더)
 function sendData_search( query ){
 	if( query ){
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		getUsers( query, 5, function(xhrResult){
 			var result = $("#head_search_result");
-			if( xhr.responseText != "[]" ){
-				result.innerHTML="";
-				var xhrResult = JSON.parse( xhr.responseText );
-				if( xhrResult.length ){
-					for( var i = xhrResult.length - 1; i>=0; i--){
-						result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="head_search_result_uid">@' + xhrResult[i].uid.toString() + '</div>' + xhrResult[i].name.toString() + '</span></div></a>';
-					}
+			result.innerHTML="";
+			if( xhrResult.length ){
+					console.log(xhrResult);
+				for( var i = xhrResult.length - 1; i>=0; i--){
+					result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="head_search_result_uid">@' + xhrResult[i].uid + '</div>' + xhrResult[i].name + '</span></div></a>';
 				}
 			} else {
 				result.innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
 			}
-		}}
-		xhr.open("POST", "/api/user/search", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('query='+query);
+		});
 	} else {
 		$('#head_search_result').innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
 	}
@@ -236,7 +240,7 @@ window.addEventListener('load',function(){
 	search.name = "query";
 	search.onkeyup = function(e){
 		if( e.keyCode == 13 ){
-			location.href = "/search/"+this.value;
+			location.href = "/search/"+this.value+"/user";
 		} else {
 			sendData_search(this.value);
 		}
