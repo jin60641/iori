@@ -87,7 +87,9 @@ window.addEventListener('load', function(){
 				evt.preventDefault();
 			}
 			resizeContainer();
-			label.onmousewheel = backgroundMouseWheel; 
+			label.onmousewheel = function( evt ){
+				backgroundMouseWheel( evt, img ); 
+			}
 			label.onmousemove = function( evt ){
 				backgroundMouseMove( evt, img );
 			}
@@ -135,12 +137,12 @@ window.addEventListener('load', function(){
 		container.appendChild(user_chat);
 	}
 
-	user_name = $("div");
+	var user_name = $("div");
 	user_name.id = "user_name";
 	user_name.innerHTML = user.name;
 	container.appendChild(user_name);
 
-	user_userid = $("div");
+	var user_userid = $("div");
 	user_userid.id = "user_userid";
 	user_userid.innerHTML = "@" + user.uid;
 	container.appendChild(user_userid);
@@ -416,7 +418,7 @@ function makePhotoHelper( type, boolean ){
 	var photohelper_menu = $("div");
 	photohelper_menu.innerHTML = "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
 	photohelper_menu.className = "photohelper_menu";
-	photohelper_change = $("div");
+	var photohelper_change = $("div");
 	photohelper_change.onclick = function( evt ){
 		hideLabelMenu();
 		$('#' + this.parentNode.parentNode.parentNode.id.replace("label","file") ).click();
@@ -428,7 +430,7 @@ function makePhotoHelper( type, boolean ){
 	if( boolean == true || ( boolean == undefined && user[type] == true ) ) {
 	//if( ( boolean == true || boolean == undefined ) && user[type] ){
 		photohelper_change.innerText = "변경";
-		photohelper_remove = $("div");
+		var photohelper_remove = $("div");
 		photohelper_remove.onclick = removeImage;
 		photohelper_remove.className = "photohelper_div";
 		photohelper_remove.innerText = "삭제";
@@ -442,7 +444,7 @@ function makePhotoHelper( type, boolean ){
 	return photohelper;
 }
 
-function backgroundMouseWheel(evt){
+function backgroundMouseWheel( evt, img ){
 	var type = evt.target.id.split('img')[0];
 	if( type == "header"){
 		headerLabelScale -= 0.001 * evt.deltaY;
@@ -452,6 +454,7 @@ function backgroundMouseWheel(evt){
 			headerLabelScale = 2;
 		}
 		changeLabelSize("header");
+		backgroundMouseMove( evt, img, true );
 	} else if( type == "profile" ){
 		profileLabelScale -= 0.001 * evt.deltaY;
 		if( profileLabelScale < 1 ){
@@ -460,12 +463,13 @@ function backgroundMouseWheel(evt){
 			profileLabelScale = 2;
 		}
 		changeLabelSize("profile");
+		backgroundMouseMove( evt, img, true );
 	}
 	evt.preventDefault();
 }
 
-function backgroundMouseMove( evt, img ){
-	if( evt.button || evt.buttons ){
+function backgroundMouseMove( evt, img, update ){
+	if( evt.button || evt.buttons || update ){
 		var label = evt.target;
 		var type = label.id.split('img')[0];
 		var scale;
@@ -477,15 +481,15 @@ function backgroundMouseMove( evt, img ){
 
 		var x = parseInt(label.style.backgroundPositionX.replace("px",""));
 		var y = parseInt(label.style.backgroundPositionY.replace("px",""));
-					
-		x += evt.movementX * 2;
-		y += evt.movementY * 2;
-					
-		if( label.id == "profileimg_label" ){
-			x += evt.movementX;
-			y += evt.movementY;
+		if( update == undefined || update == false ){
+			x += evt.movementX * 2;
+			y += evt.movementY * 2;
+			if( label.id == "profileimg_label" ){
+				x += evt.movementX;
+				y += evt.movementY;
+			}
 		}
-		
+					
 		var imgWidth = img.width * scale;
 		var imgHeight = img.height * scale;
 

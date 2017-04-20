@@ -78,7 +78,7 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 				}
 			});
 		}, function( uids, cb ){
-			db.Users.find({ be : true, id : { $in : uids } },{ id : 1, name : 1, uid : 1, profile : 1, header : 1 }).lean().exec( function( err, result ){
+			db.Users.find({ be : true, id : { $in : uids } },{ id : 1, name : 1, uid : 1, profile : 1, header : 1, color : 1 }).lean().exec( function( err, result ){
 				if( err ){
 					throw err;
 				} else {
@@ -261,6 +261,7 @@ router.post( '/api/user/:imgtype(*)img', checkSession, function( req, res ){
 						}
 						res.end();
 						var obj = {};
+						req.user[type] = true;
 						obj[type] = true;
 						db.Users.update({ id : req.user.id }, obj ).exec();
 					});

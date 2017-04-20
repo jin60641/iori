@@ -179,6 +179,11 @@ window.addEventListener('load', function(){
 		getChats( 0, data.type, data.dialog_id, true, true );
 	});
 	
+	window.addEventListener('keydown', function(e){
+		if( e.keyCode == 27 ){
+			showChatLayer(false);
+		}
+	});
 	window.addEventListener('keydown', imgmenu_keydown );
 
 	window.addEventListener('click', function(e){
@@ -1220,4 +1225,5 @@ function DragOver(evt){
 	obj.marginTop = "5px";
 	obj.marginRight = "9px";
 }
+
 

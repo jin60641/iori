@@ -274,11 +274,12 @@
 
 #head #navi_tab a::after {
 	content: '';
-	margin-top : 12px;
+	margin-top : 11px;
     display: block;
     width: 100%;
 	height : 0px;
     background : <%= color_hex %>;
+	transition : all linear .1s;
 }
 
 #head #navi_tab a:hover::after {
@@ -346,6 +347,10 @@
 	}
 	position : absolute;
 	right : 30px;
+}
+
+#user_list_self {
+	margin-right : initial;
 }
 
 @media screen and ( max-width : 470px ) {

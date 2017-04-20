@@ -8,7 +8,7 @@ function makeUserCard( obj, popup ){
 	header.href = "/@" + obj.uid;
 	header.style.backgroundColor = obj.color.hex;
 	if( obj.header == true ){
-		header.style.backgroundImage = "url('/files/header/" + user.id + "?')";
+		header.style.backgroundImage = "url('/files/header/" + obj.id + "?')";
 	} 
 	header.className = "user_list_header";
 	div.appendChild(header);

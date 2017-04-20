@@ -425,6 +425,9 @@ function openfile_post(event,postid){
 		fileindex_tmp = fileindex[postid];
 	} else {
 		realfiles_tmp = realfiles[0];
+		if( realfiles_tmp == undefined ){
+			realfiles_tmp = [];
+		}
 		var output = output_post;
 	}
 	var input=event.target;
@@ -981,7 +984,7 @@ function makeReply( Reply, pid ){
 		reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Reply.user.uid + '">' +  Reply.user.name.toString() + "</a><span>" + Reply.text.toString() + "</span><br><span id='date_" + new Date(Reply.date).getTime() + "' class='date'>" + getDateString(Reply.date,1) + '</span></div>';
 	}
 	if( session != "" && session.signUp == true ){
-		reply_menu_btn = reply.lastElementChild.firstChild;
+		var reply_menu_btn = reply.lastElementChild.firstChild;
 		reply_menu_btn.id = "reply_menu_btn_" + pid + '_' + Reply.id
 		reply.onmouseleave=function(event){
 			event.stopPropagation();
@@ -1486,7 +1489,7 @@ function postWrite(){
 		formdata.append("text",tmp);
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
-			pid = parseInt(xhr.responseText);
+			var pid = parseInt(xhr.responseText);
 			getPosts(0);
 			var post_cnt = $('#user_list_tab_value_post');
 			if( post_cnt ){
@@ -1495,7 +1498,7 @@ function postWrite(){
 //			socket.emit( 'post_write', pid );
 		}}
 		xhr.open("POST","/api/newsfeed/writepost", false);  xhr.send(formdata);
-		delete realfiles[0];
+		realfiles[0] = [];
 		post_write.value="";
 		post_file.value="";
 		output_post.innerHTML="";

@@ -92,7 +92,7 @@ window.addEventListener('load', function(){
 	for( var i = 0; i < keys.length; ++i ){
 		tabs.appendChild(makeSettingTab(keys[i],settings[keys[i]].kr));
 	}
-	$('#wrap1').appendChild(tabs);
+	$('#wrap_left').appendChild(tabs);
 	
 	var submit = $('div');
 	submit.innerText = "저장";
@@ -105,10 +105,10 @@ window.addEventListener('load', function(){
 });
 
 function settingResize(){
-	if( $("#wrap1").clientWidth == 0 ){
+	if( $("#wrap_left").clientWidth == 0 ){
 		$("#setting_wrap").insertBefore( $('#setting_tab'), $("#setting_wrap").firstElementChild );
 	} else {
-		$("#wrap1").appendChild( $('#setting_tab') );
+		$("#wrap_left").appendChild( $('#setting_tab') );
 	}
 }
 

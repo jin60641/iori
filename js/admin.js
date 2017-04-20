@@ -92,7 +92,7 @@ function makePages(){
 		left.className = "pages_btn";
 		left.id = "pages_left";
 		pages.appendChild(left);
-		for( i = 0; i < 10; ++i ){
+		for( var i = 0; i < 10; ++i ){
 			var pages_num = $('span');
 			if( page_cnt > i ){
 				pages_num.style.display = "";

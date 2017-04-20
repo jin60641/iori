@@ -9,12 +9,13 @@
 	margin : auto;
 }
 
-#wrap1 #setting_tab {
+#wrap_left #setting_tab {
 	border-top : 1px solid #e5e6e9;
 	border-radius : 4px;
 }
 
 #setting_tab > div {
+	cursor : pointer;
 	background-color : white;
 	border : 1px solid #dfe0e4;
 	border-color : #e5e6e9 #dfe0e4 #e5e6e9;
@@ -24,7 +25,7 @@
 	font-size: 14px;
 }
 
-#wrap2 #setting_tab > div {
+#wrap_mid #setting_tab > div {
 	display : inline-block;
 	width : 90px;
 	box-sizing : border-box;
@@ -34,19 +35,19 @@
 	border-right : 0px;
 }
 
-#wrap2 #setting_tab > div:last-of-type {
+#wrap_mid #setting_tab > div:last-of-type {
 	border-right : 1px #dfe0e4 solid;
 }
 
-#wrap1 #setting_tab > div:first-of-type {
+#wrap_left #setting_tab > div:first-of-type {
 	border-radius : 4px 4px 0 0;
 }
 
-#wrap1 #setting_tab > div:last-of-type {
+#wrap_left #setting_tab > div:last-of-type {
 	border-radius : 0px 0px 4px 4px;
 }
 
-#wrap1 #setting_tab > div:hover {
+#wrap_left #setting_tab > div:hover {
 	cursor : pointer;
 	background-color : #f6f6f6;
 	color : <%= color_hex %>;

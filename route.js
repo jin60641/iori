@@ -31,7 +31,12 @@ function checkAdmin( req, res, next ){
 		res.redirect('/');
 	}
 }
-
+router.get('/.well-known/acme-challenge/gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8', function( req, res ){
+	res.send("gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8.3-9-I62_50CExzz0HafMZVP8K3-h0XQUH4Cmjam7Gto");
+});
+router.post('/.well-known/acme-challenge/gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8', function( req, res ){
+	res.send("gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8.3-9-I62_50CExzz0HafMZVP8K3-h0XQUH4Cmjam7Gto");
+});
 router.get('/', function( req, res ){
 	if( req.user && req.user.signUp ){
 		makeObj( req, res, "index" );
@@ -79,11 +84,15 @@ router.get('/changepw/:email/:link',function( req, res){
 
 router.get( '/files/header/:uid', function( req, res ){
 	var uid = req.params['uid'];
-	fs.exists( __dirname + '/files/header/' + parseInt(uid), function( exists ){
+	var id = parseInt(uid);
+	if( ( id >= 0 ) == false ){
+		id = -1;
+	}
+	fs.exists( __dirname + '/files/header/' + id, function( exists ){
 		if( exists ){
-			res.sendfile(__dirname + '/files/header/' + parseInt(uid) );
+			res.sendfile(__dirname + '/files/header/' + id );
 		} else {
-			db.Users.findOne({ uid : uid }, function( err, user ){
+			db.Users.findOne({ $or : [{ uid : uid },{ id : id }] }, function( err, user ){
 				if( err ){
 					throw err;
 				} else if( user ){
@@ -117,11 +126,15 @@ router.get( '/files/group/:gid', function( req, res ){
 
 router.get( '/files/profile/:uid', function( req, res ){
 	var uid = req.params['uid'];
-	fs.exists( __dirname + '/files/profile/' + parseInt(uid), function( exists ){
+	var id = parseInt(req.params['uid']);
+	if( ( id >= 0 ) == false ){
+		id = -1;
+	}
+	fs.exists( __dirname + '/files/profile/' + id, function( exists ){
 		if( exists ){
-			res.sendfile(__dirname + '/files/profile/' + parseInt(uid) );
+			res.sendfile(__dirname + '/files/profile/' + id );
 		} else {
-			db.Users.findOne({ uid : uid }, function( err, user ){
+			db.Users.findOne({ $or : [{ uid : uid },{ id : id }] }, function( err, user ){
 				if( err ){
 					throw err;
 				} else if( user ){
@@ -150,7 +163,6 @@ router.get( '/files/profile/:uid', function( req, res ){
 	});
 });
 
-//router.use(require('../ujujuju/ujujuju.js'));
 
 router.get('/:dir/:filename', function( req, res ){
 	var dir = req.params['dir'];
@@ -173,7 +185,7 @@ router.get('/:dir/:filename', function( req, res ){
 			type = "image/svg+xml";
 			break;
 		case "sound":
-        	type = "audio/mpeg";
+			type = "audio/mpeg";
 			break;
 	}
 	if( type ){
@@ -237,6 +249,7 @@ function defaultRoute( req, res, url ){
 		}
 	}
 }
+
 
 
 module.exports = router;
