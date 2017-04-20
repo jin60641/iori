@@ -1,3 +1,6 @@
+
+'use strict';
+
 (function () {
 	var css_href = '/css/webfont_woff.css';
 	var css_href_normal = '/css/webfont_normal.css';

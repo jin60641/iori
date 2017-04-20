@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
 var db = require('./dbconfig.js');
@@ -485,7 +487,7 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 			postid = result.id + 1;
 		}
 		var uploadedFile = __dirname + '/../files/post/' + postid;
-		fs.mkdir( uploadedFile, 0755, function( err ){
+		fs.mkdir( uploadedFile, "0755", function( err ){
 			if( err ){
 				throw err;
 			}
@@ -518,7 +520,7 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 					if( error ){
 						throw error;
 					}
-					fs.mkdir( uploadedFile + '/reply' , 0755, function( err2 ){
+					fs.mkdir( uploadedFile + '/reply' , "0755", function( err2 ){
 						if( err2 ){
 							throw err2;
 						}

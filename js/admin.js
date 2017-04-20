@@ -1,3 +1,5 @@
+'use strict';
+
 var obj_keys;
 
 var admin_obj = {

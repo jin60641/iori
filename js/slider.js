@@ -1,3 +1,6 @@
+'use strict';
+var sliderTimer;
+
 window.addEventListener('load', function(){
 	var post_slider = $("div");
 	post_slider.id = "post_slider";
@@ -49,7 +52,7 @@ window.addEventListener('load', function(){
 	var slide_box = $("div");
 	slide_box.id = "slide_box";
 
-	slide_logo = $("div");
+	var slide_logo = $("div");
 	slide_logo.id = "slide_logo";
 	slide_box.appendChild(slide_logo);
 

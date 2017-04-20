@@ -1,3 +1,5 @@
+'use strict';
+
 postOption.uid = user.id;
 
 var profileLabelScale = 1;

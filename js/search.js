@@ -1,3 +1,5 @@
+'use strict';
+
 postOption.search = location.pathname.split('/')[2];
 
 window.addEventListener('load', function(){

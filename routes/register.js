@@ -1,3 +1,5 @@
+'use strict';
+
 var crypto = require("crypto");
 var async = require("async");
 var db = require("./dbconfig");

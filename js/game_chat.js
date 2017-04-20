@@ -1,3 +1,5 @@
+'use strict';
+
 window.addEventListener('click',function(){
 	if( event.target != slot_menu_name ){
 		slot_menu.style.display = "none";

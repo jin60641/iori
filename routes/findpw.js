@@ -1,3 +1,5 @@
+'use strict';
+
 var crypto = require("crypto");
 var db = require("./dbconfig");
 var smtpTransport = require("./mailconfig").smtpTransport;

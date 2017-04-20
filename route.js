@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
@@ -138,7 +140,7 @@ router.get( '/files/profile/:uid', function( req, res ){
 				} else {
 					var file = fs.readFileSync( __dirname + '/svg/profile.svg', 'utf8' );
 					file = file.replace("#000000",require('./routes/settings.js').defaultColor.hex);
-					type = "image/svg+xml";
+					var type = "image/svg+xml";
 					res.writeHead(200, { 'Content-Type' : type });
 					res.end( file );
 					//res.sendfile(__dirname + '/svg/profile.svg' );

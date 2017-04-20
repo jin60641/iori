@@ -1,4 +1,11 @@
-postLoading = false;
+'use strict';
+
+
+var postLoading = false;
+var realfiles = {};
+realfiles[0] = [];
+var post_origin = {};
+var fileindex = {};
 
 //모바일을 위한 터치 이벤트 리스너
 /*
@@ -199,7 +206,7 @@ function changePost(postid){
 	textarea.onkeyup=function(){post_resize(this)};
 	textarea.placeholder="글을 입력하세요.";
 	if( inside.firstChild && inside.firstChild.innerText ){
-		eval("origin_"+postid+"=inside.firstChild.cloneNode(true)");
+		post_origin[postid]=inside.firstChild.cloneNode(true);
 		inside.replaceChild(textarea,inside.firstChild);
 	} else {
 		inside.insertBefore(textarea,inside.firstChild);
@@ -230,18 +237,18 @@ function changePost(postid){
 	output.id = "changeoutput_"+postid;
 	inside.insertBefore(output,postbtn);
 	var post_span = inside.parentNode.childNodes[1];
-	eval("fileindex_"+postid+"=[]");
-	eval("var fileindex = fileindex_"+postid);
-	eval("realfiles_"+postid+"=[]");
+	fileindex[postid] = [];
+	realfiles[postid] = [];
+	var fileindex_tmp = fileindex[postid];
 	if(post_span.className == "post_span"){
 		for(var j = 0; j < inside.childElementCount; ++j){
 		//for(var j = inside.childElementCount - 1; j>=0; --j){
 			if(inside.childNodes[j].tagName == "IMG"){
 				var src = inside.childNodes[j].src;
 				for(var i = 0; i < parseInt(post_span.innerText); ++i){
-					fileindex[i] = i + 1;
+					fileindex_tmp[i] = i + 1;
 					var imgbox = $("div");
-					imgbox.id = "postimg_" +( output.childElementCount + 1);
+					imgbox.id = "postimg_" +( i + 1);
 					imgbox.className='post_imgbox';
 					output.appendChild(imgbox);
 					output.style.display="block";
@@ -257,9 +264,8 @@ function changePost(postid){
 					imgbox.style.backgroundClip="content-box";
 					var deletebtn = $("div");
 					deletebtn.className='delete_postimg';
-					deletebtn.onclick= function(){
-						eval("var realfiles = realfiles_"+this.parentNode.parentNode.id.substr(13));
-						fileindex.splice( parseInt(this.parentNode.id.substr(8)) - 1 , 1);
+					deletebtn.onclick= function(){	
+						fileindex_tmp.splice( parseInt(this.parentNode.id.split('_').pop()) - 1 , 1);
 						output.removeChild(this.parentNode);  
 						for( var k = 0; k < output.childElementCount; ++k ){
 							output.children[k].id = "postimg_" + (k+1);
@@ -282,9 +288,9 @@ function changePost_apply(inside){
 	}
 	var formdata = new FormData();
 	var postid = inside.id.substr(12);
-	eval("var realfiles_change = realfiles_"+postid);
-	eval("var fileindex = fileindex_"+postid);
-	if( fileindex[0] || inside.firstElementChild.value.length>= 1 ){
+	var realfiles_change = realfiles[postid];
+	var fileindex_tmp = fileindex[postid];
+	if( fileindex_tmp[0] || inside.firstElementChild.value.length>= 1 ){
 		for( var i = 0; i < realfiles_change.length; ++i ){
 //		for( var i=realfiles_change.length-1; i>=0; --i){
 			formdata.append("file",realfiles_change[i]);
@@ -349,8 +355,8 @@ function changePost_apply(inside){
 			//socket.emit( 'post_change' );
 		}
 	}}
-	if( fileindex[0] ){
-		xhr.open("POST","/api/newsfeed/changepost/" + postid + "/" + fileindex, false); xhr.send(formdata)
+	if( fileindex_tmp[0] ){
+		xhr.open("POST","/api/newsfeed/changepost/" + postid + "/" + fileindex_tmp, false); xhr.send(formdata)
 	} else {
 		xhr.open("POST","/api/newsfeed/changepost/" + postid + "/0", false); xhr.send(formdata)
 	}
@@ -358,8 +364,8 @@ function changePost_apply(inside){
 
 //게시글 수정 취소
 function cancleChange(postid){
-	eval("delete realfiles_"+postid);
-	eval("delete fileindex_"+postid);
+	delete realfiles[postid];
+	delete fileindex[postid];
 	var div = $("div")
 	div.id = "changepost_"+postid;
 	div.onclick = "changePost("+postid+")";
@@ -373,15 +379,16 @@ function cancleChange(postid){
 	for(var i = inside.childElementCount - 1; i>=0; --i){
 		var child = inside.childNodes[i];
 		if(child.tagName=="TEXTAREA"){
+			var origin;
 			try {
-				eval("origin = origin_"+postid);
+				origin = post_origin[postid];
 			}
 			catch(err){
 				inside.removeChild(child);
 				continue;
 			}
 			inside.replaceChild(origin,child);
-			eval("delete origin_"+postid);
+			delete post_origin[postid];
 		} else if(child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR"||child.tagName=="A"){
 			child.style.display = "";
 		} else {
@@ -410,11 +417,14 @@ function openfile_post(event,postid){
 	if( event.dataTransfer ){
 		event.dataTransfer.dropEffect = 'copy';
 	}
+	var realfiles_tmp;
+	var fileindex_tmp;
 	if(postid){
 		var output = $("#changeoutput_"+postid);
-		eval("var realfiles = realfiles_"+postid);
-		eval("var fileindex = fileindex_"+postid);
+		realfiles_tmp = realfiles[postid];
+		fileindex_tmp = fileindex[postid];
 	} else {
+		realfiles_tmp = realfiles[0];
 		var output = output_post;
 	}
 	var input=event.target;
@@ -428,21 +438,21 @@ function openfile_post(event,postid){
 		files = event.dataTransfer.files;
 	}
 	for( var i = 0; i<files.length; ++i){
-		if(realfiles.length>=20){
+		if(realfiles_tmp.length>=20){
 			alert("사진은 최대 20장까지만 업로드 가능합니다.");
 			return false;
 		}
-		realfiles.push(files[i]);
+		realfiles_tmp.push(files[i]);
 		if(postid){
 			var post_span = input.parentNode.parentNode.childNodes[1];
 			if(post_span.className == "post_span"){
-				if( fileindex[fileindex.length - 1] < parseInt(post_span.innerText) ){
-					fileindex.push(parseInt(post_span.innerText)+1);
+				if( fileindex_tmp[fileindex_tmp.length - 1] < parseInt(post_span.innerText) ){
+					fileindex_tmp.push(parseInt(post_span.innerText)+1);
 				} else {
-					fileindex.push(fileindex[fileindex.length - 1] + 1);
+					fileindex_tmp.push(fileindex_tmp[fileindex_tmp.length - 1] + 1);
 				}
 			} else {
-				fileindex.push(1);
+				fileindex_tmp.push(1);
 			}
 		}
 		var reader = new FileReader();
@@ -475,11 +485,12 @@ function openfile_post(event,postid){
 			deletebtn.className='delete_postimg';
 			if(postid){
 				deletebtn.onclick= function(){
-					eval("var realfiles = realfiles_"+this.parentNode.parentNode.id.substr(13));
-					eval("var fileindex = fileindex_"+this.parentNode.parentNode.id.substr(13));
+					var postid = this.parentNode.parentNode.id.substr(13);
+					var realfiles_tmp = realfiles[postid];
+					var fileindex_tmp = fileindex[postid];
 					var index = parseInt(this.parentNode.id.substr(8)) - 1;
-					realfiles.splice( index - output.childElementCount + realfiles.length , 1 );
-					fileindex.splice( index , 1);
+					realfiles_tmp.splice( index - output.childElementCount + realfiles_tmp.length , 1 );
+					fileindex_tmp.splice( index , 1);
 					output.removeChild(this.parentNode);  
 					for( var j=0; j<output.childElementCount;++j){
 						output.children[j].id = "postimg_" + (j+1);
@@ -487,7 +498,8 @@ function openfile_post(event,postid){
 				}
 			} else {
 				deletebtn.onclick= function(){
-					realfiles.splice( (parseInt(this.parentNode.id.substr(8)) - 1), 1 );
+					var realfiles_tmp = realfiles[0];
+					realfiles_tmp.splice( (parseInt(this.parentNode.id.substr(8)) - 1), 1 );
 					output.removeChild(this.parentNode);  
 					for( var j=0; j<output.childElementCount;++j){
 						output.children[j].id = "postimg_" + (j+1);
@@ -1232,7 +1244,7 @@ function getPosts(limit){
 		skip = posts;
 	}
 	if( postOption ){
-		obj_keys = Object.keys(postOption);
+		var obj_keys = Object.keys(postOption);
 		for( var i = 0; obj_keys.length > i; ++i ){
 			params += "&" + obj_keys[i] + "=" + postOption[obj_keys[i]];
 		}
@@ -1372,8 +1384,8 @@ window.addEventListener('load',function(){
 			postwrap.appendChild(write);
 		}
 	}
-	output_post = $("#output_post");
-	post_file = $("#post_file");
+	var output_post = $("#output_post");
+	var post_file = $("#post_file");
 
 	window.addEventListener('scroll', function(e){
 		if( $('#post_wrap') != null && postLoading == false ){
@@ -1458,15 +1470,18 @@ function replyWrite(post){
 }
 
 // 게시글쓰기
-realfiles=[];
 function postWrite(){
 	var postwrite = $('#post_write');
 	var tmp = postwrite.value;
 	var formdata = new FormData();
-	if( realfiles[0] || tmp.length>= 1 ){
-		for( var i=0; i<realfiles.length; ++i){
-//		for( var i=realfiles.length-1; i>=0; --i){
-			formdata.append("file",realfiles[i]);
+	var realfiles_tmp = realfiles[0];
+	if( realfiles_tmp == undefined ){
+		realfiles_tmp = [];
+	}
+	if( realfiles_tmp[0] || tmp.length>= 1 ){
+		for( var i=0; i<realfiles_tmp.length; ++i){
+//		for( var i=realfiles_tmp.length-1; i>=0; --i){
+			formdata.append("file",realfiles_tmp[i]);
 		}
 		formdata.append("text",tmp);
 		var xhr = new XMLHttpRequest();
@@ -1480,7 +1495,7 @@ function postWrite(){
 //			socket.emit( 'post_write', pid );
 		}}
 		xhr.open("POST","/api/newsfeed/writepost", false);  xhr.send(formdata);
-		realfiles=[];
+		delete realfiles[0];
 		post_write.value="";
 		post_file.value="";
 		output_post.innerHTML="";

@@ -1,3 +1,5 @@
+'use strict';
+
 var imgviewing = 0;
 window.addEventListener('load',function(){
 	var imglayer = $("div");
@@ -161,7 +163,7 @@ window.addEventListener('load',function(){
 		imglayer.onclick = function(){ document.body.style.overflowY=""; imglayer.style.opacity="0";imgviewing=0;}
 	}
 	imglayer.appendChild(imgmenu);
-	imgbox = $("div");
+	var imgbox = $("div");
 	imgbox.id = "imgbox";
 	imglayer.appendChild(imgbox);
 	

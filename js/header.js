@@ -1,3 +1,5 @@
+'use strict';
+
 function getCookie(cname) {
 	var cookie_array = document.cookie.split(', ');
 	for(var i = 0; i < cookie_array.length; ++i ){
@@ -171,7 +173,7 @@ function close_all(){
 }
 
 window.addEventListener('load',function(){
-	body = $("div");
+	var body = $("div");
 	document.body.appendChild(body);
 	body.id = "body";
 

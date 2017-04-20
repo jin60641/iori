@@ -1,3 +1,5 @@
+'use strict';
+
 var db = require("./dbconfig");
 var cookie = require('cookie');
 

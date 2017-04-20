@@ -1,3 +1,5 @@
+'use strict';
+
 function makeUserCard( obj, popup ){
 	var div = $('div');
 	div.className = "user_list_div";

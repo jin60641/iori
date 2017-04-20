@@ -1,3 +1,5 @@
+'use strict';
+
 function $(query){
 	switch( query[0] ){
 		case '#' :
@@ -98,5 +100,5 @@ function makeToast(text){
 	}, 500 );
 }
 
-postOption = {};
+var postOption = {};
 

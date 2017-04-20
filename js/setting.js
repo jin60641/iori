@@ -1,3 +1,5 @@
+'use strict';
+
 var settings = {
 	account : {
 		tabs : [{
