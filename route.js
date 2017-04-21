@@ -16,7 +16,7 @@ router.use(require('./routes/notice.js').router);
 router.use(require('./routes/audio.js'));
 router.use(require('./routes/newsfeed.js').router);
 router.use(require('./routes/user.js').router);
-router.use(require('./routes/chat.js'));
+router.use(require('./routes/chat.js').router);
 router.use(require('./routes/admin.js'));
 router.use(require('./routes/search.js'));
 
@@ -31,12 +31,6 @@ function checkAdmin( req, res, next ){
 		res.redirect('/');
 	}
 }
-router.get('/.well-known/acme-challenge/gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8', function( req, res ){
-	res.send("gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8.3-9-I62_50CExzz0HafMZVP8K3-h0XQUH4Cmjam7Gto");
-});
-router.post('/.well-known/acme-challenge/gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8', function( req, res ){
-	res.send("gTPfJc5FiWVumKn0tvrTUnkw1w3IpBRRf0Lf0YLWbK8.3-9-I62_50CExzz0HafMZVP8K3-h0XQUH4Cmjam7Gto");
-});
 router.get('/', function( req, res ){
 	if( req.user && req.user.signUp ){
 		makeObj( req, res, "index" );

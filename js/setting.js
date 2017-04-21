@@ -70,6 +70,10 @@ var settings = {
 			value : session.color.hex
 		}],
 		kr : "테마 색상"
+	},
+	drop : {
+		tabs : [],
+		kr : "회원 탈퇴"
 	}
 }
 
@@ -171,6 +175,23 @@ function openSettingTab( newtab ){
 		submit.onclick = checkChangeNotice;
 	} else if( page == "color" ){
 		submit.onclick = checkChangeColor;
+	} else if( page == "drop" ){
+		submit.innerText = "회원 탈퇴";
+		submit.onclick = checkDropUser;
+	}
+}
+
+function checkDropUser(){
+	if( confirm("정말로 회원 탈퇴를 진행하시려면 확인을 눌러주세요") == true ){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+			alert("회원탈퇴가 완료되었습니다.");
+			var date = "Thu, 01 Jan 1970 00:00:01 GMT"
+			document.cookie = "facebook=,uid=,email=,password=;expires=" + date + ";domain=iori.kr;path=/";
+			location.href = "/";
+		}};
+		xhr.open("POST", "/api/user/drop", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+		xhr.send();
 	}
 }
 

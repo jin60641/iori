@@ -92,6 +92,8 @@ passport.use(new LocalStrategy({ usernameField : 'uid', passwordField : 'passwor
 			if( user.password == sha_pw ){
 				if( user && user.signUp == false ){
 					return next(null,false,{message:'이메일 인증을 진행하셔야 정상적인 이용이 가능합니다.'});
+				} else if( user.be == false ){
+					return next(null,false,{message:'아이디 또는 비밀번호가 잘못되었습니다.'});
 				} else if( user ){
 					delete user.password;
 					return next(null,user);
@@ -256,7 +258,7 @@ router.get('/api/auth/facebook/:link', function( req, res ){
 	res.redirect('/api/auth/facebook');
 });
 
-router.get('/api/auth/logout', function( req, res){
+function logOut( req, res, message ){
 	res.clearCookie("email")
 	res.clearCookie("password")
 	res.clearCookie("uid")
@@ -266,9 +268,14 @@ router.get('/api/auth/logout', function( req, res){
 		if( req.user ){
 			delete req.user;
 		}
-		res.redirect('/');
+		if( req.method == "GET" ){
+			res.redirect('/');
+		} else {
+			res.send( message );
+		}
 	});
-});
+}
+router.get('/api/auth/logout', logOut );
 
 router.post('/api/auth/changepw', function( req, res ){
 	var password = req.body['password'];
@@ -355,5 +362,6 @@ function checkAdmin( req, res, next ){
 module.exports = {
 	router : router,
 	checkSession : checkSession,
-	checkAdmin : checkAdmin
+	checkAdmin : checkAdmin,
+	logOut : logOut
 }

@@ -268,17 +268,19 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 			var chat_panel;
 			var current_panel = $("#chat_panel");
 			var current_id = current_panel.className.split('_').pop();
-			if( current_id == session.id && chats[i].from.id == session.id ){
+			if( chats[i].from.id == session.id ){
 				chat_panel = current_panel;
 			} else if( chats[i].type == "g" && current_id != chats[i].to.id ){
 				chat_panel = chat_panel_obj[ "chat_dialogs_g_" + chats[i].to.id ];
 			} else if( chats[i].type == "u" &&  chats[i].to.id == session.id && current_id != chats[i].from.id ){
 				chat_panel = chat_panel_obj[ "chat_dialogs_u_" + chats[i].to.id ];
-			}
-			if( chat_panel == undefined ){
+				if( chat_panel == undefined && current_panel.className == "chat_dialogs_u_" + chats[i].from.uid ){
+					chat_panel = current_panel;
+				}
+			} else {
 				chat_panel = current_panel;
 			}
-			if( current_id && current_id.length ){
+			if( current_id && current_id.length && chat_panel != undefined ){
 				var chat = $("div");
 				chat.id = "chat_" + chats[i].id;
 				chat.className = "chat";
@@ -287,7 +289,6 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				if( chats[i].from.id == session.id ){
 					my_chat = true;
 				}
-			
 
 				if( chats[i].html ){
 					chat.className = "chat_system";
@@ -393,7 +394,7 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				}
 
 				if( chat_dialog_box.childElementCount == 0 ){
-					chat_dialog_box.removeChild(dialog);
+				//	chat_dialog_box.removeChild(dialog);
 					chat_dialog_box.appendChild(new_dialog);
 				} else if( dialog_scroll ){
 					if( dialog ){
@@ -414,7 +415,7 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				}
 			}
 		}
-		if( scroll ){
+		if( scroll && chat_panel != undefined ){
 			chat_panel.scrollTop = chat_panel.scrollHeight;
 		}
 	}};
@@ -475,14 +476,14 @@ function makeDialog( chat ){
 }
 
 var chat_panel_obj = {};
-function openDialog(text){
+function openDialog(evt){
 	var dialog = this;
 	var chat_panel = $("#chat_panel");
 	if( chat_panel.className.length ){
 		chat_panel_obj[chat_panel.className] = chat_panel;
 	}
 
-	if( dialog && dialog.id == undefined ){
+	if( dialog == undefined || dialog.id == undefined ){
 		dialog = $( "#chat_dialogs_" + location.hash.substr(1,1) + "_" + location.hash.substr(3) );
 	}
 

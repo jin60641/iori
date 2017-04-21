@@ -83,50 +83,85 @@ router.get('/chat', checkSession, function( req, res ){
 	});
 });
 
-router.post('/api/chat/exit', checkSession, function( req, res ){
+	
+
+router.post( '/api/chat/exit', checkSession, function( req, res ){
+	exitChat( req, res, function( result ){
+		res.send(result);
+	});
+});
+
+function exitChat( req, res, cb ){
 	var gid = parseInt(req.body['gid']);
-	db.Groups.findOne({ id : gid, "users.uid" : { $in : [ req.user.uid ] } }, function( err, group ){
+	var user = {
+		id : req.user.id,
+		name : req.user.name,
+		uid : req.user.uid
+	}
+	var query = {
+		"users.uid" : {
+			"$in" : [ user.uid ]
+		}
+	};
+	if( gid >= 1 ){
+		query.id = gid;
+	}
+	db.Groups.find( query, function( err, groups ){
 		if( err ){
 			throw err;
-		} else {
-			group.update({ $pull : { "users" : { id : req.user.id } } }, function( err, result ){
-				db.Chats.findOne().sort({id:-1}).exec( function( err, chat ){
-					if( err ){
-						throw err;
-					}
-					var cid;
-					if( !chat ){
-						cid = 1;
-					} else {
-						cid = chat.id + 1;
-					}
-					var current = new db.Chats({
-						id : cid,
-						from : {
-							id : req.user.id,
-							name : req.user.name,
-							uid : req.user.uid
-						},
-						type : 'g',
-						to : group,
-						text : null,
-						html : '<span>' + req.user.name + '</span>님이 그룹에서 탈퇴하셨습니다',
-						file : false
-					});
-					current.save( function( err ){
-						for( var i = 0; i < group.users.length; ++i ){
-							var socket_id = socket_ids[group.users[i].id];
-							if( socket_id != undefined ){
-								io.sockets.connected[socket_id].emit( 'chat_new', { type : current.type, dialog_id : current.to.id } );
-							}
-						}
-						res.send("success");
-					});
-				});
+		} else if( groups != undefined ){
+			db.Chats.findOne().sort({id:-1}).exec( function( err2, chat ){
+				if( err2 ){
+					throw err2;
+				}
+				var cid;
+				if( !chat ){
+					cid = 1;
+				} else {
+					cid = chat.id;
+				}
+				for( var itmp = 0; itmp < groups.length; ++itmp ){
+					( function( i ){
+						process.nextTick( function(){
+							console.log(i);
+							var group = groups[i];
+							group.update({ $pull : { "users" : { id : user.id } } }, function( err3, result ){
+								if( err3 ){
+									throw err3;
+								}
+								var current = new db.Chats({
+									id : cid,
+									from : {
+										id : user.id,
+										name : user.name,
+										uid : user.uid
+									},
+									type : 'g',
+									to : group,
+									text : null,
+									html : '<span>' + user.name + '</span>님이 퇴장하셨습니다',
+									file : false
+								});
+								current.save( function( err4 ){
+									if( err4 ){
+										throw err4;
+									}
+									for( var j = 0; j < group.users.length; ++j ){
+										var socket_id = socket_ids[group.users[j].id];
+										if( socket_id != undefined ){
+											io.sockets.connected[socket_id].emit( 'chat_new', { type : current.type, dialog_id : current.to.id } );
+										}
+									}
+								});
+							});
+						});
+					})(itmp);
+				}
+				cb("success");
 			});
 		}
 	});
-});
+};
 
 router.post('/api/chat/invite', checkSession, function( req, res ){
 	var uids = req.body['uids'].split(',');
@@ -454,4 +489,7 @@ router.post('/api/chat/getinfo', checkSession, function( req, res ){
 	});
 });
 
-module.exports = router;
+module.exports = {
+	router : router,
+	exitChat : exitChat
+}

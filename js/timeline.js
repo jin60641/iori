@@ -1,9 +1,7 @@
 'use strict';
 
-
 var postLoading = false;
-var realfiles = {};
-realfiles[0] = [];
+var realfiles = { '0' : [] };
 var post_origin = {};
 var fileindex = {};
 
@@ -98,14 +96,14 @@ function dontseeReply(pid,reply_id){
 }
 
 //보고싶지 않습니다(게시물)
-function dontsee(postid){
+function dontsee(pid){
 	var postwrap = $('#post_wrap');
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		if( location.pathname.substr(0,6) == "/post/" ){
 			location.href = "/";
 		} else {
-			var post = $("#post_"+postid);
+			var post = $("#post_"+pid);
 			post.style.display="none";
 			var menu = $("div");
 			menu.className = "post";
@@ -124,26 +122,26 @@ function dontsee(postid){
 			postwrap.insertBefore(menu,post);
 		}
 	}}
-	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+postid);
+	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+pid);
 }
 
 //보고싶지 않습니다 취소
-function dontsee_cancle(postid){
+function dontsee_cancle(pid){
 	var postwrap = $('#post_wrap');
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var post = $("#post_"+postid);
+		var post = $("#post_"+pid);
 		post.style.display="";
 		postwrap.removeChild(post.previousElementSibling);
 	}}
-	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+postid);
+	xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+pid);
 }
 
 //관심글 등록, 취소
-function favorite(postid,add){
+function favorite(pid,add){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var menu_favorite = $("#favorite_"+postid);
+		var menu_favorite = $("#favorite_"+pid);
 		if(add){
 			menu_favorite.onclick=function(){
 				favorite(this.id.substr(9),0)
@@ -151,13 +149,13 @@ function favorite(postid,add){
 			menu_favorite.innerText="관심글해제";
 			var span = $("span")
 			span.className="post_favorite";
-			span.id="post_favorite_"+postid;
-			$("#post_"+postid).insertBefore(span,$("#post_inside_"+postid));
+			span.id="post_favorite_"+pid;
+			$("#post_"+pid).insertBefore(span,$("#post_inside_"+pid));
 			if( $('#imgmenu_favorite') ){
 				$('#imgmenu_favorite').src='/img/favorite_remove.png';
 				$('#imgmenu_favorite').onclick = function(){
 					event.stopPropagation();
-					favorite(postid,0)
+					favorite(pid,0)
 				}
 			}
 		} else {
@@ -165,30 +163,30 @@ function favorite(postid,add){
 				favorite(this.id.substr(9),1)
 			}
 			menu_favorite.innerText = "관심글등록";
-			$("#post_"+postid).removeChild($("#post_favorite_"+postid));
+			$("#post_"+pid).removeChild($("#post_favorite_"+pid));
 			if( $('#imgmenu_favorite') ){
 				$('#imgmenu_favorite').src='/img/favorite.png';
 				$('#imgmenu_favorite').onclick = function(){
-					favorite(postid,1)
+					favorite(pid,1)
 				}
 			}
 		}
 	}}
-	xhr.open("POST", "/api/newsfeed/favorite", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+postid);
+	xhr.open("POST", "/api/newsfeed/favorite", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid);
 }
 
 // 게시글 수정
-function changePost(postid){
+function changePost(pid){
 	var cancle = $("div");
-	cancle.id = "changecancle_"+postid;
+	cancle.id = "changecancle_"+pid;
 	cancle.onclick = function(){
 		cancleChange(this.id.substr(13));
 	}
 	cancle.innerText="수정 취소";
-	$("#menu_"+postid).replaceChild(cancle,$("#changepost_"+postid))
-	var inside = $("#post_inside_"+postid);
+	$("#menu_"+pid).replaceChild(cancle,$("#changepost_"+pid))
+	var inside = $("#post_inside_"+pid);
 	inside.style.paddingBottom = "39px";
-	var preview = $("#link_preview_"+postid);
+	var preview = $("#link_preview_"+pid);
 	if( preview ){
 		preview.style.display = "none";
 	}
@@ -206,7 +204,7 @@ function changePost(postid){
 	textarea.onkeyup=function(){post_resize(this)};
 	textarea.placeholder="글을 입력하세요.";
 	if( inside.firstChild && inside.firstChild.innerText ){
-		post_origin[postid]=inside.firstChild.cloneNode(true);
+		post_origin[pid]=inside.firstChild.cloneNode(true);
 		inside.replaceChild(textarea,inside.firstChild);
 	} else {
 		inside.insertBefore(textarea,inside.firstChild);
@@ -219,12 +217,12 @@ function changePost(postid){
 	}
 	var label = $("label");
 	label.className = "post_change_label";
-	label.htmlFor = "post_file_"+postid;
+	label.htmlFor = "post_file_"+pid;
 	inside.insertBefore(label,textarea.nextElementSibling);
 	inside.insertBefore(postbtn,textarea.nextElementSibling);
 	var input = $("input");
 	input.className = "post_change_file";
-	input.id = "post_file_"+postid;
+	input.id = "post_file_"+pid;
 	input.type = "file";
 	input.accept = "image/*";
 	input.multiple = "multiple";
@@ -234,12 +232,12 @@ function changePost(postid){
 	inside.insertBefore(input,postbtn);
 	var output = $("div");
 	output.className = "output_change";
-	output.id = "changeoutput_"+postid;
+	output.id = "changeoutput_"+pid;
 	inside.insertBefore(output,postbtn);
 	var post_span = inside.parentNode.childNodes[1];
-	fileindex[postid] = [];
-	realfiles[postid] = [];
-	var fileindex_tmp = fileindex[postid];
+	fileindex[pid] = [];
+	realfiles[pid] = [];
+	var fileindex_tmp = fileindex[pid];
 	if(post_span.className == "post_span"){
 		for(var j = 0; j < inside.childElementCount; ++j){
 		//for(var j = inside.childElementCount - 1; j>=0; --j){
@@ -289,9 +287,9 @@ function changePost_apply(inside){
 		return false;
 	}
 	var formdata = new FormData();
-	var postid = inside.id.substr(12);
-	var realfiles_change = realfiles[postid];
-	var fileindex_tmp = fileindex[postid];
+	var pid = inside.id.substr(12);
+	var realfiles_change = realfiles[pid];
+	var fileindex_tmp = fileindex[pid];
 	if( fileindex_tmp[0] || inside.firstElementChild.value.length>= 1 ){
 		for( var i = 0; i < realfiles_change.length; ++i ){
 //		for( var i=realfiles_change.length-1; i>=0; --i){
@@ -306,7 +304,34 @@ function changePost_apply(inside){
 	}
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		inside.style.paddingBottom="3px";
-		inside.innerHTML="<span>"+inside.firstChild.value.replace(/((\r\n)|\n|\r)/gm,"<br />") +"</span><br />";  
+		var preview_cnt = 0;
+		if( inside.firstElementChild.className == "textspan" ){
+			var text = inside.firstChild.value.replace(/((\r\n)|\n|\r)/gm,"<br />"); 
+			var textspan = $("span");
+			textspan.className = "textspan";
+			var texts = text.split("\r\n");
+			var textmore = $("yyspan");
+			for( var k = 0; k < texts.length; ++k ){
+				var textindex = 0;
+				while(1){
+					var link = /(http|https):\/\/([\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-])*[\w@?^=%&amp;\/~+#-])?/gi.exec( texts[k].substr( textindex ) );
+					if( link != null ){
+						var str = link[0];
+						var replace_str = "<a target='_blank' href='" + str + "'>" + link[0] + "</a>";
+						textindex += link.index + replace_str.length ;
+						if( !preview_cnt++ ){
+							makePreview(str,texts[k],pid,inside);
+						}
+						texts[k] = texts[k].replace( link[0].toString(), replace_str );
+					} else {
+						break;
+					}
+				}
+				textspan.innerHTML += texts[k].toString() + '<br />';
+			}
+			inside.appendChild(textspan);
+		}
+
 		if(xhr.responseText){ 
 			var xhrResult = JSON.parse( xhr.responseText );
 			var date = new Date( xhrResult.date ).getTime();
@@ -325,16 +350,16 @@ function changePost_apply(inside){
 					var span = $("span");
 					span.className = "post_span";
 					span.addEventListener('click', function(e){ 
-						$("#postimg_" +postid).click();
+						$("#postimg_" +pid).click();
 					}, false);
 					span.innerHTML = xhrResult.file;
 					inside.parentNode.insertBefore(span,inside.parentNode.firstElementChild.nextElementSibling);
 				}
 			}
 			if(xhrResult.file){
-//				inside.innerHTML+="<img src='/files/post/"+postid+"/1?"+xhrResult.date+"' id='postimg_"+postid+"' class='postimg' onclick='viewimg("+postid+","+xhrResult.file+",\""+ xhrResult.date+"\")' ></img>"
+//				inside.innerHTML+="<img src='/files/post/"+pid+"/1?"+xhrResult.date+"' id='postimg_"+pid+"' class='postimg' onclick='viewimg("+pid+","+xhrResult.file+",\""+ xhrResult.date+"\")' ></img>"
 			}
-			cancleChange(postid);
+			cancleChange(pid);
 			/*
 			// 수정됨 삽입기능 ( 모바일이 좁아서 보류 )
 			var post_date;
@@ -358,32 +383,32 @@ function changePost_apply(inside){
 		}
 	}}
 	if( fileindex_tmp[0] ){
-		xhr.open("POST","/api/newsfeed/changepost/" + postid + "/" + fileindex_tmp, false); xhr.send(formdata)
+		xhr.open("POST","/api/newsfeed/changepost/" + pid + "/" + fileindex_tmp, false); xhr.send(formdata)
 	} else {
-		xhr.open("POST","/api/newsfeed/changepost/" + postid + "/0", false); xhr.send(formdata)
+		xhr.open("POST","/api/newsfeed/changepost/" + pid + "/0", false); xhr.send(formdata)
 	}
 }
 
 //게시글 수정 취소
-function cancleChange(postid){
-	delete realfiles[postid];
-	delete fileindex[postid];
+function cancleChange(pid){
+	delete realfiles[pid];
+	delete fileindex[pid];
 	var div = $("div")
-	div.id = "changepost_"+postid;
-	div.onclick = "changePost("+postid+")";
+	div.id = "changepost_"+pid;
+	div.onclick = "changePost("+pid+")";
 	div.innerText="게시글수정";
 	div.onclick=function(){
 		changePost(this.id.substr(11));
 	}
-	var inside = $("#post_inside_"+postid);
+	var inside = $("#post_inside_"+pid);
 	inside.style.paddingBottom="3px";
-	$("#menu_"+postid).replaceChild(div,$("#changecancle_"+postid))
+	$("#menu_"+pid).replaceChild(div,$("#changecancle_"+pid))
 	for(var i = inside.childElementCount - 1; i>=0; --i){
 		var child = inside.childNodes[i];
 		if(child.tagName=="TEXTAREA"){
 			var origin;
 			try {
-				origin = post_origin[postid];
+				origin = post_origin[pid];
 				if( origin == undefined || origin == null ){
 					origin = $('span');
 					origin.className = "textspan";
@@ -394,7 +419,7 @@ function cancleChange(postid){
 				continue;
 			}
 			inside.replaceChild(origin,child);
-			delete post_origin[postid];
+			delete post_origin[pid];
 		} else if(child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR"||child.tagName=="A"){
 			child.style.display = "";
 		} else {
@@ -410,8 +435,8 @@ function cancleChange(postid){
 		var preview = $('div');
 		preview.className = "postimg_preview";
 		var img = $('img');
-		img.src = "/files/post/" + postid + "/1?" + d;
-		img.id = "postimg_" + postid;
+		img.src = "/files/post/" + pid + "/1?" + d;
+		img.id = "postimg_" + pid;
 		img.className = "postimg_img";
 		img.onclick = function(){
 			viewimg(Post.id,post_span.innerText,d);
@@ -423,12 +448,12 @@ function cancleChange(postid){
 }
 
 //파일열기(writepost) paste
-function openfile_paste(event,postid){
+function openfile_paste(event,pid){
 
 }
 
 //파일열기(writepost)
-function openfile_post(event,postid){
+function openfile_post(event,pid){
 	event.stopPropagation();
 	event.preventDefault();
 	if( event.dataTransfer ){
@@ -436,10 +461,10 @@ function openfile_post(event,postid){
 	}
 	var realfiles_tmp;
 	var fileindex_tmp;
-	if(postid){
-		var output = $("#changeoutput_"+postid);
-		realfiles_tmp = realfiles[postid];
-		fileindex_tmp = fileindex[postid];
+	if(pid){
+		var output = $("#changeoutput_"+pid);
+		realfiles_tmp = realfiles[pid];
+		fileindex_tmp = fileindex[pid];
 	} else {
 		realfiles_tmp = realfiles[0];
 		if( realfiles_tmp == undefined ){
@@ -463,7 +488,7 @@ function openfile_post(event,postid){
 			return false;
 		}
 		realfiles_tmp.push(files[i]);
-		if(postid){
+		if(pid){
 			var post_span = input.parentNode.parentNode.childNodes[1];
 			if(post_span.className == "post_span"){
 				if( fileindex_tmp[fileindex_tmp.length - 1] < parseInt(post_span.innerText) ){
@@ -503,11 +528,11 @@ function openfile_post(event,postid){
 			imgbox.style.backgroundClip="content-box";
 			var deletebtn = $("div");
 			deletebtn.className='delete_postimg';
-			if(postid){
+			if(pid){
 				deletebtn.onclick= function(){
-					var postid = this.parentNode.parentNode.id.substr(13);
-					var realfiles_tmp = realfiles[postid];
-					var fileindex_tmp = fileindex[postid];
+					var pid = this.parentNode.parentNode.id.substr(13);
+					var realfiles_tmp = realfiles[pid];
+					var fileindex_tmp = fileindex[pid];
 					var index = parseInt(this.parentNode.id.substr(8)) - 1;
 					realfiles_tmp.splice( index - output.childElementCount + realfiles_tmp.length , 1 );
 					fileindex_tmp.splice( index , 1);
@@ -900,10 +925,10 @@ function getReplys(obj,limit){
 			replywrap.removeChild(obj);
 		}
 	}}
-	xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('postid='+pid+'&skip='+reply_skip+'&limit='+limit);
+	xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid+'&skip='+reply_skip+'&limit='+limit);
 }
 
-function makePreview( link, text, Post, inside ){
+function makePreview( link, text, pid, inside ){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		if( xhr.responseText != "" ){
@@ -911,7 +936,7 @@ function makePreview( link, text, Post, inside ){
 			var preview = $("a");
 			preview.href = link;
 			preview.target = "_blank";
-			preview.id = "link_preview_" + Post.id;
+			preview.id = "link_preview_" + pid;
 			preview.className = "link_preview";
 			var preview_img = $("div");
 			preview_img.className = "link_preview_img";
@@ -923,7 +948,7 @@ function makePreview( link, text, Post, inside ){
 			preview.appendChild( preview_text );
 
 			var preview_title = $("div");
-			preview_title.id = "link_preview_title_" + Post.id;
+			preview_title.id = "link_preview_title_" + pid;
 			preview_title.innerHTML = metas.title;
 			preview_title.className = "link_preview_title";
 			preview_text.appendChild( preview_title );
@@ -1065,7 +1090,7 @@ function makePost( Post ){
 					var replace_str = "<a target='_blank' href='" + str + "'>" + link[0] + "</a>";
 					textindex += link.index + replace_str.length ;
 					if( !preview_cnt++ ){
-						makePreview(str,texts[k],Post,inside);
+						makePreview(str,texts[k],Post.id,inside);
 					}
 					texts[k] = texts[k].replace( link[0].toString(), replace_str );
 				} else {
@@ -1443,8 +1468,8 @@ window.addEventListener('load',function(){
 		socket.on( 'post_new', function(){
 			getPosts(0,1);
 		});
-		socket.on( 'post_removed', function( postid ){
-			postwrap.removeChild($("#post_"+postid));	
+		socket.on( 'post_removed', function( pid ){
+			postwrap.removeChild($("#post_"+pid));	
 		});
 	}
 
@@ -1475,10 +1500,10 @@ function showmenu(dom){
 
 // 덧글쓰기
 function replyWrite(post){
-	var postid = post.id.substr(11);
+	var pid = post.id.substr(11);
 	var tmp = post.lastElementChild.previousElementSibling.value.toString();
 	var formdata = new FormData();
-	var input = $("#replyinput_"+postid);
+	var input = $("#replyinput_"+pid);
 	$("#replywrite_"+input.id.substr(11)).lastElementChild.style.display="block";
 	if( input.files.length || tmp.length >= 1 ){
 		formdata.append("file",input.files[0]);
@@ -1487,15 +1512,15 @@ function replyWrite(post){
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
 			var replyid = xhr.responseText;
 			getReplys(post,1);
-//			getReplys($("#replywrite_" + postid),1);
+//			getReplys($("#replywrite_" + pid),1);
 		}}
-		xhr.open("POST","/api/newsfeed/writereply/" + postid, false); xhr.send(formdata)
+		xhr.open("POST","/api/newsfeed/writereply/" + pid, false); xhr.send(formdata)
 		input.value="";
 		post.lastElementChild.previousElementSibling.value="";
 		event.preventDefault(); 
 		reply_resize(post.lastElementChild.previousElementSibling);
-		$("#replyoutput_" + postid).style.display="none";
-		$("#replyoutput_" + postid).innerHTML="";
+		$("#replyoutput_" + pid).style.display="none";
+		$("#replyoutput_" + pid).innerHTML="";
 	} else {
 		alert("댓글이 비어 있습니다. 글을 입력해주세요");
 		post.lastElementChild.previousElementSibling.value="";

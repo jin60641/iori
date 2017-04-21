@@ -491,6 +491,65 @@ router.post( '/api/user/change/notice', checkSession, function( req, res ){
 	});
 });
 
+router.post( '/api/user/drop', checkSession, function( req, res ){
+	db.Users.findOne({ be : true, id : req.user.id }, function( err, user ){
+		if( err ){
+			throw err;
+		}
+		if( user ){
+			async.parallel([
+				function( cb ){
+					user.update({ be : false }, function( err, result ){
+						if( err ){
+							throw err;
+						}
+						cb(null);
+					});
+				}, function( cb ){
+					db.Posts.update({ "user.id" : user.id },{ be : false }, { multi : true }, function( err, result ){
+						if( err ){
+							throw err;
+						}
+						cb(null);
+					});
+				}, function( cb ){
+					db.Replys.update({ "user.id" : user.id },{ be : false }, { multi : true }, function( err, result ){
+						if( err ){
+							throw err;
+						}
+						cb(null); 
+					});
+				}, function( cb ){
+					db.Chats.update({ $or : [{ "from.id" : user.id }, { "to.id" : user.id }] }, { be : false }, { multi : true }, function( err, result ){
+						if( err ){
+							throw err;
+						} 
+						cb(null);
+					});
+				}, function( cb ){
+					db.Follows.remove({ $or : [{ "from.id" : user.id }, { "to.id" : user.id }] }, function( err, result ){
+						if( err ){
+							throw err;
+						} 
+						cb(null);
+					});
+				}, function( cb ){
+					require("./chat").exitChat( req, res, function( result ){
+						cb(null);
+					});
+				}
+			], function( err, results ){
+				if( err ){
+					throw err;
+				}
+				require('./auth.js').logOut( req, res, "회원 탈퇴가 완료되었습니다." );
+			});
+		} else {
+			res.send("존재하지 않거나 이미 탈퇴처리된 사용자입니다.");
+		}
+	});
+});
+
 router.post( '/api/user/change/password', checkSession, function( req, res ){
 	var oldpw = req.body['oldpw'];
 	var password = req.body['newpw'];
