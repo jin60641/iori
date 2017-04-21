@@ -243,8 +243,9 @@ function changePost(postid){
 	if(post_span.className == "post_span"){
 		for(var j = 0; j < inside.childElementCount; ++j){
 		//for(var j = inside.childElementCount - 1; j>=0; --j){
-			if(inside.childNodes[j].tagName == "IMG"){
-				var src = inside.childNodes[j].src;
+			var img = inside.childNodes[j].firstElementChild;
+			if( img != undefined && img.tagName == "IMG"){
+				var src = img.src;
 				for(var i = 0; i < parseInt(post_span.innerText); ++i){
 					fileindex_tmp[i] = i + 1;
 					var imgbox = $("div");
@@ -258,6 +259,7 @@ function changePost(postid){
 						return false;
 					});
 					var dataURL = event.target.result;
+					console.log(src);
 					src = src.replace(/(.*post\/)(.*\/)(.*)\?/i,"$1"+"$2"+(i+1)+"?");
 					imgbox.style.background="url('" + src + "') center center no-repeat"
 					imgbox.style.backgroundSize="cover";
@@ -382,6 +384,10 @@ function cancleChange(postid){
 			var origin;
 			try {
 				origin = post_origin[postid];
+				if( origin == undefined || origin == null ){
+					origin = $('span');
+					origin.className = "textspan";
+				}
 			}
 			catch(err){
 				inside.removeChild(child);
@@ -400,7 +406,18 @@ function cancleChange(postid){
 		var div = $('div');
 		div.className = "postimg_div";
 		inside.appendChild(div);
-		inside.innerHTML+="<img src='/files/post/" + postid + "/1" + "?" + new Date() + "' id='postimg_" + postid + "' class='postimg_img' onclick='viewimg(" + postid + "," + post_span.innerText + ",\"" + new Date() + "\")' >";
+		var d = new Date();
+		var preview = $('div');
+		preview.className = "postimg_preview";
+		var img = $('img');
+		img.src = "/files/post/" + postid + "/1?" + d;
+		img.id = "postimg_" + postid;
+		img.className = "postimg_img";
+		img.onclick = function(){
+			viewimg(Post.id,post_span.innerText,d);
+		}
+		preview.appendChild(img);
+		inside.appendChild(preview);
 		
 	}
 }
@@ -947,9 +964,6 @@ function makePreview( link, text, Post, inside ){
 				preview_description.className = "link_preview_description";
 			}
 
-			var preview_helper = $("div");
-			preview_helper.className = "link_preview_helper";
-			preview_img.appendChild(preview_helper);
 			var tmpimg = new Image;
 			tmpimg.src = metas.image;
 			var realimg = $('img');
@@ -965,6 +979,9 @@ function makePreview( link, text, Post, inside ){
 				}
 			}
 			inside.appendChild( preview );
+			var preview_helper = $("div");
+			preview_helper.className = "link_preview_helper";
+			preview_img.appendChild(preview_helper);
 		}
 	}};
 	xhr.open("POST", "/api/newsfeed/linkpreview", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);
@@ -1096,8 +1113,10 @@ function makePost( Post ){
 		span.innerHTML = Post.file ;
 		div.insertBefore(span,div.firstElementChild.nextElementSibling);
 		*/
+
 		div.innerHTML+="<span class='post_span' onclick='$(\"#postimg_" + Post.id + "\").click();'>" + Post.file + "</span>";
 		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
+
 		/*
 		//수정됨 표시 ( 모바일화면작아서 일단은 보류 )
 		if( Post.change ){
@@ -1105,10 +1124,21 @@ function makePost( Post ){
 			inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.change + "' id='postimg_" + Post.id + "' class='postimg' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.change + "\")' >";
 		} else {
 		*/
-		inside.innerHTML+="<img src='/files/post/" + Post.id + "/1" + "?" + Post.date + "' id='postimg_" + Post.id + "' class='postimg_img' onclick='viewimg(" + Post.id + "," + Post.file + ",\"" + Post.date + "\")' >";
+		var preview = $('div');
+		preview.className = "postimg_preview";
+		var img = $('img');
+		img.src = "/files/post/" + Post.id + "/1?" + Post.date;
+		img.id = "postimg_" + Post.id;
+		img.className = "postimg_img";
+		img.onclick = function(){
+			viewimg(Post.id,Post.file,Post.date);
+		}
+		preview.appendChild(img);
+		inside.appendChild(preview);
 		//}
 	} else {
 		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
+
 		/* 수정됨
 		if( Post.change ){
 			div.innerHTML+="<span class='post_changed' onclick='alert(\"" + getDateString(Post.change,false,true) + "\")'>수정됨</span>";

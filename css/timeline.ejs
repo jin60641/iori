@@ -78,20 +78,26 @@ textarea {
 	padding-bottom : 50px;
 	margin-top : 0px;
 }
+.post .postimg_preview {
+	margin-top : 10px;
+	overflow : hidden;
+	max-width : 100%;
+	border : 1px solid #e1e2e3;
+}
 
 .post .postimg_img {
 	max-height : 600px;
 	display : block;
 	max-width : 100%;
-	margin-top : 10px;
-	border : 1px solid #e1e2e3;
 	-moz-transition : all 0.3s;
 	-webkit-transition : all 0.3s;
 	transition : all 0.3s;
 	cursor : pointer;
 }
 
-
+.post .postimg_img:hover {
+	transform : scale(1.1);
+}
 
 .post > .date {
 	position : relative;
@@ -484,23 +490,31 @@ textarea {
 }
 
 .post .post_inside .link_preview .link_preview_img .link_preview_helper {
+	display : none;
+}
+.post .post_inside .link_preview .link_preview_img_big .link_preview_helper {
+	display : block;
 	width : 100%;
-	height : 100%;
+	height : 3px;
 	position : absolute;
-	
+	bottom : 0px;
+	background-color : white;
 }
 
 .post .post_inside .link_preview_img {
 	position : relative;
 	display : inline-block;
-}
-
-.post .post_inside .link_preview_img:hover {
+	overflow : hidden;
 }
 
 .post .post_inside .link_preview_img img {
 	max-width : 100%;
 	max-height : 100%;
+	transition : all .2s ease;
+}
+
+.post .post_inside .link_preview_img img:hover {
+	transform : scale(1.1);
 }
 
 .post .post_inside .link_preview_img_big {
