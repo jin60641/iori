@@ -25,7 +25,7 @@ window.addEventListener('load', function(){
 	form_password.id = "form_password";
 	form_password.type = "password"
 	form.appendChild(form_password);
-
+/*
 	var form_auto_login = $("div");
 	form_auto_login.innerText = "로그인 유지";
 	form_auto_login.style.backgroundImage = 'url("/img/login/btn_checkbox_pressed.png")';
@@ -38,6 +38,18 @@ window.addEventListener('load', function(){
 	}
 	form_auto_login.id = "form_auto_login";
 	form.appendChild(form_auto_login);
+*/
+	var form_auto_login = $("input");
+	form_auto_login.type = "checkbox"
+	form_auto_login.id = "form_auto_login";
+	form_auto_login.name = "form_auto_login";
+	form.appendChild(form_auto_login);
+	var form_auto_login_label = $("label");
+	form_auto_login_label.id = "form_auto_login_label";
+	form_auto_login_label.innerText = "로그인 유지";
+	form_auto_login_label.htmlFor = "form_auto_login";
+	form.appendChild(form_auto_login_label);
+
 	var form_login_btn = $("div");
 	form_login_btn.id = "form_login_btn";
 	form_login_btn.onclick = send_login;
@@ -61,7 +73,7 @@ window.addEventListener('load', function(){
 			now.setTime(now.getTime() + (7*24*60*60*1000));
 			var returnTo = document.URL.split('/').slice(4).toString();
 			var auto = $("#form_auto_login");
-			if( auto.style.backgroundImage == 'url("/img/login/btn_checkbox_pressed.png")' ){
+			if( auto.checked == true ){
 //				document.cookie = "facebook=true;expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
 			}
 			location.href = "/api/auth/facebook/" + returnTo;
@@ -101,7 +113,7 @@ function send_login(){
 		xhr.onreadystatechange = function(event){
 			if( xhr.readyState == 4 && xhr.status == 200 ){
 				if( xhr.responseText == "success" ){
-					if( auto.style.backgroundImage == 'url("/img/login/btn_checkbox_pressed.png")' ){
+					if( auto.checked == true ){
 						var now = new Date();
 						now.setTime(now.getTime() + (7*24*60*60*1000));
 						document.cookie = "facebook=false, uid="+uid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";

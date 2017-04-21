@@ -1,5 +1,6 @@
 'use strict';
 var sliderTimer;
+var removeTimer;
 
 window.addEventListener('load', function(){
 	var post_slider = $("div");

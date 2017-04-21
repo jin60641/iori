@@ -257,7 +257,6 @@ function changePost(pid){
 						return false;
 					});
 					var dataURL = event.target.result;
-					console.log(src);
 					src = src.replace(/(.*post\/)(.*\/)(.*)\?/i,"$1"+"$2"+(i+1)+"?");
 					imgbox.style.background="url('" + src + "') center center no-repeat"
 					imgbox.style.backgroundSize="cover";
@@ -305,8 +304,9 @@ function changePost_apply(inside){
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		inside.style.paddingBottom="3px";
 		var preview_cnt = 0;
-		if( inside.firstElementChild.className == "textspan" ){
-			var text = inside.firstChild.value.replace(/((\r\n)|\n|\r)/gm,"<br />"); 
+		if(xhr.responseText){ 
+			var xhrResult = JSON.parse( xhr.responseText );
+			var text = inside.firstElementChild.value.replace(/((\r\n)|\n|\r)/gm,"<br />"); 
 			var textspan = $("span");
 			textspan.className = "textspan";
 			var texts = text.split("\r\n");
@@ -320,7 +320,9 @@ function changePost_apply(inside){
 						var replace_str = "<a target='_blank' href='" + str + "'>" + link[0] + "</a>";
 						textindex += link.index + replace_str.length ;
 						if( !preview_cnt++ ){
-							makePreview(str,texts[k],pid,inside);
+							if( xhrResult.file == undefined || xhrResult.file == 0 ){
+								makePreview(str,texts[k],pid,inside);
+							}
 						}
 						texts[k] = texts[k].replace( link[0].toString(), replace_str );
 					} else {
@@ -330,10 +332,6 @@ function changePost_apply(inside){
 				textspan.innerHTML += texts[k].toString() + '<br />';
 			}
 			inside.appendChild(textspan);
-		}
-
-		if(xhr.responseText){ 
-			var xhrResult = JSON.parse( xhr.responseText );
 			var date = new Date( xhrResult.date ).getTime();
 			var post_span = inside.parentNode.childNodes[1];
 			if(post_span.className == "post_span"){
@@ -356,10 +354,11 @@ function changePost_apply(inside){
 					inside.parentNode.insertBefore(span,inside.parentNode.firstElementChild.nextElementSibling);
 				}
 			}
+
 			if(xhrResult.file){
 //				inside.innerHTML+="<img src='/files/post/"+pid+"/1?"+xhrResult.date+"' id='postimg_"+pid+"' class='postimg' onclick='viewimg("+pid+","+xhrResult.file+",\""+ xhrResult.date+"\")' ></img>"
 			}
-			cancleChange(pid);
+			cancleChange(pid,true);
 			/*
 			// 수정됨 삽입기능 ( 모바일이 좁아서 보류 )
 			var post_date;
@@ -390,7 +389,7 @@ function changePost_apply(inside){
 }
 
 //게시글 수정 취소
-function cancleChange(pid){
+function cancleChange(pid,change){
 	delete realfiles[pid];
 	delete fileindex[pid];
 	var div = $("div")
@@ -418,9 +417,10 @@ function cancleChange(pid){
 				inside.removeChild(child);
 				continue;
 			}
+			origin.innerText = child.value;
 			inside.replaceChild(origin,child);
 			delete post_origin[pid];
-		} else if(child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR"||child.tagName=="A"){
+		} else if((child.tagName=="SPAN"||child.tagName=="IMG"||child.tagName=="BR"||child.tagName=="A")&&change!=true){
 			child.style.display = "";
 		} else {
 			inside.removeChild(child);
@@ -1090,7 +1090,9 @@ function makePost( Post ){
 					var replace_str = "<a target='_blank' href='" + str + "'>" + link[0] + "</a>";
 					textindex += link.index + replace_str.length ;
 					if( !preview_cnt++ ){
-						makePreview(str,texts[k],Post.id,inside);
+						if( Post.file == 0 ){
+							makePreview(str,texts[k],Post.id,inside);
+						}
 					}
 					texts[k] = texts[k].replace( link[0].toString(), replace_str );
 				} else {
