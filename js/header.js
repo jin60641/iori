@@ -375,6 +375,10 @@ if( session.notice && session.notice.web == true ){
 				title = "새 관심글";
 				options.body = notice.from.name + " 님이 당신의 게시글을 관심글로 표시했습니다.";
 				break;
+			case "share":
+				title = "공유됨";
+				options.body = notice.from.name + " 님이 당신의 게시글을 공유했습니다.";
+				break;
 		}
 
 		var noti = new Notification(title,options);

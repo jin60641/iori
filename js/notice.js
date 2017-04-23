@@ -9,7 +9,6 @@ window.addEventListener('load',function(){
 	}
 
 	socket.on( 'notice_new', function( notice ){
-		console.log(notice);
 		getNotice(0);
 	});
 	checkNoticeNone();
@@ -58,6 +57,7 @@ function makeNotice( notice ){
 	message.className = "notice_message";
 	var text = $('div');
 	text.innerHTML = "<span>" + notice.from.name + "</span>";
+	console.log(notice);
 	switch( notice.type ){
 		case "chat":
 			text.innerHTML += "님이 쪽지를 보내셨습니다";
@@ -70,6 +70,9 @@ function makeNotice( notice ){
 			break;
 		case "favorite":
 			text.innerHTML += "님이 당신의 게시글을 관심글로 표시했습니다.";
+			break;
+		case "share":
+			text.innerHTML += "님이 당신의 게시글을 공유했습니다.";
 			break;
 	}
 	message.appendChild( text );

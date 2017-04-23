@@ -116,6 +116,7 @@ var UserSchema = new mongoose.Schema({
 		reply : { type : Boolean, default : true },
 		follow : { type : Boolean, default : true },
 		chat : { type : Boolean, default : true },
+		share : { type : Boolean, default : true },
 		email : { type : Boolean, default : true },
 		web : { type : Boolean, default : true }
 	},

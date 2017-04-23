@@ -144,7 +144,7 @@ function postFavorite(pid,add){
 		var menu_favorite = $("#favorite_"+pid);
 		if(add){
 			menu_favorite.onclick=function(){
-				postFavorite(this.id.substr(9),0)
+				postFavorite(pid,0)
 			}
 			menu_favorite.innerText="관심글해제";
 			var span = $("span")
@@ -160,7 +160,7 @@ function postFavorite(pid,add){
 			}
 		} else {
 			menu_favorite.onclick=function(){
-				postFavorite(this.id.substr(9),1)
+				postFavorite(pid,1)
 			}
 			menu_favorite.innerText = "관심글등록";
 			$("#post_"+pid).removeChild($("#post_favorite_"+pid));
@@ -181,8 +181,8 @@ function postShare(pid,add){
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		var menu_share = $("#share_"+pid);
 		if(add){
-			menu_share.onclick=function(){
-				postShare(this.id.substr(9),0)
+			menu_share.onclick = function(){
+				postShare(pid,0)
 			}
 			menu_share.innerText="공유취소";
 			var span = $("span")
@@ -198,10 +198,9 @@ function postShare(pid,add){
 			}
 		} else {
 			menu_share.onclick=function(){
-				postShare(this.id.substr(9),1)
+				postShare(pid,1)
 			}
 			menu_share.innerText = "공유하기";
-			$("#post_"+pid).removeChild($("#post_share_"+pid));
 			if( $('#imgmenu_share') ){
 				$('#imgmenu_share').src='/img/share.png';
 				$('#imgmenu_share').onclick = function(){
@@ -218,7 +217,7 @@ function changePost(pid){
 	var cancle = $("div");
 	cancle.id = "changecancle_"+pid;
 	cancle.onclick = function(){
-		cancleChange(this.id.substr(13));
+		cancleChange(pid);
 	}
 	cancle.innerText="수정 취소";
 	$("#menu_"+pid).replaceChild(cancle,$("#changepost_"+pid))
@@ -265,7 +264,7 @@ function changePost(pid){
 	input.accept = "image/*";
 	input.multiple = "multiple";
 	input.onchange = function(event){
-		openfile_post(event,this.id.substr(10));
+		openfile_post(event,this.id.split('_').pop());
 	}
 	inside.insertBefore(input,postbtn);
 	var output = $("div");
@@ -324,7 +323,7 @@ function changePost_apply(inside){
 		return false;
 	}
 	var formdata = new FormData();
-	var pid = inside.id.substr(12);
+	var pid = inside.id.split('_').pop();
 	var realfiles_change = realfiles[pid];
 	var fileindex_tmp = fileindex[pid];
 	if( fileindex_tmp[0] || inside.firstElementChild.value.length>= 1 ){
@@ -435,7 +434,7 @@ function cancleChange(pid,change){
 	div.onclick = "changePost("+pid+")";
 	div.innerText="게시글수정";
 	div.onclick=function(){
-		changePost(this.id.substr(11));
+		changePost(pid);
 	}
 	var inside = $("#post_inside_"+pid);
 	inside.style.paddingBottom="3px";
@@ -607,8 +606,8 @@ function openfile_reply(event,change){
 		var deleteimg = $("div");
 		deleteimg.className = "delete_replyimg";
 		if( change ){
-			var output = $("#replyoutput_change_"+input.id.substr(18));
-			$("#replyinput_change_"+input.id.substr(18)).style.display="none";
+			var output = $("#replyoutput_change_"+input.id.split('_').pop());
+			$("#replyinput_change_"+input.id.split('_').pop()).style.display="none";
 			deleteimg.onclick= function(){
 				input.previousElementSibling.previousElementSibling.style.display="";
 				this.parentNode.removeChild(this.previousElementSibling); 
@@ -616,8 +615,8 @@ function openfile_reply(event,change){
 				input.value="";
 			}
 		} else {
-			var output = $("#replyoutput_"+input.id.substr(11));
-			$("#replywrite_"+input.id.substr(11)).lastElementChild.style.display="none";
+			var output = $("#replyoutput_"+input.id.split('_').pop());
+			$("#replywrite_"+input.id.split('_').pop()).lastElementChild.style.display="none";
 			deleteimg.onclick= function(){
 				input.previousElementSibling.lastElementChild.style.display="";
 				this.parentNode.removeChild(this.previousElementSibling);

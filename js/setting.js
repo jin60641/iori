@@ -51,6 +51,10 @@ var settings = {
 			name : "채팅",
 			type : "checkbox"
 		},{
+			id : "share",
+			name : "공유",
+			type : "checkbox"
+		},{
 			id : "email",
 			name : "이메일",
 			type : "checkbox"

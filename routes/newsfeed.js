@@ -606,7 +606,7 @@ router.post( '/api/newsfeed/share', checkSession, function( req, res ){
 		if( post == undefined ){
 			res.send("존재하지 않는 게시글입니다.");
 		} else {
-			db.Posts.findOne({ "share.id" : req.user.id, pid : post.id }, function( err2, share ){
+			db.Posts.findOne({ "share.id" : req.user.id, id : post.id }, function( err2, share ){
 				if( err2 ){
 					throw err2;
 				}

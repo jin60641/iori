@@ -153,7 +153,7 @@ window.addEventListener('load',function(){
 		event.stopPropagation();
 		event.preventDefault();
 	});
-	if( typeof favorite != "undefined" ){
+	if( typeof postFavorite != "undefined" ){
 		imgmenu.innerHTML="<img id='imgmenu_favorite' src='/img/favorite.png'>";
 	}
 	imgmenu.innerHTML+="<a id='imgdownload' download><img src='/img/download.png'></a>"; //<img src='/img/share.png'>";
@@ -206,6 +206,7 @@ function viewimg(postid,filecount,date,url,controller){
 	imgviewing = 1;
 	var imglayer = $('#imglayer');
 	var imgmenu_favorite = $('#imgmenu_favorite');
+	var imgmenu_share = $('#imgmenu_favorite');
 	var imgbox = $('#imgbox');
 	var imgmenuhover = $('#imgmenuhover');
 	var lefthover= $('#lefthover');
@@ -221,12 +222,12 @@ function viewimg(postid,filecount,date,url,controller){
 	} else if( $("#post_favorite_"+postid) ){
 		imgmenu_favorite.src = '/img/favorite_remove.png';
 		imgmenu_favorite.onclick = function(){
-			favorite(postid,0);
+			postFavorite(postid,0);
 		}
 	} else if( postid != undefined ){
 		imgmenu_favorite.src = '/img/favorite.png';
 		imgmenu_favorite.onclick = function(){
-			favorite(postid,1);
+			postFavorite(postid,1);
 		}
 	}
 	if( filecount >= 2 || url != undefined ){
