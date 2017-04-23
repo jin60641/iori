@@ -138,13 +138,13 @@ function dontsee_cancle(pid){
 }
 
 //관심글 등록, 취소
-function favorite(pid,add){
+function postFavorite(pid,add){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 		var menu_favorite = $("#favorite_"+pid);
 		if(add){
 			menu_favorite.onclick=function(){
-				favorite(this.id.substr(9),0)
+				postFavorite(this.id.substr(9),0)
 			}
 			menu_favorite.innerText="관심글해제";
 			var span = $("span")
@@ -155,24 +155,62 @@ function favorite(pid,add){
 				$('#imgmenu_favorite').src='/img/favorite_remove.png';
 				$('#imgmenu_favorite').onclick = function(){
 					event.stopPropagation();
-					favorite(pid,0)
+					postFavorite(pid,0)
 				}
 			}
 		} else {
 			menu_favorite.onclick=function(){
-				favorite(this.id.substr(9),1)
+				postFavorite(this.id.substr(9),1)
 			}
 			menu_favorite.innerText = "관심글등록";
 			$("#post_"+pid).removeChild($("#post_favorite_"+pid));
 			if( $('#imgmenu_favorite') ){
 				$('#imgmenu_favorite').src='/img/favorite.png';
 				$('#imgmenu_favorite').onclick = function(){
-					favorite(pid,1)
+					postFavorite(pid,1)
 				}
 			}
 		}
 	}}
 	xhr.open("POST", "/api/newsfeed/favorite", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid);
+}
+
+
+function postShare(pid,add){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+		var menu_share = $("#share_"+pid);
+		if(add){
+			menu_share.onclick=function(){
+				postShare(this.id.substr(9),0)
+			}
+			menu_share.innerText="공유취소";
+			var span = $("span")
+			span.className="post_share";
+			span.id="post_share_"+pid;
+			$("#post_"+pid).insertBefore(span,$("#post_inside_"+pid));
+			if( $('#imgmenu_share') ){
+				$('#imgmenu_share').src='/img/share_remove.png';
+				$('#imgmenu_share').onclick = function(){
+					event.stopPropagation();
+					postShare(pid,0)
+				}
+			}
+		} else {
+			menu_share.onclick=function(){
+				postShare(this.id.substr(9),1)
+			}
+			menu_share.innerText = "공유하기";
+			$("#post_"+pid).removeChild($("#post_share_"+pid));
+			if( $('#imgmenu_share') ){
+				$('#imgmenu_share').src='/img/share.png';
+				$('#imgmenu_share').onclick = function(){
+					postShare(pid,1)
+				}
+			}
+		}
+	}}
+	xhr.open("POST", "/api/newsfeed/share", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid);
 }
 
 // 게시글 수정
@@ -1066,6 +1104,14 @@ function makePost( Post ){
 	var div = $("div");
 	div.id = 'post_' + Post.id;
 	div.className = 'post';
+	if( Post.share != undefined ){
+		var share = $('a');
+		share.href = "/@" + Post.share.uid;
+		share.id = "post_share_" + Post.id;
+		share.className = "post_share";
+		share.innerText = Post.share.name += "님이 공유하셨습니다";
+		div.appendChild(share);
+	}
 	var a = $("a");
 	a.href = '/@'+Post.user.uid;
 	a.className = 'post_name';
@@ -1172,7 +1218,7 @@ function makePost( Post ){
 		}
 		*/
 	}
-	if( Post.isfavorite ){
+	if( Post.isFavorite ){
 		div.innerHTML+="<span class='post_favorite' id='post_favorite_"+Post.id + "' ></span>";
 	}
 	inside.className="post_inside";
@@ -1180,6 +1226,9 @@ function makePost( Post ){
 	if( session != "" && session.signUp == true ){
 		var btn = $("div");
 		btn.className = 'postmenubtn';
+		if( Post.share != undefined ){
+			btn.style.top = "24px";
+		}
 		btn.addEventListener('click', function(){ showmenu(this) });
 		div.appendChild(btn);
 		var menu = $("div")
@@ -1191,10 +1240,15 @@ function makePost( Post ){
 		} else {
 			menu.innerHTML+="<div id='dontsee_" + Post.id + "' onclick='dontsee(" + Post.id + ")'>보고싶지 않습니다</div>";
 		}
-		if( Post.isfavorite ){
-			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',0' + ")'>관심글해제</div>";
+		if( Post.isFavorite ){
+			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='postFavorite(" + Post.id + ',0' + ")'>관심글해제</div>";
 		} else {
-			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',1' + ")'>관심글등록</div>";
+			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='postFavorite(" + Post.id + ',1' + ")'>관심글등록</div>";
+		}
+		if( Post.isShare ){
+			menu.innerHTML+="<div id='share_" + Post.id + "' onclick='postShare(" + Post.id + ',0' + ")'>공유취소</div>";
+		} else {
+			menu.innerHTML+="<div id='share_" + Post.id + "' onclick='postShare(" + Post.id + ',1' + ")'>공유하기</div>";
 		}
 		div.appendChild(menu);
 	}
@@ -1262,10 +1316,13 @@ function getPosts(limit){
 			if(xhr.responseText!='[]'){
 				postLoading = false;
 				var xhrResult = JSON.parse(xhr.responseText);
-				var Posts = xhrResult.sort(function(a,b){if(a.id < b.id){return -1;} else{ return 1;}});
+				var Posts = xhrResult.sort(function(a,b){if(a._id < b._id){return -1;} else{ return 1;}});
 				posts += Posts.length;
 				skip = posts;
 				for( var i = Posts.length-1; i >= 0; --i){
+					if( $('#post_'+Posts[i].id) != undefined ){
+						continue;
+					}
 					var div = makePost(Posts[i]);
 					if( limit ){
 						postwrap.appendChild(div);

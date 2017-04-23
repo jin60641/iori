@@ -112,6 +112,9 @@ function makeNotice( to, from, type, obj ){
 			case "favorite":
 				current.link = "/post/" + obj.pid;
 				break;
+			case "share":
+				current.link = "/post/" + obj.pid;
+				break;
 		}
 		current.save( function( err ){
 			if( err ){

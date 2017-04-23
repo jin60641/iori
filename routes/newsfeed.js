@@ -52,7 +52,7 @@ router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 
 router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 	var postid = parseInt(req.body['postid']);
-	if( postid ){
+	if( isNaN(postid) == false ){
 		db.Posts.findOne({ id : postid, be : true }, function( err2, post ){
 			if( err2 ){
 				throw err2;
@@ -185,10 +185,10 @@ function getPosts( req, cb ){
 			} else if( req.body['favorite'] == "true" && uid != null ){
 				query = { id : { $in : favorites } };
 			} else {
-				query = { id : { $nin : dontsee_posts }, "user.id" : { $in : tos } };
+				query = { id : { $nin : dontsee_posts }, $or : [{ "user.id" : { $in : tos } }, { "share.id" : { $in : tos } }] };
 			}
 			query.be = true;
-			db.Posts.find( query ).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, posts ){
+			db.Posts.find( query ).sort({ _id : -1 }).limit( limit ).skip( skip ).lean().exec( function( err, posts ){
 				if( err ){
 					throw err;
 				} else {
@@ -200,35 +200,49 @@ function getPosts( req, cb ){
 		if( err ){
 			throw err;
 		} else if( posts.length > 0 ){
-			async.forEach( posts , function( post, key, callback ){
-				db.Replys.find({ id : { $nin : dontsee_replys }, pid : post.id, be : true }).sort({ id : -1 }).exec( function( err, reply ){
-					var replys;
-					if( reply.length > 4 ){
-						replys = reply.slice(0,4)
-						replys.push("더있어요");
-					} else {
-						replys = reply;
+			async.each( posts , function( post, goContinue ){
+				var replys;
+				var isFavorite = false;
+				var isShare = false;
+				async.waterfall([
+					function( callback ){
+						db.Replys.find({ id : { $nin : dontsee_replys }, pid : post.id, be : true }).sort({ id : -1 }).exec( function( err, reply ){
+							if( reply.length > 4 ){
+								replys = reply.slice(0,4)
+								replys.push("더있어요");
+							} else {
+								replys = reply;
+							}
+							callback( null );
+						});
+					}, function( callback ){
+						db.Favorites.findOne({ pid : post.id, uid : req.user.id }, function( err, favorite ){
+							if( favorite ){
+								isFavorite = true;
+							}
+							callback( null );
+						});
+					}, function( callback ){
+						db.Posts.findOne({ id : post.id, "share.id" : req.user.id }, function( err, share ){
+							if( share ){
+								isShare = true;
+							}
+							callback( null );
+						});
+					},
+				], function( err2 ){
+					if( err2 ){
+						throw err2;
 					}
-					db.Favorites.findOne({ pid : post.id, uid : req.user.id }, function( err, favorite ){
-						var isfavorite = false;
-						if( favorite ){
-							isfavorite = true;
-						}
-						var result = {
-							id : post.id,
-							user : post.user,
-							text : post.text,
-							html : post.html,
-							file : post.file,
-							date : post.date,
-							reply : replys,
-							isfavorite : isfavorite
-						};
-						results.push( result );
-						if( results.length == posts.length ){
-							cb( results );
-						}
-					});
+					var result = post;
+					result.reply = replys;
+					result.isFavorite = isFavorite;
+					result.isShare = isShare;
+					results.push( result );
+					if( results.length == posts.length ){
+						cb( results );
+					}
+					goContinue(null);
 				});
 			});
 		} else {
@@ -580,21 +594,19 @@ function getMeta(body){
 	return metas;
 }
 
-/*
-개발중
 router.post( '/api/newsfeed/share', checkSession, function( req, res ){
 	var pid = parseInt(req.body['pid']);
 	if( isNaN( pid ) == true ){
 		pid = -1;
 	}
-	db.Posts.findOne({ id : pid },function( err, post ){
+	db.Posts.findOne({ id : pid }).lean().exec( function( err, post ){
 		if( err ){
 			throw err
 		}
 		if( post == undefined ){
 			res.send("존재하지 않는 게시글입니다.");
 		} else {
-			db.Shares.findOne({ "user.id" : req.user.id, pid : post.id }, function( err2, share ){
+			db.Posts.findOne({ "share.id" : req.user.id, pid : post.id }, function( err2, share ){
 				if( err2 ){
 					throw err2;
 				}
@@ -606,14 +618,15 @@ router.post( '/api/newsfeed/share', checkSession, function( req, res ){
 						res.send("remove");
 					});
 				} else {
-					var current = new Shares({
-						user : req.user,
-						pid : post.id
-					});
+					delete post._id;
+					delete post.__v;
+					var current = new db.Posts(post);
+					current.share = req.user;
 					current.save( function( err3 ){
 						if( err3 ){
 							throw err3;
 						}
+						makeNotice( post.user, req.user, "share", current );
 						res.send("success");
 					});
 				}
@@ -621,7 +634,7 @@ router.post( '/api/newsfeed/share', checkSession, function( req, res ){
 		}
 	});
 });
-*/
+
 router.post( '/api/newsfeed/linkpreview', function( req, res ){
 	var url = req.body['link'];
 	db.Links.findOne({ url : url },function( error, result ){

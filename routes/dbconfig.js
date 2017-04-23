@@ -9,27 +9,17 @@ db.once('open', function callback() {
 	console.log('db connected');
 });
 
-var ShareSchema = new mongoose.Schema({
-	user : {
-		id : { type : Number },
-		uid : { type : String },
-		name : { type : String }
-	},
-	pid : { type : Number },
-	date : { type : Date, default : Date.now }
-});
-
 var FavoriteSchema = new mongoose.Schema({
-    uid : { type : Number },
-    pid : { type : Number },
-    date : { type: Date, default : Date.now }
+	uid : { type : Number },
+	pid : { type : Number },
+	date : { type: Date, default : Date.now }
 });
 
 var DontseeSchema = new mongoose.Schema({
-    uid : { type : Number },
+	uid : { type : Number },
 	type : { type : String },
-    obj_id : { type : Number },
-    date : { type : Date, default : Date.now }
+	obj_id : { type : Number },
+	date : { type : Date, default : Date.now }
 });
 
 var ChatSchema = new mongoose.Schema({
@@ -63,32 +53,37 @@ var GroupSchema = new mongoose.Schema({
 });
 
 var PostSchema = new mongoose.Schema({
-    id : { type : Number },
-    user : {
+	id : { type : Number },
+	user : {
 		id : { type : Number },
 		uid : { type : String },
 		name : { type : String }
 	},
-    text : { type : String, default : "" },
-    html : { type : String, default : "" },
-    date : { type : Date, default : Date.now },
-    change :  { type : Date },
-    file :  { type : Number },
+	text : { type : String, default : "" },
+	html : { type : String, default : "" },
+	date : { type : Date, default : Date.now },
+	change :  { type : Date },
+	file :  { type : Number },
+	share : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
 	be : { type : Boolean, default : true }
 });
 
 var ReplySchema = new mongoose.Schema({
-    id : { type : Number },
-    user : {
+	id : { type : Number },
+	user : {
 		id : { type : Number },
 		uid : { type : String },
 		name : { type : String }
 	},
-    pid : { type : Number },
-    text : String,
-    date : { type: Date, default : Date.now },
-    change : { type : Date },
-    file : { type : Number },
+	pid : { type : Number },
+	text : String,
+	date : { type: Date, default : Date.now },
+	change : { type : Date },
+	file : { type : Number },
 	be : { type : Boolean, default : true }
 });
 
@@ -103,16 +98,16 @@ var FollowSchema = new mongoose.Schema({
 		uid : { type : String },
 		name : { type : String }
 	},
-    date : { type: Date, default : Date.now }
+	date : { type: Date, default : Date.now }
 });
 
 var UserSchema = new mongoose.Schema({
-    id : { type : Number },
+	id : { type : Number },
 	admin : { type : Boolean, default : false },
-    email : String,
-    name : String,
-    password : String,
-    signUp : { type : Boolean, default : false },
+	email : String,
+	name : String,
+	password : String,
+	signUp : { type : Boolean, default : false },
 	uid : String,
 	profile : { type : Boolean, default : false },
 	header : { type : Boolean, default : false },
@@ -136,40 +131,40 @@ var UserSchema = new mongoose.Schema({
 });
 
 var NoticeSchema = new mongoose.Schema({
-    id : { type : Number },
-    to : {
+	id : { type : Number },
+	to : {
 		id : { type : Number },
 		uid : { type : String },
 		name : { type : String }
 	},
-    from : {
+	from : {
 		id : { type : Number },
 		uid : { type : String },
 		name : { type : String }
 	},
-    type : { type : String },
+	type : { type : String },
 	desc : { type : String },
 	link : { type : String },
-    readed : { type : Boolean, default : false },
-    date : { type : Date, default : Date.now }
+	readed : { type : Boolean, default : false },
+	date : { type : Date, default : Date.now }
 });
 
 var LinkSchema = new mongoose.Schema({
-    url : { type : String },
-    title : { type : String },
-    description : { type : String },
-    image : { type : String }
+	url : { type : String },
+	title : { type : String },
+	description : { type : String },
+	image : { type : String }
 });
 
 module.exports = {
-    Users : mongoose.model('users',UserSchema),
-    Follows : mongoose.model('follows',FollowSchema),
-    Posts : mongoose.model('posts',PostSchema),
-    Replys : mongoose.model('replys',ReplySchema),
-    Favorites : mongoose.model('favorites',FavoriteSchema),
-    Dontsees : mongoose.model('dontsees',DontseeSchema),
-    Groups : mongoose.model('groups',GroupSchema),
-    Notices : mongoose.model('notices',NoticeSchema),
-    Links : mongoose.model('links',LinkSchema),
+	Users : mongoose.model('users',UserSchema),
+	Follows : mongoose.model('follows',FollowSchema),
+	Posts : mongoose.model('posts',PostSchema),
+	Replys : mongoose.model('replys',ReplySchema),
+	Favorites : mongoose.model('favorites',FavoriteSchema),
+	Dontsees : mongoose.model('dontsees',DontseeSchema),
+	Groups : mongoose.model('groups',GroupSchema),
+	Notices : mongoose.model('notices',NoticeSchema),
+	Links : mongoose.model('links',LinkSchema),
 	Chats : mongoose.model('chats',ChatSchema)
 }
