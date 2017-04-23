@@ -9,6 +9,16 @@ db.once('open', function callback() {
 	console.log('db connected');
 });
 
+var ShareSchema = new mongoose.Schema({
+	user : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+	pid : { type : Number },
+	date : { type : Date, default : Date.now }
+});
+
 var FavoriteSchema = new mongoose.Schema({
     uid : { type : Number },
     pid : { type : Number },

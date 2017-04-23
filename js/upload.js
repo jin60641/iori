@@ -326,10 +326,10 @@ window.addEventListener('load',function(){
 		var play_btn = $('#play_btn');
 		if( spot != null && mousestart != null && audio != null && waveformArray.length >= 0 && play_btn.onclick != null ){
 			listenstart += spot - mousestart;
-			if( listenstart < -( waveformArray.length * 6 - window.innerWidth  * (2/4) ) ){
-				listenstart = -( waveformArray.length * 6 - window.innerWidth * (2/4) );
-			} else if( listenstart > window.innerWidth / 2 ){
-				listenstart = window.innerWidth / 2;
+			if( listenstart < -( waveformArray.length * 6 - window.innerWidth  * (2/4) )+18 ){
+				listenstart = -( waveformArray.length * 6 - window.innerWidth * (2/4) )+18;
+			} else if( listenstart > window.innerWidth / 2 - 18){
+				listenstart = window.innerWidth / 2 - 18;
 			}
 			mousestart = spot;
 		}

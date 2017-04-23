@@ -967,7 +967,6 @@ function makePreview( link, text, pid, inside ){
 			}
 			if( vid != "" && vid != null ){
 				preview_img.id = vid;
-				
 				preview_img.onclick = function(event){
 					event.stopPropagation();
 					event.preventDefault();
@@ -1007,6 +1006,7 @@ function makePreview( link, text, pid, inside ){
 			var preview_helper = $("div");
 			preview_helper.className = "link_preview_helper";
 			preview_img.appendChild(preview_helper);
+			$('#menu_'+pid).innerHTML+="<div id='getaudio_" + pid + "' onclick='getAudio(" + pid + ")'>mp3 다운</div>";
 		}
 	}};
 	xhr.open("POST", "/api/newsfeed/linkpreview", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);
@@ -1195,9 +1195,6 @@ function makePost( Post ){
 			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',0' + ")'>관심글해제</div>";
 		} else {
 			menu.innerHTML+="<div id='favorite_" + Post.id + "' onclick='favorite(" + Post.id + ',1' + ")'>관심글등록</div>";
-		}
-		if( preview_cnt ){
-			menu.innerHTML+="<div id='getaudio_" + Post.id + "' onclick='getAudio(" + Post.id + ")'>mp3 다운</div>";
 		}
 		div.appendChild(menu);
 	}

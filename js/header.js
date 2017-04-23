@@ -357,7 +357,6 @@ window.addEventListener('load',function(){
 
 if( session.notice && session.notice.web == true ){
 	socket.on( 'notice_new', function( notice ){
-		console.log(notice);
 		var options = {
 			body : notice.desc,
 			icon : "/files/profile/"+notice.from.uid,

@@ -68,49 +68,59 @@ router.get( '/api/audio/getaudio/:vid', function( req, res ){
 
 router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 	var vid = req.params['vid'];
+	var wave = req.params['wave']=="true"?true:false;
 	var url = 'http://www.youtube.com/watch?v=' + vid;
 	var path = __dirname + "/../audio/" + vid + ".mp3";
 //	var path = __dirname + "/../audio/" + req.user.id + ".mp3";
 	
 	var exists = fs.existsSync(path);
 	if( exists ){
-		makeWave( fs.createReadStream( path ), function( vals ){
-			res.send({ vals : vals });
-		});
+		if( wave ){
+			makeWave( fs.createReadStream( path ), function( vals ){
+				res.send({ vals : vals });
+			});
+		} else {
+			res.send({ info : {} });
+		}
 	} else {
-		console.log("getInfo Start");
 		ytdl.getInfo( url, function( err, info ){
-		console.log("getInfo End");
 			var duration;
 			if( info && info.duration ){
 				duration = info.duration.split(':');
 			}
+			
 			if( info == undefined || info.duration == undefined ){
 				res.send("잘못된 링크입니다.");
 			} else if( duration.length >= 3 || duration.length == 2 && duration[0] > 10 ){
 				res.send("10분 이내의 영상만 음원을 추출하실 수 있습니다.");
 			} else {
+				console.log(duration);
 				console.log("format check");
 				ytdl.exec( url, ['-F'], {}, function( err, list ){
 					if( err ){
 						res.send("저작권 문제로 사용하실 수 없는 영상입니다. 죄송합니다.");
 					} else {
-						var flag = false;
+						var flag = 0;
 						async.each( list, function( value, cb ){
-							if( flag == false && value.indexOf("audio only") >= 0 && ( value.indexOf("webm") >= 0 || value.indexOf("mp4") >= 0 ) ){
-								flag = true;
-								console.log(value);
+							if( value.indexOf("audio only") >= 0 && ( value.indexOf("webm") >= 0 || value.indexOf("mp4") >= 0 ) && flag == 0 ){
+								flag = 1;
 								var num = value.split(' ')[0];
 								var ystream = ytdl(url,['-f',num]);
 								var fstream = fs.createWriteStream( path );
-								var command = ffmpeg(ystream).format('adts');
-								var stream = command.pipe(fstream);
-								stream.on('finish',function(){
-									makeWave( fs.createReadStream( path ), function( vals ){
-										console.log("success");
-										res.send({ vals : vals, info : info });
+								if( wave ){
+									var command = ffmpeg(ystream).format('adts');
+									var stream = command.pipe(fstream);
+									stream.on('finish',function(){
+										makeWave( fs.createReadStream( path ), function( vals ){
+											res.send({ vals : vals, info : info });
+										});
 									});
-								});
+								} else {
+									var stream = ystream.pipe(fstream);
+									stream.on('finish',function(){
+										res.send({info:info});
+									});
+								}
 								return;
 							} else {
 								cb(null);
@@ -162,13 +172,16 @@ function makeWave( stream, cb ){
 			var channel = buffer.getChannelData(0);
 			var channel2 = buffer.getChannelData(1);
 			var sections = Math.floor( buffer.duration );
+			console.log("duration : " + buffer.duration);
 			var len = Math.floor( channel.length / sections );
 			var vals = [];
 			var sum = 0.0;
 			var i = 0;
 			async.each(channel, function( tmp, callback ){
 				var value;
-				if( isNaN( tmp ) == true ){
+				if( isNaN( tmp ) == false && isNaN( channel2[i] ) == false ){
+					value = tmp + channel2[i];
+				} else if( isNaN( tmp ) == true ){
 					value = channel2[i];
 				} else if( Math.abs(tmp) < Math.abs(channel2[i]) ){
 					value = channel2[i];
@@ -178,6 +191,7 @@ function makeWave( stream, cb ){
 				}
 				if( i % len == 0 ){
 					var a = Math.sqrt( sum / channel.length ) * 10000;
+					a = a * a;
 					vals.push(a);
 					sum = 0.0;
 				}

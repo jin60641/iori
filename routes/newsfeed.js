@@ -238,18 +238,28 @@ function getPosts( req, cb ){
 };
 
 router.post( '/api/newsfeed/getreplys', function( req, res ){
-	var postid = parseInt(req.body['postid']);
+	var pid = parseInt(req.body['pid']);
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
-	db.Replys.find({ pid : postid, be : true }).skip( skip ).sort({ id : -1 }).exec( function( err, reply ){
-		if( reply && reply.length == 0 ){
+	var morecnt = 4;
+	if( isNaN( limit ) ){
+		limit = morecnt;
+	}
+	if( isNaN( skip ) ){
+		skip = 0;
+	}
+	db.Replys.find({ pid : pid, be : true }).skip( skip ).sort({ id : -1 }).limit( limit ).exec( function( err, reply ){
+		if( err ){
+			throw err;
+		}
+		if( reply == undefined || reply.length == 0 ){
 			res.end();
-		} else if( limit > 4 && reply.length > 4 ){
-			replys = reply.slice(0,4)
+		} else if( limit > morecnt && reply != undefined && reply.length > morecnt ){
+			var replys = reply.slice(0,4)
 			replys.push("더있어요");
 			res.send( replys )
-		} else if( reply.length >= 1 ) {
-			replys = reply.slice(0,limit);
+		} else if( reply != undefined && reply.length >= 1 ) {
+			var replys = reply.slice(0,limit);
 			res.send( replys )
 		} else {
 			res.end();
@@ -570,6 +580,48 @@ function getMeta(body){
 	return metas;
 }
 
+/*
+개발중
+router.post( '/api/newsfeed/share', checkSession, function( req, res ){
+	var pid = parseInt(req.body['pid']);
+	if( isNaN( pid ) == true ){
+		pid = -1;
+	}
+	db.Posts.findOne({ id : pid },function( err, post ){
+		if( err ){
+			throw err
+		}
+		if( post == undefined ){
+			res.send("존재하지 않는 게시글입니다.");
+		} else {
+			db.Shares.findOne({ "user.id" : req.user.id, pid : post.id }, function( err2, share ){
+				if( err2 ){
+					throw err2;
+				}
+				if( share != undefined ){
+					share.remove( function( err3 ){
+						if( err3 ){
+							throw err3;
+						}
+						res.send("remove");
+					});
+				} else {
+					var current = new Shares({
+						user : req.user,
+						pid : post.id
+					});
+					current.save( function( err3 ){
+						if( err3 ){
+							throw err3;
+						}
+						res.send("success");
+					});
+				}
+			});
+		}
+	});
+});
+*/
 router.post( '/api/newsfeed/linkpreview', function( req, res ){
 	var url = req.body['link'];
 	db.Links.findOne({ url : url },function( error, result ){

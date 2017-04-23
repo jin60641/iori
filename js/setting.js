@@ -150,9 +150,9 @@ function openSettingTab( newtab ){
 	$("#setting_tab_"+page).className = "setting_tab_active";
 	
 
-	
 	var title = $("#setting_title");
 	var submit = $("#setting_submit");
+	submit.innerText = "저장";
 	for( var i = 0; i < settings[page].tabs.length; ++i ){
 		box.insertBefore(makeField(settings[page].tabs[i]),submit);
 	}
