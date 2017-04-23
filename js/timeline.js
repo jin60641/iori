@@ -56,9 +56,10 @@ function getAudio( pid ){
 		var obj;
 		try {
 			obj = JSON.parse(xhr.responseText);
+			console.log(obj);
 			var download = $("a");
 			var title = $('#link_preview_title_' + pid);
-			download.download = title.innerText;
+			download.download = title.innerText + "." + obj.type;
 			download.href = '/api/audio/getaudio/' + vid;
 			download.click();
 		} catch(e){
@@ -1043,7 +1044,7 @@ function makePreview( link, text, pid, inside ){
 			var preview_helper = $("div");
 			preview_helper.className = "link_preview_helper";
 			preview_img.appendChild(preview_helper);
-			$('#menu_'+pid).innerHTML+="<div id='getaudio_" + pid + "' onclick='getAudio(" + pid + ")'>mp3 다운</div>";
+			$('#menu_'+pid).innerHTML+="<div id='getaudio_" + pid + "' onclick='getAudio(" + pid + ")'>음원 추출</div>";
 		}
 	}};
 	xhr.open("POST", "/api/newsfeed/linkpreview", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);

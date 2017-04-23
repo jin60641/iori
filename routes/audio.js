@@ -55,11 +55,18 @@ router.get( '/api/audio/getaudio/:uid/:start', checkSession, function( req, res 
 });
 
 router.get( '/api/audio/getaudio/:vid', function( req, res ){
-	var path = __dirname + "/../audio/" + req.params['vid'] + ".mp3";
-	if( fs.existsSync( path ) ){
+	var path = __dirname + "/../audio/" + req.params['vid'] + ".";
+	var flag;
+	if( fs.existsSync(path+"mp4") ){
+		flag = "mp4";
+	} else if( fs.existsSync(path+"webm") ){
+		flag = "webm";
+	}
+	path += flag;
+	if( flag != undefined ){
 		var file = fs.readFileSync( path );
 		var stat = fs.statSync( path );
-		res.writeHead(200, { 'Content-Type' : 'audio/mpeg','Content-Length':stat.size,'Accept-Ranges':stat.size });
+		res.writeHead(200, { 'Content-Type' : 'video/' + flag, 'Content-Length':stat.size,'Accept-Ranges':stat.size });
 		res.end( file );
 	} else {
 		res.end();
@@ -70,17 +77,25 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 	var vid = req.params['vid'];
 	var wave = req.params['wave']=="true"?true:false;
 	var url = 'http://www.youtube.com/watch?v=' + vid;
-	var path = __dirname + "/../audio/" + vid + ".mp3";
+	var path = __dirname + "/../audio/" + vid;
 //	var path = __dirname + "/../audio/" + req.user.id + ".mp3";
 	
-	var exists = fs.existsSync(path);
+	var type = "mp4";
+	var exists = fs.existsSync(path+".mp4");
+	if( exists ){
+		path += ".mp4";
+	} else if( fs.existsSync(path+".webm") ){
+		exists = true;
+		type = "webm";
+		path += ".webm";
+	}
 	if( exists ){
 		if( wave ){
 			makeWave( fs.createReadStream( path ), function( vals ){
 				res.send({ vals : vals });
 			});
 		} else {
-			res.send({ info : {} });
+			res.send({ type : type });
 		}
 	} else {
 		ytdl.getInfo( url, function( err, info ){
@@ -106,6 +121,11 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 								flag = 1;
 								var num = value.split(' ')[0];
 								var ystream = ytdl(url,['-f',num]);
+								path += ".";
+								if( value.indexOf("webm") >= 0 ){
+									type = "webm";
+								}
+								path += type;
 								var fstream = fs.createWriteStream( path );
 								if( wave ){
 									var command = ffmpeg(ystream).format('adts');
@@ -118,7 +138,7 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 								} else {
 									var stream = ystream.pipe(fstream);
 									stream.on('finish',function(){
-										res.send({info:info});
+										res.send({info:info,type:type});
 									});
 								}
 								return;
