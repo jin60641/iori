@@ -92,22 +92,21 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 						db.Follows.find({ $or : [{ "to.id" : req.user.id, "from.id" : users[i].id },{ "from.id" : user.id, "to.id" : users[i].id }] }, function( err, result ){
 							if( err ){
 								throw err;
-							} else {
-								if( result != null ){
-									if( result.length == 2 ){
-										users[i].following = true;
+							}
+							if( result != null ){
+								if( result.length == 2 ){
+									users[i].following = true;
+									users[i].follower = true;
+								} else if( result.length ){
+									if( result[0].to.id == req.user.id ){
 										users[i].follower = true;
-									} else if( result.length ){
-										if( result[0].to.id == req.user.id ){
-											users[i].follower = true;
-										} else {
-											users[i].following = true;
-										}
+									} else {
+										users[i].following = true;
 									}
-								} 
-								if( i+1 == users.length ){
-									cb( null, users );
 								}
+							} 
+							if( i+1 == users.length ){
+								cb( null, users );
 							}
 						});
 					})(j);
@@ -550,9 +549,11 @@ router.post( '/api/user/drop', checkSession, function( req, res ){
 	});
 });
 
-router.post( '/api/user/recommend/', checkSession, function( req, res ){
+router.post( '/api/user/recommend', checkSession, function( req, res ){
 	var cnt = {};
 	var followings = [];
+	var uids = [];	
+	followings.push(req.user.id);
 	async.waterfall([
 		function( callback ){
 			db.Follows.find({ "from.id" : req.user.id }, function( err, result ){
@@ -561,8 +562,8 @@ router.post( '/api/user/recommend/', checkSession, function( req, res ){
 				}
 				callback( null, result );
 			});
-		}, function( followings, callback ){
-			async.each( followings, function( following, cb ){
+		}, function( following_docs, callback ){
+			async.each( following_docs, function( following, cb ){
 				followings.push(following.to.id);
 				cb(null);
 			}, function( err, result ){
@@ -578,9 +579,11 @@ router.post( '/api/user/recommend/', checkSession, function( req, res ){
 				}
 				async.each( follows, function( follow, cb ){
 					if( cnt[follow.to.id] == null ){
-						cnt[follow.to.id] = 0;
+						cnt[follow.to.id] = [];
+						uids.push(follow.to.id);
 					}
-					cnt[follow.to.id]++;
+					cnt[follow.to.id].push(follow.from);
+					cb( null );
 				}, function( err2 ){
 					if( err2 ){
 						throw err2;
@@ -588,6 +591,7 @@ router.post( '/api/user/recommend/', checkSession, function( req, res ){
 					callback( null );
 				});
 			});
+		/*
 		}, function( callback ){
 			db.Follows.find({ "from.id" : { $nin : followings }, "to.id" : { $in : followings } }, function( err, follows ){
 				if( err ){
@@ -595,9 +599,10 @@ router.post( '/api/user/recommend/', checkSession, function( req, res ){
 				}
 				async.each( follows, function( follow, cb ){
 					if( cnt[follow.from.id] == null ){
-						cnt[follow.frm.id] = 0;
+						cnt[follow.from.id] = 0;
 					}
 					cnt[follow.from.id]++;
+					cb( null );
 				}, function( err2 ){
 					if( err2 ){
 						throw err2;
@@ -605,6 +610,7 @@ router.post( '/api/user/recommend/', checkSession, function( req, res ){
 					callback( null );
 				});
 			});
+		*/
 		}
 	], function( err ){
 		if( err ){
@@ -618,14 +624,15 @@ router.post( '/api/user/recommend/', checkSession, function( req, res ){
 		if( isNaN( limit ) ){
 			limit = 3;
 		}
-		var uids = Object.keys(cnt);
-		db.Users.find({ id : { $in : uids } }, { password : 0 }).skip( skip ).limit( limit ).exec( function( err2, users ){
+		db.Users.find({ id : { $in : uids } }, { name : 1, uid : 1, id : 1 }).skip( skip ).limit( limit ).lean().exec( function( err2, users ){
 			if( err2 ){
 				throw err2;
 			}
 			var result = [];
 			async.each( users, function( user, callback ){
+				user.followers = cnt[user.id];
 				result[uids.indexOf(user.id)] = user;
+				callback( null );
 			}, function( err3 ){
 				if( err3 ){
 					throw err3;

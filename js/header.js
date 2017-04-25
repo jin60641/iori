@@ -65,7 +65,6 @@ function sendData_search( query ){
 			var result = $("#head_search_result");
 			result.innerHTML="";
 			if( xhrResult.length ){
-					console.log(xhrResult);
 				for( var i = xhrResult.length - 1; i>=0; i--){
 					result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="head_search_result_uid">@' + xhrResult[i].uid + '</div>' + xhrResult[i].name + '</span></div></a>';
 				}
@@ -100,8 +99,8 @@ function goTop( orix, oriy, desx, desy ){
 	if( Timer ){
 		clearTimeout( Timer );
 	}
-	startx = 0;
-	starty = winHeight;
+	var startx = 0;
+	var starty = winHeight;
 	if( !orix || orix < 0 ){
 		orix = 0;
 	}
@@ -196,7 +195,6 @@ window.addEventListener('load',function(){
 	if( session != null && session.signUp == true  ){
 		wrap1.appendChild(makeUserCard(session));
 		makeRecommendList();
-//		wrap3.appendChild(makeRecommendList);
 	}
 
 	var head = $("div");
@@ -394,11 +392,41 @@ if( session.notice && session.notice.web == true ){
 
 function makeRecommendList(){
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function(event){
-		if( xhr.readyState == 4 && xhr.status == 200 ){
-			console.log(xhr.responseText);
+	xhr.onreadystatechange = function(event){ if( xhr.readyState == 4 && xhr.status == 200 ){
+		var result = JSON.parse(xhr.responseText);
+		var div = $('div');
+		div.id = "recommed_list";
+		var title = $('div');
+		title.id = "recommend_title";
+		title.innerText = "팔로우 추천";
+		div.appendChild(title);
+		for( var i = 0; i < result.length; ++i ){
+			var user = result[i];
+			var li = $('div');
+			var img = $('img');
+			img.src = "/files/profile/"+user.uid;
+			li.appendChild(img);
+			var a = $('a');
+			a.href = "/@"+user.uid;
+			a.innerText = user.name;
+			var span = $('span');
+			span.innerText = "@"+user.uid;
+			a.appendChild(span);
+			li.appendChild(a);
+			var followers = user.followers;
+			var text = $("div");
+			if( followers.length == 1 ){
+				text.innerText = followers[0].name + " 님이 팔로우 중";
+			} else if( followers.length == 2 ){
+				text.innerText = followers[0].name + " 님, " + followers[1].name + " 님이 팔로우 중";
+			} else {
+				text.innerText = followers[0].name + " 님 외 다수가 팔로우 중";
+			}
+			li.appendChild(text);
+			div.appendChild(li);
 		}
-	}
+		$('#wrap_right').appendChild(div);
+	}}
 	xhr.open("POST", "/api/user/recommend", false);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.send();
