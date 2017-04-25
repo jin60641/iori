@@ -550,6 +550,92 @@ router.post( '/api/user/drop', checkSession, function( req, res ){
 	});
 });
 
+router.post( '/api/user/recommend/', checkSession, function( req, res ){
+	var cnt = {};
+	var followings = [];
+	async.waterfall([
+		function( callback ){
+			db.Follows.find({ "from.id" : req.user.id }, function( err, result ){
+				if( err ){
+					throw err;
+				}
+				callback( null, result );
+			});
+		}, function( followings, callback ){
+			async.each( followings, function( following, cb ){
+				followings.push(following.to.id);
+				cb(null);
+			}, function( err, result ){
+				if( err ){
+					throw err;
+				}
+				callback( null );
+			});
+		}, function( callback ){
+			db.Follows.find({ "from.id" : { $in : followings }, "to.id" : { $nin : followings } }, function( err, follows ){
+				if( err ){
+					throw err;
+				}
+				async.each( follows, function( follow, cb ){
+					if( cnt[follow.to.id] == null ){
+						cnt[follow.to.id] = 0;
+					}
+					cnt[follow.to.id]++;
+				}, function( err2 ){
+					if( err2 ){
+						throw err2;
+					}
+					callback( null );
+				});
+			});
+		}, function( callback ){
+			db.Follows.find({ "from.id" : { $nin : followings }, "to.id" : { $in : followings } }, function( err, follows ){
+				if( err ){
+					throw err;
+				}
+				async.each( follows, function( follow, cb ){
+					if( cnt[follow.from.id] == null ){
+						cnt[follow.frm.id] = 0;
+					}
+					cnt[follow.from.id]++;
+				}, function( err2 ){
+					if( err2 ){
+						throw err2;
+					}
+					callback( null );
+				});
+			});
+		}
+	], function( err ){
+		if( err ){
+			throw err;
+		}
+		var skip = parseInt(req.body['skip']);
+		var limit = parseInt(req.body['limit']);
+		if( isNaN( skip ) ){
+			skip = 0;
+		}
+		if( isNaN( limit ) ){
+			limit = 3;
+		}
+		var uids = Object.keys(cnt);
+		db.Users.find({ id : { $in : uids } }, { password : 0 }).skip( skip ).limit( limit ).exec( function( err2, users ){
+			if( err2 ){
+				throw err2;
+			}
+			var result = [];
+			async.each( users, function( user, callback ){
+				result[uids.indexOf(user.id)] = user;
+			}, function( err3 ){
+				if( err3 ){
+					throw err3;
+				}
+				res.send(result);
+			});
+		});
+	})
+});
+
 router.post( '/api/user/change/password', checkSession, function( req, res ){
 	var oldpw = req.body['oldpw'];
 	var password = req.body['newpw'];

@@ -125,9 +125,8 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 								if( value.indexOf("webm") >= 0 ){
 									type = "webm";
 								}
-								path += type;
-								var fstream = fs.createWriteStream( path );
 								if( wave ){
+									var fstream = fs.createWriteStream( path+".mp3" );
 									var command = ffmpeg(ystream).format('adts');
 									var stream = command.pipe(fstream);
 									stream.on('finish',function(){
@@ -136,6 +135,8 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 										});
 									});
 								} else {
+									path += type;
+									var fstream = fs.createWriteStream( path );
 									var stream = ystream.pipe(fstream);
 									stream.on('finish',function(){
 										res.send({info:info,type:type});

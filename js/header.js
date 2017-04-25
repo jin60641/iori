@@ -195,6 +195,8 @@ window.addEventListener('load',function(){
 
 	if( session != null && session.signUp == true  ){
 		wrap1.appendChild(makeUserCard(session));
+		makeRecommendList();
+//		wrap3.appendChild(makeRecommendList);
 	}
 
 	var head = $("div");
@@ -327,6 +329,7 @@ window.addEventListener('load',function(){
 	head_menu.id = "head_menu";
 	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
 	head_menu.innerHTML += "<a href='/@" + session.uid + "'><img src='/svg/menu_home.svg'>| 프로필</a>";
+	head_menu.innerHTML += "<a href='/activity'><img src='/svg/menu_activity.svg'>| 활동로그</a>";
 	head_menu.innerHTML += "<a href='/setting/account'><img src='/svg/menu_setting.svg'>| 설정</a>";
 	if( session == "" ){
 	} else if( session.signUp == 1 ){
@@ -389,3 +392,14 @@ if( session.notice && session.notice.web == true ){
 	});
 }
 
+function makeRecommendList(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(event){
+		if( xhr.readyState == 4 && xhr.status == 200 ){
+			console.log(xhr.responseText);
+		}
+	}
+	xhr.open("POST", "/api/user/recommend", false);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.send();
+}
