@@ -281,6 +281,9 @@ function settingSave(){
 		flag = true;
 	} else if( $('#headerimg_back').style.backgroundImage == "" && user.header ){
 		sendProfileImage( "header", false );
+		flag = true;
+	} else {
+		$('#headerimg_form').removeChild($('#headerimg_label'));
 	}
 
 	if( $('#profileimg_file').value != "" ){
@@ -288,6 +291,9 @@ function settingSave(){
 		flag = true;
 	} else if( $('#profileimg_back').style.backgroundImage == 'url("/svg/profile.svg")' && user.profile ){
 		sendProfileImage( "profile", false );
+		flag = true;
+	} else {
+		$('#profileimg_form').removeChild($('#profileimg_label'));
 	}
 	
 	if( flag == false ){
@@ -298,14 +304,17 @@ function settingSave(){
 function sendProfileImage( type, boolean ){
 	var xhr = new XMLHttpRequest();
 	var label = $('#'+type+"img_label");
-	console.log(1);
 	if( user[type] && boolean == false ){
-		console.log(2);
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-			console.log(3);
-			console.log(xhr.responseText);
+			session[type] = false;
 			user[type] = false;
-			settingCancel();
+			if( type == 'header' ){
+				$('#headerimg_back').style.backgroundImage = "";
+			} else {
+				$('#profileimg_back').style.backgroundImage = 'url("/svg/profile.svg")';
+			}
+			$('#'+type+'img_form').removeChild($('#'+type+'img_label'));
+			settingCancel(true);
 		}}
 		xhr.open("POST","/api/user/removeimg", false); 
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -335,38 +344,18 @@ function sendProfileImage( type, boolean ){
 		formdata.append( "file", file );
 	
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+			session[type] = true;
 			user[type] = true;
 			$('#'+type+"img_back").style.backgroundImage = "url('/files/" + type + "/" + user.id + "?" + new Date().getTime() + "')";
-			settingCancel();
+			$('#'+type+"img_form").reset();
+			$('#'+type+'img_form').removeChild($('#'+type+'img_label'));
+			settingCancel(true);
 		}}
 		xhr.open("POST","/api/user/" + type + "img", false); xhr.send(formdata);
 	}
 }
 
-function settingCancel(){
-	$('#headerimg_form').reset();
-	$('#profileimg_form').reset();
-	if( !user.header ){
-		$('#profile_container').style.height = "";
-		$('#profile_wrap').style.height = "";
-	}
-
-	if( user.header ){
-		$('#headerimg_back').style.backgroundImage = "url('/files/header/" + user.id + "?" + new Date().getTime() + "')";
-	}
-	if( user.profile ){
-		$('#profileimg_back').style.backgroundImage = "url('/files/profile/" + user.id + "?" + new Date().getTime() + "')";
-	}
-
-	$('#user_setting').style.display = "";
-
-	if( $('#headerimg_label') ){
-		headerimg_form.removeChild($('#headerimg_label'));
-	}
-	if( $('#profileimg_label') ){
-		profileimg_form.removeChild($('#profileimg_label'));
-	}
-
+function settingCancel(boolean){
 	if( $('#user_setting_cancel') ){
 		$('#profile_container').removeChild($('#user_setting_cancel'));
 	}
@@ -374,6 +363,31 @@ function settingCancel(){
 	if( $('#user_setting_save') ){
 		$('#profile_container').removeChild($('#user_setting_save'));
 	}
+	if( !user.header ){
+		$('#profile_container').style.height = "";
+		$('#profile_wrap').style.height = "";
+	}
+	$('#user_setting').style.display = "";
+	if( boolean == true ){
+		return ;
+	}
+	if( user.header ){
+		$('#headerimg_back').style.backgroundImage = "url('/files/header/" + user.id + "?" + new Date().getTime() + "')";
+	}
+	if( user.profile ){
+		$('#profileimg_back').style.backgroundImage = "url('/files/profile/" + user.id + "?" + new Date().getTime() + "')";
+	}
+	var headerimg_form = $('#headerimg_form');
+	var profileimg_form = $('#profileimg_form');
+	headerimg_form.reset();
+	profileimg_form.reset();
+	if( $('#headerimg_label') ){
+		headerimg_form.removeChild($('#headerimg_label'));
+	}
+	if( $('#profileimg_label') ){
+		profileimg_form.removeChild($('#profileimg_label'));
+	}
+
 }
 
 
@@ -588,6 +602,7 @@ function openUserTab( evt ){
 	$('#post_wrap').style.display = "none";
 	$('#follow_wrap').innerHTML = "";
 	$('#follow_wrap').style.display = "none";
+	$('#wrap_right').style.display = "";
 	switch(tab_name){
 		case "following":
 			getFollows(6,"following");
@@ -610,6 +625,7 @@ function openUserTab( evt ){
 }
 
 function getFollows(limit,type){
+	$('#wrap_right').style.display = "none";
 	var wrap = $('#follow_wrap');
 	wrap.style.display = "";
 	var xhr = new XMLHttpRequest();

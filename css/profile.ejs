@@ -19,6 +19,8 @@
 
 #profile_wrap #profile_container #user_tab {
 	padding-left : 0px;
+	padding-right : 8px;	
+	box-sizing : initial;
 	border : 0;
 	text-align : left;
 }
@@ -232,6 +234,7 @@ profile_wrap #post_wrap {
 	margin : auto;
 	width : 650px;
 	max-width : 100vw;
+	margin-bottom : 10px;
 }
 
 
@@ -267,7 +270,7 @@ profile_wrap #post_wrap {
 
 #follow_wrap {
 	max-width : 100vw;
-	width : 650px;
+	width : 970px;
 	display : block;
 	padding-top : 10px;
 }
@@ -303,7 +306,11 @@ profile_wrap #post_wrap {
 
 @media screen and ( max-width : 1300px ) {
 	#profile_wrap #profile_container #user_tab {
-		padding-left : 155px !important;
+		padding-left : 157px !important;
+		box-sizing : border-box;
+	}
+	#follow_wrap {
+		width : 650px;
 	}
 }
 
@@ -312,6 +319,9 @@ profile_wrap #post_wrap {
 		display : block;
 		margin-left : auto;
 		margin-right : auto;
+	}
+	#follow_wrap .user_list_div {
+		margin-bottom : 20px;
 	}
 }
 

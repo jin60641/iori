@@ -229,10 +229,15 @@ router.post( '/api/user/removeimg', checkSession, function( req, res ){
 				if( err ){
 					throw err;
 				}
-				res.send("success")
 				var query = {};
 				query[type] = false;
-				db.Users.update({ id : req.user.id }, query ).exec();
+				db.Users.update({ id : req.user.id }, query, function( err2, result ){
+					if( err2 ){
+						throw err2;
+					}
+					req.user[type] = false;
+					res.send("success")
+				});
 			});
 		}
 	}
@@ -258,11 +263,15 @@ router.post( '/api/user/:imgtype(*)img', checkSession, function( req, res ){
 						if( err ){
 							throw err;
 						}
-						res.end();
 						var obj = {};
-						req.user[type] = true;
 						obj[type] = true;
-						db.Users.update({ id : req.user.id }, obj ).exec();
+						db.Users.update({ id : req.user.id }, obj, function( err2, result ){
+							if( err2 ){
+								throw err2;
+							}
+							req.user[type] = true;
+							res.end();
+						});
 					});
 				} else {
 					res.end();

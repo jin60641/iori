@@ -154,7 +154,16 @@ window.addEventListener('load',function(){
 		event.preventDefault();
 	});
 	if( typeof postFavorite != "undefined" ){
-		imgmenu.innerHTML="<img id='imgmenu_favorite' src='/img/favorite.png'>";
+		var img = $('img');
+		img.id = "imgmenu_favorite";
+		img.src = "/img/favorite.png";
+		imgmenu.appendChild(img);
+	}
+	if( typeof postShare != "undefined" ){
+		var img = $('img');
+		img.id = "imgmenu_share";
+		img.src = "/img/share.png";
+		imgmenu.appendChild(img);
 	}
 	imgmenu.innerHTML+="<a id='imgdownload' download><img src='/img/download.png'></a>"; //<img src='/img/share.png'>";
 	if( !(/(BB|iPad|iPhone|iPod|Android|\.NET)/i.test( navigator.userAgent )) ){
@@ -206,7 +215,7 @@ function viewimg(postid,filecount,date,url,controller){
 	imgviewing = 1;
 	var imglayer = $('#imglayer');
 	var imgmenu_favorite = $('#imgmenu_favorite');
-	var imgmenu_share = $('#imgmenu_favorite');
+	var imgmenu_share = $('#imgmenu_share');
 	var imgbox = $('#imgbox');
 	var imgmenuhover = $('#imgmenuhover');
 	var lefthover= $('#lefthover');
@@ -217,20 +226,35 @@ function viewimg(postid,filecount,date,url,controller){
 	imgbox.innerHTML="<div id='helper'></div>";
 	imgmenuhover.style.display="block";
 	imgmenu.style.display = "block";
+	var favorite = $('#favorite_'+postid);
+	var share = $('#share_'+postid);
 	if( url ){
 		imgmenu.style.display = "none";
-	} else if( $("#post_favorite_"+postid) ){
-		imgmenu_favorite.src = '/img/favorite_remove.png';
-		imgmenu_favorite.onclick = function(){
-			postFavorite(postid,0);
+	} else {
+		if( favorite.innerText == "관심글해제" ){
+			imgmenu_favorite.src = '/img/favorite_remove.png';
+			imgmenu_favorite.onclick = function(){
+				postFavorite(postid,0);
+			}
+		} else if( postid != undefined ){
+			imgmenu_favorite.src = '/img/favorite.png';
+			imgmenu_favorite.onclick = function(){
+				postFavorite(postid,1);
+			}
 		}
-	} else if( postid != undefined ){
-		imgmenu_favorite.src = '/img/favorite.png';
-		imgmenu_favorite.onclick = function(){
-			postFavorite(postid,1);
+		if( share.innerText == "공유취소" ){
+			imgmenu_share.src = '/img/share_remove.png';
+			imgmenu_share.onclick = function(){
+				postShare(postid,0);
+			}
+		} else if( postid != undefined ){
+			imgmenu_share.src = '/img/share.png';
+			imgmenu_share.onclick = function(){
+				postShare(postid,1);
+			}
 		}
 	}
-	if( filecount >= 2 || url != undefined ){
+	if( filecount >= 2 || ( url != undefined && controller == true )){
 		lefthover.style.display="block";
 		righthover.style.display="block";
 	} else if( filecount == 1 || (/(BB|iPad|iPhone|iPod|Android)/i.test( navigator.userAgent )) || controller == false ){
@@ -239,13 +263,13 @@ function viewimg(postid,filecount,date,url,controller){
 	}
 	for(var i = 1; i <= filecount; ++i){
 		var img = $("img");
-		if( postid != undefined ){
-			img.src="/files/post/" + postid + "/" + i + "?" + date;
-			imgdownload.download = postid+'_'+1+'';
-		} else if( url ){
+		if( url ){
 			img.src = url + '?' + date;
 			imgdownload.download = "iori_"+new Date().getTime() + ".jpg";
 			img.id = "imglayer_img";
+		} else if( postid != undefined ){
+			img.src="/files/post/" + postid + "/" + i + "?" + date;
+			imgdownload.download = postid+'_'+1+'';
 		}
 		imgdownload.href = img.src;
 		img.onclick = function(){

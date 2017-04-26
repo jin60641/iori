@@ -186,10 +186,6 @@ function postShare(pid,add){
 				postShare(pid,0)
 			}
 			menu_share.innerText="공유취소";
-			var span = $("span")
-			span.className="post_share";
-			span.id="post_share_"+pid;
-			$("#post_"+pid).insertBefore(span,$("#post_inside_"+pid));
 			if( $('#imgmenu_share') ){
 				$('#imgmenu_share').src='/img/share_remove.png';
 				$('#imgmenu_share').onclick = function(){
