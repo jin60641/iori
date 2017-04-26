@@ -168,7 +168,15 @@ function getProfilePage( req, res ){
 	});
 }
 
-router.get('/@:uid(*)/:tab', getProfilePage );
+router.get('/@:uid(*)/:tab', function( req, res ){
+	if( req.params['tab'] == 'follower_together' ){
+		checkSession( req, res, function(){
+			getProfilePage( req, res );
+		});
+	} else {
+		getProfilePage( req, res );
+	}
+});
 router.get('/@:uid(*)', getProfilePage );
 
 router.post('/@:uid(*)', function( req, res ){
@@ -562,6 +570,10 @@ router.post( '/api/user/recommend', checkSession, function( req, res ){
 	var cnt = {};
 	var followings = [];
 	var uids = [];	
+	var uid = parseInt( req.body['uid'] );
+	if( isNaN( uid ) ){
+		uid = null;
+	}
 	followings.push(req.user.id);
 	async.waterfall([
 		function( callback ){
@@ -582,7 +594,18 @@ router.post( '/api/user/recommend', checkSession, function( req, res ){
 				callback( null );
 			});
 		}, function( callback ){
-			db.Follows.find({ "from.id" : { $in : followings }, "to.id" : { $nin : followings } }, function( err, follows ){
+			var query = {
+				"from.id" : {
+					"$in" : followings
+				}
+			}
+			
+			if( uid != null ){
+				query["to.id"] = uid;
+			} else {
+				query["to.id"] = { "$nin" : followings }
+			}
+			db.Follows.find( query, function( err, follows ){
 				if( err ){
 					throw err;
 				}
@@ -591,7 +614,11 @@ router.post( '/api/user/recommend', checkSession, function( req, res ){
 						cnt[follow.to.id] = [];
 						uids.push(follow.to.id);
 					}
-					cnt[follow.to.id].push(follow.from);
+					if( uid != null ){
+						cnt[follow.to.id].push(follow.from.id);
+					} else {
+						cnt[follow.to.id].push(follow.from);
+					}
 					cb( null );
 				}, function( err2 ){
 					if( err2 ){
@@ -639,22 +666,31 @@ router.post( '/api/user/recommend', checkSession, function( req, res ){
 		if( err ){
 			throw err;
 		}
-		db.Users.find({ id : { $in : uids } }, { name : 1, uid : 1, id : 1 }).lean().exec( function( err2, users ){
-			if( err2 ){
-				throw err2;
-			}
-			var result = [];
-			async.each( users, function( user, callback ){
-				user.followers = cnt[user.id];
-				result[uids.indexOf(user.id)] = user;
-				callback( null );
-			}, function( err3 ){
-				if( err3 ){
-					throw err3;
+		if( uid != null ){
+			db.Users.find({ id : { $in : cnt[uids[0]] } }, { header : 1, profile : 1, color : 1, name : 1, uid : 1, id : 1 }).lean().exec( function( err2, users ){
+				if( err2 ){
+					throw err2;
 				}
-				res.send(result);
+				res.send( users );
 			});
-		});
+		} else {
+			db.Users.find({ id : { $in : uids } }, { name : 1, uid : 1, id : 1 }).lean().exec( function( err2, users ){
+				if( err2 ){
+					throw err2;
+				}
+				var result = [];
+				async.each( users, function( user, callback ){
+					user.followers = cnt[user.id];
+					result[uids.indexOf(user.id)] = user;
+					callback( null );
+				}, function( err3 ){
+					if( err3 ){
+						throw err3;
+					}
+					res.send(result);
+				});
+			});
+		}
 	})
 });
 

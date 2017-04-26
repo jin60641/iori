@@ -47,7 +47,17 @@ window.addEventListener('load',function(){
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 				if( xhr.responseText != "" ){
 					var src = "/files/chat/" + xhr.responseText;
-					img.src = src;
+					var image = new Image();
+					image.src = src;
+					img.src = "";
+					var wait = setInterval( function(){
+						var w = image.naturalWidth ;
+						var h = image.naturalHeight;
+						if( w && h ){
+							clearInterval(wait);
+							img.src = src;
+						}
+					},10);
 				}
 			}}
 			xhr.open("POST", "/api/chat/getfile", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
@@ -100,7 +110,17 @@ window.addEventListener('load',function(){
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 				if( xhr.responseText ){
 					var src = "/files/chat/" + xhr.responseText;
-					img.src = src;
+					var image = new Image();
+					image.src = src;
+					img.src = "";
+					var wait = setInterval( function(){
+						var w = image.naturalWidth ;
+						var h = image.naturalHeight;
+						if( w && h ){
+							clearInterval(wait);
+							img.src = src;
+						}
+					},10);
 				}
 			}}
 			xhr.open("POST", "/api/chat/getfile", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);		
@@ -229,7 +249,7 @@ function viewimg(postid,filecount,date,url,controller){
 	var favorite = $('#favorite_'+postid);
 	var share = $('#share_'+postid);
 	if( url ){
-		imgmenu.style.display = "none";
+//		imgmenu.style.display = "none";
 	} else {
 		if( favorite.innerText == "관심글해제" ){
 			imgmenu_favorite.src = '/img/favorite_remove.png';

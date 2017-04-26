@@ -345,7 +345,7 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 					}
 					chat_body_file.onclick = function(){
 						var src = this.src.split('?');
-						viewimg(null,1,src[1],src[0]);
+						viewimg(null,1,src[1],src[0],true);
 					};
 					chat_body.appendChild(chat_body_file);
 				}

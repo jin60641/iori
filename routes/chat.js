@@ -390,7 +390,7 @@ router.post('/api/chat/getfile', checkSession, function( req, res ){
 		query.id = { "$lt" : now }
 		sort.id = -1
 	}
-	if( typeof now == "NaN" ){
+	if( isNaN(now) == true ){
 		res.send("비정상적 접근");
 	} else if( type == "g" ){
 		db.Groups.findOne({ id : dialog_id, "users.id" : { $in : [ req.user.id ] } }, function( error, group ){

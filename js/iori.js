@@ -113,13 +113,15 @@ function makeRecommendList(){
 		for( var i = 0; i < result.length; ++i ){
 			var user = result[i];
 			var li = $('div');
-			var img = $('img');
-			img.src = "/files/profile/"+user.uid;
+			var img = $('a');
+			img.id = "recommend_img";
+			img.style.backgroundImage = "url('/files/profile/" + user.uid + "')";
+			img.href = "/@"+user.uid;
 			li.appendChild(img);
 			var box = $("div");
 			box.className = "recommend_box";
 			var a = $('a');
-			a.href = "/@"+user.uid;
+			a.href = img.href;
 			a.innerText = user.name;
 			var span = $('span');
 			span.innerText = "@"+user.uid;
@@ -128,11 +130,34 @@ function makeRecommendList(){
 			var followers = user.followers;
 			var text = $('text');
 			if( followers.length == 1 ){
-				text.innerText = followers[0].name + " 님이 팔로우 중";
+				var a1 = $('a');
+				a1.href = "/@"+followers[0].uid;
+				a1.innerText = followers[0].name;
+				console.log(a1);
+				text.appendChild(a1);
+				text.innerHTML += " 님이 팔로우 중";
 			} else if( followers.length == 2 ){
-				text.innerText = followers[0].name + " 님, " + followers[1].name + " 님이 팔로우 중";
+				var a1 = $('a');
+				a1.href = "/@"+followers[0].uid;
+				a1.innerText = followers[0].name;
+				text.appendChild(a1);
+				text.innerHTML += " 님, ";
+				var a2 = $('a');
+				a2.href = "/@"+followers[1].uid;
+				a2.innerText = followers[1].name;
+				text.appendChild(a2);
+				text.innerHTML += " 님이 팔로우 중";
 			} else {
-				text.innerText = followers[0].name + " 님 외 다수가 팔로우 중";
+				var a1 = $('a');
+				a1.href = "/@"+followers[0].uid;
+				a1.innerText = followers[0].name;
+				text.appendChild(a1);
+				text.innerHTML += "님 외 ";
+				var a2 = $('a');
+				a2.href = "/@"+user.uid+"/follower_together";
+				a2.innerText = "다수";
+				text.appendChild(a2);
+				text.innerHTML += "가 팔로우 중";
 			}
 			box.appendChild(text);
 			var user_follow = $('div');;

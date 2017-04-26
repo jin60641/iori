@@ -1,8 +1,8 @@
 <style>
 #imglayer {
-	height : 100%;
+	height : calc( 100% - 42px );
 	position : fixed !important;
-	top : 0;
+	top : 42px;
 	visibility : hidden;
 	opacity : 0;
 	transition : opacity 0.1s linear;
@@ -13,6 +13,7 @@
 }
 
 #imglayer #imgbox {
+	box-sizing : border-box;
 	white-space : nowrap;
 	z-index : 300;
 	display : inline-block;
@@ -72,7 +73,6 @@
 	background-color : white;
 	max-width : calc( 100% - 60px );
 	max-height : calc( 100% - 60px );
-	margin-top : 42px;
 	display : none;
 	vertical-align : middle;
 }

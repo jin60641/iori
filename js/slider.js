@@ -120,6 +120,9 @@ function sliding( type ){
 			imgs.removeChild(img);
 			img = img.cloneNode(true);
 			img.style.marginLeft =  margin * type + "px";
+			img.onloadstart = function(){
+				img.style.marginLeft = "0px";
+			}
 			imgs.insertBefore(img,imgs.childNodes[0]);
 			setTimeout(function(){
 				img.style.marginLeft = "0px";

@@ -35,7 +35,7 @@ window.addEventListener('load', function(){
 		container.style.height = "45vh";
 		wrap.style.height = "45vh";
 	} else {
-		headerimg_back.style.backgroundColor = session.color.hex;
+		headerimg_back.style.backgroundColor = user.color.hex;
 	}
 	headerimg_form.appendChild(headerimg_back);
 
@@ -559,7 +559,7 @@ function removeImage( evt ){
  	var type = this.parentNode.parentNode.parentNode.id.split('_')[0].replace("img","");
 	var back = $('#' + type + 'img_back');
 	if( type == "header" ){
-		headerimg_back.style.backgroundColor = session.color.hex;
+		headerimg_back.style.backgroundColor = user.color.hex;
 		headerimg_back.style.backgroundImage = "";
 	} else if( type =="profile" ){
 		back.style.backgroundImage = 'url("/svg/profile.svg")';
@@ -610,6 +610,10 @@ function openUserTab( evt ){
 		case "follower":
 			getFollows(6,"follower");
 			break;
+		case "follower_together":
+			tab = $('#profile_tab_follower');
+			getFollows(6,"follower",true);
+			break;
 		case "favorite":
 			postOption.favorite = "true";
 			getPosts(10);
@@ -620,11 +624,11 @@ function openUserTab( evt ){
 	}
 	history.pushState(null,null,history_str);
 	
-	tab.style.color = session.color.hex;
-	tab.style.borderBottom = "5px solid " + session.color.hex;
+	tab.style.color = user.color.hex;
+	tab.style.borderBottom = "5px solid " + user.color.hex;
 }
 
-function getFollows(limit,type){
+function getFollows(limit,type,together){
 	$('#wrap_right').style.display = "none";
 	var wrap = $('#follow_wrap');
 	wrap.style.display = "";
@@ -645,7 +649,14 @@ function getFollows(limit,type){
 			wrap.appendChild(none);
 		}
 	}}
-	xhr.open("POST","/@" + user.uid + '/' + type, false); 
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.send();
+	if( together == true ){
+		xhr.open("POST","/api/user/recommend", false); 
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		var limit = 6;
+		xhr.send('uid='+user.id+'&limit='+limit);
+	} else {
+		xhr.open("POST","/@" + user.uid + '/' + type, false); 
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.send();
+	}
 }

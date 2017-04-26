@@ -134,12 +134,12 @@ textarea {
 	margin-bottom : 15px;
 }
 
-#wrap_right #recommend_list div img {
+#wrap_right #recommend_list div #recommend_img {
 	width : 50px;
 	height : 50px;
-	display : inline;
+	display : inline-block;
 	border : 1px solid rgba(0, 0, 0, .1);
-	background : white;
+	background-color : white;
 	border-radius : 25px;
 	vertical-align : top;
 	margin-right : 10px;
@@ -151,7 +151,7 @@ textarea {
 	width : 210px;
 }
 
-#wrap_right #recommend_list div .recommend_box a {
+#wrap_right #recommend_list div .recommend_box > a {
     color : #000000;
     text-decoration : none;
 	vertical-align : top;
@@ -159,7 +159,7 @@ textarea {
     font-weight : bold;
 }
 
-#wrap_right #recommend_list div .recommend_box a span {
+#wrap_right #recommend_list div .recommend_box > a span {
 	padding-left : 5px;
 	color : #657786;
     font-weight : normal;
@@ -168,6 +168,15 @@ textarea {
 #wrap_right #recommend_list div .recommend_box text {
 	display : block;
 	font-size : 14px;
+}
+
+#wrap_right #recommend_list div .recommend_box text a {
+	color : <%= color_hex %>;
+	text-decoration : none;
+}
+
+#wrap_right #recommend_list div .recommend_box text a:hover {
+	text-decoration : underline;
 }
 
 .user_follow_btn, .user_follow_btn_small {

@@ -23,7 +23,6 @@ function makeObj( req, res, ejs, obj ){
 	obj.color_b = color.b;
 	if( req.user ){
 	    obj.session = req.user;
-		obj.session.color = color;
 		async.parallel([
 			function(cb){
 				db.Posts.count({ "user.id" : req.user.id, be : true, share : null }, function( err, count ){
