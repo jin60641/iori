@@ -566,7 +566,7 @@ function openUserTab( evt ){
 		tab = this;
 		tab_name = this.id.split("_").pop();
 	} else {
-		tab_name = document.URL.split("/").pop();
+		tab_name = document.URL.split("/").pop().split('#')[0];
 		tab = $('#profile_tab_' + tab_name);
 	}
 	if( tab_name == "post" || tab_name[0] == "@" ){

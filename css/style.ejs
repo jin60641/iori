@@ -1,34 +1,34 @@
 <style>
 @-webkit-keyframes fade_post {
-    from {
-        opacity : 0;
-    } to {
-        opacity : 1;
-    }
+	from {
+		opacity : 0;
+	} to {
+		opacity : 1;
+	}
 }
 
 @-o-keyframes fade_post {
-    from {
-        opacity : 0;
-    } to {
-        opacity : 1;
-    }
+	from {
+		opacity : 0;
+	} to {
+		opacity : 1;
+	}
 }
 @-moz-keyframes fade_post {
-    from {
-        opacity : 0;
-    } to {
-        opacity : 1;
-    }
+	from {
+		opacity : 0;
+	} to {
+		opacity : 1;
+	}
 }
 
 @keyframes fade_post {
-    from {
-        opacity : 0;
-    }
-    to {
-        opacity : 1;
-    }
+	from {
+		opacity : 0;
+	}
+	to {
+		opacity : 1;
+	}
 }
 
 body::-webkit-scrollbar {
@@ -116,25 +116,85 @@ textarea {
 #wrap_right {
 	margin-left : 10px;
 }
-.user_follow_btn {
-    float : right;
-    width : 78px;
-    text-align : center !important;
-    padding : 9px;
-    background-color : white;
-    border : 1px solid #e1e8ed;
-    border-radius : 4px;
-    color : #66757f;
-    cursor : pointer;
-    font-size : 14px;
-    font-weight : bold;
-    margin-top : 7px;
-    margin-right : 7px;
+
+#wrap_right #recommend_list {
+	background-color : white;
+	margin-bottom : 10px;
+	width : 310px;
+	border-radius : 4px;
+	border : 1px solid;
+	border-color : #e5e6e9 #dfe0e4 #d0d1d5;
+	padding : 15px;
+	box-sizing : border-box;
 }
 
-.user_follow_btn:hover {
+#wrap_right #recommend_list #recommend_title {
+	font-size : 18px;
+	color : #66757f;
+	margin-bottom : 15px;
+}
+
+#wrap_right #recommend_list div img {
+	width : 50px;
+	height : 50px;
+	display : inline;
+	border : 1px solid rgba(0, 0, 0, .1);
+	background : white;
+	border-radius : 25px;
+	vertical-align : top;
+	margin-right : 10px;
+}
+
+#wrap_right #recommend_list div .recommend_box {
+	display : inline-block;
+	vertical-align : top;
+	width : 210px;
+}
+
+#wrap_right #recommend_list div .recommend_box a {
+    color : #000000;
     text-decoration : none;
-    background-color : #f5f5f5;
+	vertical-align : top;
+    font-size : 16px;
+    font-weight : bold;
+}
+
+#wrap_right #recommend_list div .recommend_box a span {
+	padding-left : 5px;
+	color : #657786;
+    font-weight : normal;
+}
+
+#wrap_right #recommend_list div .recommend_box text {
+	display : block;
+	font-size : 14px;
+}
+
+.user_follow_btn, .user_follow_btn_small {
+	float : right;
+	width : 78px;
+	text-align : center !important;
+	padding : 9px;
+	background-color : white;
+	border : 1px solid #e1e8ed;
+	border-radius : 4px;
+	color : #66757f;
+	cursor : pointer;
+	font-size : 14px;
+	font-weight : bold;
+	margin-top : 7px;
+	margin-right : 7px;
+}
+
+.user_follow_btn_small {
+	margin-top : 5px;
+	padding : 5px;
+	float : initial;
+}
+
+.user_follow_btn:hover, .user_follow_btn_small:hover {
+	text-decoration : none;
+	background-color : #f5f5f5;
 }
 
 input[type=text], input[type=password], input[type=email], input[type=number] {

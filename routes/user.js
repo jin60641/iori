@@ -284,7 +284,7 @@ router.post( '/api/user/follow', checkSession, function( req, res ){
 		if( err ){
 			throw err;
 		} else if ( user ){
-			db.Follows.findOne({ "to.id" : user.id }, function( err2, follow ){
+			db.Follows.findOne({ "to.id" : user.id, "from.id" : req.user.id }, function( err2, follow ){
 				if( err2 ){
 					throw err2;
 				} else if( follow ){
@@ -611,20 +611,26 @@ router.post( '/api/user/recommend', checkSession, function( req, res ){
 				});
 			});
 		*/
+		}, function( callback ){
+			var skip = parseInt(req.body['skip']);
+			var limit = parseInt(req.body['limit']);
+			if( isNaN( skip ) ){
+				skip = 0;
+			}
+			if( isNaN( limit ) ){
+				limit = 3;
+			}
+			uids.sort( function(a,b) {
+				return cnt[b].length - cnt[a].length;
+			});
+			uids = uids.splice(skip,limit);
+			callback( null );
 		}
 	], function( err ){
 		if( err ){
 			throw err;
 		}
-		var skip = parseInt(req.body['skip']);
-		var limit = parseInt(req.body['limit']);
-		if( isNaN( skip ) ){
-			skip = 0;
-		}
-		if( isNaN( limit ) ){
-			limit = 3;
-		}
-		db.Users.find({ id : { $in : uids } }, { name : 1, uid : 1, id : 1 }).skip( skip ).limit( limit ).lean().exec( function( err2, users ){
+		db.Users.find({ id : { $in : uids } }, { name : 1, uid : 1, id : 1 }).lean().exec( function( err2, users ){
 			if( err2 ){
 				throw err2;
 			}

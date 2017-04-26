@@ -172,36 +172,6 @@ function close_all(){
 }
 
 window.addEventListener('load',function(){
-	var body = $("div");
-	document.body.appendChild(body);
-	body.id = "body";
-
-	var wrap0 = $("div");
-	wrap0.id = "wrap_top";
-	body.appendChild(wrap0);
-	
-	var wrap1 = $("div");
-	wrap1.id = "wrap_left";
-	body.appendChild(wrap1);
-
-	var wrap2 = $("div");
-	wrap2.id = "wrap_mid";
-	body.appendChild(wrap2);
-
-	var wrap3 = $("div");
-	wrap3.id = "wrap_right";
-	body.appendChild(wrap3);
-
-	if( session != null && session.signUp == true  ){
-		wrap1.appendChild(makeUserCard(session));
-		makeRecommendList();
-	}
-
-	var head = $("div");
-	document.body.insertBefore( head, document.body.firstChild );
-	head.id = "head";
-
-
 	var navi_tab = $("div");
 	navi_tab.id = "navi_tab";
 
@@ -390,44 +360,3 @@ if( session.notice && session.notice.web == true ){
 	});
 }
 
-function makeRecommendList(){
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function(event){ if( xhr.readyState == 4 && xhr.status == 200 ){
-		var result = JSON.parse(xhr.responseText);
-		var div = $('div');
-		div.id = "recommed_list";
-		var title = $('div');
-		title.id = "recommend_title";
-		title.innerText = "팔로우 추천";
-		div.appendChild(title);
-		for( var i = 0; i < result.length; ++i ){
-			var user = result[i];
-			var li = $('div');
-			var img = $('img');
-			img.src = "/files/profile/"+user.uid;
-			li.appendChild(img);
-			var a = $('a');
-			a.href = "/@"+user.uid;
-			a.innerText = user.name;
-			var span = $('span');
-			span.innerText = "@"+user.uid;
-			a.appendChild(span);
-			li.appendChild(a);
-			var followers = user.followers;
-			var text = $("div");
-			if( followers.length == 1 ){
-				text.innerText = followers[0].name + " 님이 팔로우 중";
-			} else if( followers.length == 2 ){
-				text.innerText = followers[0].name + " 님, " + followers[1].name + " 님이 팔로우 중";
-			} else {
-				text.innerText = followers[0].name + " 님 외 다수가 팔로우 중";
-			}
-			li.appendChild(text);
-			div.appendChild(li);
-		}
-		$('#wrap_right').appendChild(div);
-	}}
-	xhr.open("POST", "/api/user/recommend", false);
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.send();
-}
