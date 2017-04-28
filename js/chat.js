@@ -745,9 +745,11 @@ function showChatLayer( boolean, type ){
 		info_div.id = "chat_info_div";
 		
 		var info_img = $("div");
+		/*
 		info_img.onclick = function(){
 			viewimg(null,1,new Date(),this.style.backgroundImage.replace(/url\(|\)$|"/ig, ''),false);
 		}
+		*/
 		info_img.id = "chat_info_img";
 		info_img.style.backgroundImage = "url('/files/group/" + location.hash.split('?')[1] + "')";
 		info_div.appendChild(info_img);
