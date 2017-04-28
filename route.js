@@ -24,6 +24,31 @@ String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");
 }
 
+function fillSvg( req, res, path, hex ){
+	var file = fs.readFileSync( path, 'utf8' );
+	var ref = req.headers.referer;
+	if( ref.indexOf("@") >= 0 ){
+		var uid = ref.split('@')[1].split('/')[0];
+		db.Users.findOne({ uid : uid }, function( err, result ){
+			if( err ){
+				throw err;
+			} else if( result ){
+				file = file.replace("#000000",result.color.hex);
+				var type = "image/svg+xml";
+				res.writeHead(200, { 'Content-Type' : type });
+				res.end( file );
+			} else {
+				res.end();
+			}
+		});
+	} else {
+		file = file.replace("#000000",hex);
+		var type = "image/svg+xml";
+		res.writeHead(200, { 'Content-Type' : type });
+		res.end( file );
+	}
+}
+
 function checkAdmin( req, res, next ){
 	if( req.user && req.user.signUp && req.user.level == 9 ){
 		return next();
@@ -136,21 +161,11 @@ router.get( '/files/profile/:uid', function( req, res ){
 						if( exists ){
 							res.sendfile(__dirname + '/files/profile/' + user.id );
 						} else {
-							var file = fs.readFileSync( __dirname + '/svg/profile.svg', 'utf8' );
-							file = file.replace("#000000",user.color.hex);
-							type = "image/svg+xml";
-							res.writeHead(200, { 'Content-Type' : type });
-							res.end( file );
-							//res.sendfile(__dirname + '/svg/profile.svg' );
+							fillSvg( req, res, __dirname + '/svg/profile.svg', user.color.hex )
 						}
 					});
 				} else {
-					var file = fs.readFileSync( __dirname + '/svg/profile.svg', 'utf8' );
-					file = file.replace("#000000",require('./routes/settings.js').defaultColor.hex);
-					var type = "image/svg+xml";
-					res.writeHead(200, { 'Content-Type' : type });
-					res.end( file );
-					//res.sendfile(__dirname + '/svg/profile.svg' );
+					fillSvg( req, res, __dirname + '/svg/profile.svg', require('./routes/settings.js').defaultColor.hex );
 				}
 			});
 		}
@@ -186,19 +201,17 @@ router.get('/:dir/:filename', function( req, res ){
 		var url = __dirname + '/' + dir + '/' + filename;
 		fs.exists( url, function( exists ){	
 			if( exists == true && fs.lstatSync(url).isFile() ){
-				var file;
 				if( dir == "svg" ){
-					file = fs.readFileSync( url, 'utf8' );
 					if( req.user && req.user.signUp == 1 ){
-						file = file.replace("#000000",req.user.color.hex);
+						fillSvg(req,res,url,req.user.color.hex);
 					} else {
-						file = file.replace("#000000",require('./routes/settings.js').defaultColor.hex);
+						fillSvg(req,res,url,require('./routes/settings.js').defaultColor.hex);
 					}
 				} else {
-					file = fs.readFileSync( url );
+					var file = fs.readFileSync( url );
+					res.writeHead(200, { 'Content-Type' : type });
+					res.end( file );
 				}
-				res.writeHead(200, { 'Content-Type' : type });
-				res.end( file );
 			} else {
 				defaultRoute( req, res, "error" );
 			}

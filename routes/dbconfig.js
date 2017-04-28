@@ -9,6 +9,16 @@ db.once('open', function callback() {
 	console.log('db connected');
 });
 
+var ReportSschema = new mongoose.Schema({
+	id : { type : Number },
+	comment : { type : String },
+	type : { type : String },
+	comment : { type : String },
+	oid : { type : Number },
+	date : { type : Date, default : Date.now },
+	be : { type : Boolean }
+});
+
 var FavoriteSchema = new mongoose.Schema({
 	uid : { type : Number },
 	pid : { type : Number },

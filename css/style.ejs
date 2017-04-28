@@ -131,9 +131,22 @@ textarea {
 }
 
 #wrap_right #recommend_list #recommend_title {
+	display : inline-block;
+	margin-bottom : 10px;
 	font-size : 18px;
 	color : #66757f;
-	margin-bottom : 15px;
+}
+
+#wrap_right #recommend_list .recommend_span {
+	margin-left : 10px;
+	font-size : 13px;
+	color : <%= color_hex %>;
+	cursor : pointer;
+	text-decoration : none;
+}
+
+#wrap_right #recommend_list .recommend_span:hover {
+	text-decoration : underline;
 }
 
 #wrap_right #recommend_list div #recommend_img {

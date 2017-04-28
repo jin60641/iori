@@ -145,19 +145,34 @@ function makeToast(text){
 	}, 500 );
 }
 
-function makeRecommendList(){
+function refreshRecommendList(skip,limit){
+	var refresh = $('#recommend_refresh');
+	refresh.onclick = function(){
+		refreshRecommendList(skip+3,limit);
+	}
+	var divs = $('.recommend_li');
+	var list = $('#recommend_list');
+
+	for( var i = divs.length-1; i >= 0; --i ){
+		list.removeChild(divs[i]);
+	}
+	getRecommendList(skip,limit);
+}
+
+function getRecommendList(skip,limit){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function(event){ if( xhr.readyState == 4 && xhr.status == 200 ){
 		var result = JSON.parse(xhr.responseText);
-		var div = $('div');
-		div.id = "recommend_list";
-		var title = $('div');
-		title.id = "recommend_title";
-		title.innerText = "팔로우 추천";
-		div.appendChild(title);
+		var div = $('#recommend_list');
+		if( result.length < limit ){
+			$('#recommend_refresh').onclick = function(){
+				refreshRecommendList(0,limit);
+			}
+		}
 		for( var i = 0; i < result.length; ++i ){
 			var user = result[i];
 			var li = $('div');
+			li.className = "recommend_li";
 			var img = $('a');
 			img.addEventListener('mouseover',profileHover);
 			img.addEventListener('mouseleave',profileLeave);
@@ -250,8 +265,11 @@ function makeRecommendList(){
 	}}
 	xhr.open("POST", "/api/user/recommend", false);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.send();
+	var params = "";
+	params += 'skip=' + skip + '&limit=' + limit;
+	xhr.send(params);
 }
+
 window.addEventListener('load',function(){
 	var body = $("div");
 	body.id = "body";
@@ -279,7 +297,27 @@ window.addEventListener('load',function(){
 
 	if( session != null && session.signUp == true  ){
 		wrap1.appendChild(makeUserCard(session));
-		makeRecommendList();
+		var div = $('div');
+		div.id = "recommend_list";
+		var title = $('span');
+		title.id = "recommend_title";
+		title.innerText = "팔로우 추천";
+		div.appendChild(title);
+		var refresh = $('span');
+		refresh.id = "recommend_refresh";
+		refresh.className = "recommend_span";
+		refresh.innerText = "새로고침";
+		refresh.onclick = function(){
+			refreshRecommendList(0,3);
+		}
+		div.appendChild(refresh);
+		var all = $('a');
+		all.href = "/recommend"
+		all.className = "recommend_span";
+		all.innerText = "모두보기";
+		div.appendChild(all);
+		wrap3.appendChild(div);
+		refresh.click();
 	}
 
 	var hover = $('div');
@@ -287,7 +325,6 @@ window.addEventListener('load',function(){
 	hover.addEventListener('transitionend', function(){
 		if(this.style.opacity == "0" ){
 			this.style.display = "none";
-			div.style.opacity = "";
 		}
 	});
 	hover.addEventListener('mouseover',profileHover);

@@ -1103,7 +1103,7 @@ function makeReply( Reply, pid ){
 		} else {
 			reply_menu_btn.style.backgroundImage = "url('/img/remove_reply.png')"
 			reply_menu.innerHTML += "<div onclick='dontseeReply(" + pid + "," + Reply.id + ")' >보고싶지 않습니다</div>";
-			reply_menu.innerHTML += "<div onclick='reportReply(" + pid + "," + Reply.id + ")' >댓글신고</div>";
+			reply_menu.innerHTML += "<div onclick='Report(" + pid + "," + Reply.id + ")' >댓글신고</div>";
 		}
 	}
 	return reply;
@@ -1491,7 +1491,7 @@ function DragOver(evt){
 	evt.stopPropagation();
 	evt.preventDefault();
 	evt.dataTransfer.dropEffect = 'copy';
-	obj = evt.target.style;
+	var obj = evt.target.style;
 	obj.border="1px dashed #bbb";
 	obj.paddingLeft = "2px";
 }

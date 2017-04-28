@@ -302,10 +302,17 @@ router.post( '/api/newsfeed/removereply' , checkSession, function( req, res){
 
 router.post( '/api/newsfeed/removepost' , checkSession, function( req, res){
 	var pid = req.body['pid'];
-	db.Posts.findOne( { id : pid, be : true }, function( err, post ){
-		if( post ){
-			if( req.user.id == post.user.id ){
-				post.update({ be : false }, function(){
+	db.Posts.find( { id : pid, be : true }, function( err, posts ){
+		if( posts && posts.length >= 1 ){
+			if( req.user.id == posts[0].user.id ){
+				async.each( posts, function( post, cb ){
+					post.update({ be : false }, function( err ){
+						if( err ){
+							throw err;
+						}
+						cb( null );
+					});
+				}, function( err ){
 					res.send("게시글이 삭제되었습니다.");
 				});
 			} else {
