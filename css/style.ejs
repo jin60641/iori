@@ -165,17 +165,17 @@ textarea {
     font-weight : normal;
 }
 
-#wrap_right #recommend_list div .recommend_box text {
+#wrap_right #recommend_list div .recommend_box .recommend_text {
 	display : block;
 	font-size : 14px;
 }
 
-#wrap_right #recommend_list div .recommend_box text a {
+#wrap_right #recommend_list div .recommend_box .recommend_text a {
 	color : <%= color_hex %>;
 	text-decoration : none;
 }
 
-#wrap_right #recommend_list div .recommend_box text a:hover {
+#wrap_right #recommend_list div .recommend_box .recommend_text text a:hover {
 	text-decoration : underline;
 }
 
@@ -211,6 +211,13 @@ input[type=text], input[type=password], input[type=email], input[type=number] {
 	outline : none;
 	border : 1px solid #ccc;
 }
+
+#profile_hover {
+	z-index : 500;
+	position : absolute;
+	display : none;
+}
+
 
 @media screen and ( max-width : 1300px ) {
 	#wrap_right {

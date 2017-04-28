@@ -40,6 +40,8 @@ function getDateString(origin_date){
 function makeNotice( notice ){
 	var box = $('a');
 	box.href = notice.link;
+	box.addEventListener('mouseover',profileHover);
+	box.addEventListener('mouseleave',profileLeave);
 	box.id = "notice_"+notice.id;
 	box.className = "notice";
 
@@ -57,7 +59,6 @@ function makeNotice( notice ){
 	message.className = "notice_message";
 	var text = $('div');
 	text.innerHTML = "<span>" + notice.from.name + "</span>";
-	console.log(notice);
 	switch( notice.type ){
 		case "chat":
 			text.innerHTML += "님이 쪽지를 보내셨습니다";

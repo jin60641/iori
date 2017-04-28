@@ -1,6 +1,6 @@
 'use strict';
 
-function makeUserCard( obj, popup ){
+function makeUserCard( obj, notSelf ){
 	var div = $('div');
 	div.className = "user_list_div";
 	
@@ -34,37 +34,39 @@ function makeUserCard( obj, popup ){
 	uid.className = "user_list_uid";
 	text.appendChild(uid);
 	
-	if( obj.uid != session.uid || popup ){	
-		var following = $('div');
-		following.id = "user_follow_btn_" + obj.id;
-		following.className = "user_follow_btn";
-		if( obj.following ){
-			following.innerText = "언팔로우";
-		} else {
-			following.innerText = "팔로우";
-		}
-		following.onclick = function(){
-			if( session.id ){
-				var tmp = this;
-				followUser( this.id.split('_').pop(), function( result ){
-					if( result ){
-						tmp.innerText = "언팔로우";
-					} else {
-						tmp.innerText = "팔로우";
-					}
-				});
+	if( obj.uid != session.uid || notSelf ){	
+		if( obj.uid != session.uid ){
+			var following = $('div');
+			following.id = "user_follow_btn_" + obj.id;
+			following.className = "user_follow_btn";
+			if( obj.following ){
+				following.innerText = "언팔로우";
 			} else {
-				location.href = "/login/" + document.URL.split('/').slice(3).join("-");
+				following.innerText = "팔로우";
+			}
+			following.onclick = function(){
+				if( session.id ){
+					var tmp = this;
+					followUser( this.id.split('_').pop(), function( result ){
+						if( result ){
+							tmp.innerText = "언팔로우";
+						} else {
+							tmp.innerText = "팔로우";
+						}
+					});
+				} else {
+					location.href = "/login/" + document.URL.split('/').slice(3).join("-");
+				}
+			}
+			div.appendChild(following);
+			if( obj.follower ){
+				var follower = $('div');
+				follower.className = "user_list_follower";
+				follower.innerText = "나를 팔로우 중입니다.";
+				text.appendChild(follower);
 			}
 		}
-		div.appendChild(following);
 		div.appendChild(text);
-		if( obj.follower ){
-			var follower = $('div');
-			follower.className = "user_list_follower";
-			follower.innerText = "나를 팔로우 중입니다.";
-			text.appendChild(follower);
-		}
 	} else {
 		div.id = "user_list_self";
 		text.className = "user_list_text_self";

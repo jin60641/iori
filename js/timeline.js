@@ -56,7 +56,6 @@ function getAudio( pid ){
 		var obj;
 		try {
 			obj = JSON.parse(xhr.responseText);
-			console.log(obj);
 			var download = $("a");
 			var title = $('#link_preview_title_' + pid);
 			download.download = title.innerText + "." + obj.type;
@@ -1052,13 +1051,35 @@ function makeReply( Reply, pid ){
 	reply.className = 'reply';
 	var a = $("a");
 	a.href = "/@" + Reply.user.uid;
+	a.addEventListener('mouseover',profileHover);
+	a.addEventListener('mouseleave',profileLeave);
 	reply.appendChild(a);
 	a.innerHTML += "<img src='/files/profile/" + Reply.user.uid + "'  class='profileimg_reply'>";
+	var reply_text = $('div');
+	reply_text.className = "reply_text";
+	var btn = $('div');
+	btn.className = "reply_menu_btn";
+	reply_text.appendChild(btn);
+	var reply_name = $('a');
+	reply_name.innerTexxt = Reply.user.name.toString();
+	reply_name.href = a.href;
+	reply_name.addEventListener('mouseover',profileHover);
+	reply_name.addEventListener('mouseleave',profileLeave);
+	var span = $('span');
+	span.innerText = Reply.text.toString() + '\r\n';
+	reply_text.appendChild(span);
 	if( Reply.file ){
-		reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Reply.user.uid + '">' +  Reply.user.name.toString() + "</a><span>" + Reply.text.toString() + '</span><br><img src="/files/post/'+ pid + '/reply/' + Reply.id + "?" + Reply.date + '">' + "<br><span id='date_" + new Date(Reply.date).getTime() + "' class='date'>" + getDateString(Reply.date,1) + '</span></div>';
-	} else {
-		reply.innerHTML += '<div class="reply_text"><div class="reply_menu_btn"></div><a href="/@' + Reply.user.uid + '">' +  Reply.user.name.toString() + "</a><span>" + Reply.text.toString() + "</span><br><span id='date_" + new Date(Reply.date).getTime() + "' class='date'>" + getDateString(Reply.date,1) + '</span></div>';
+		var img = $('img');
+		img.src = "/files/post/" + pid + "/reply/" + Reply.id + "?" + Reply.date;
+		reply_text.appendChild(img);
 	}
+	var date_span = $('span');
+	date_span.id = "date_" + new Date(Reply.date).getTime();
+	date_span.className = "date";
+	date_span.innerText = getDateString(Reply.date,1);
+	reply_text.appendChild(date_span);
+	reply.appendChild(reply_text);
+
 	if( session != "" && session.signUp == true ){
 		var reply_menu_btn = reply.lastElementChild.firstChild;
 		reply_menu_btn.id = "reply_menu_btn_" + pid + '_' + Reply.id
@@ -1096,6 +1117,7 @@ function makePost( Post ){
 		}
 		Replys.sort(function(a,b){if(a.id < b.id){return 1;} else{ return -1;}});
 	}
+	Post.date = new Date(Post.date);
 	var post_wrap = $('#post_wrap');
 	var div = $("div");
 	div.id = 'post_' + Post.id;
@@ -1103,13 +1125,19 @@ function makePost( Post ){
 	if( Post.share != undefined ){
 		var share = $('a');
 		share.href = "/@" + Post.share.uid;
+		share.addEventListener('mouseover',profileHover);
+		share.addEventListener('mouseleave',profileLeave);
 		share.id = "post_share_" + Post.id;
 		share.className = "post_share";
 		share.innerText = Post.share.name += "님이 공유하셨습니다";
 		div.appendChild(share);
 	}
 	var a = $("a");
+	a.addEventListener('mouseover',profileHover);
+	a.addEventListener('mouseleave',profileLeave);
 	a.href = '/@'+Post.user.uid;
+	a.addEventListener('mouseover',profileHover);
+	a.addEventListener('mouseleave',profileLeave);
 	a.className = 'post_name';
 	a.innerHTML += "<img src='/files/profile/" + Post.user.uid + "' class='profileimg_post'>";
 	a.innerHTML += Post.user.name.toString();
@@ -1173,18 +1201,22 @@ function makePost( Post ){
 		inside.innerHTML = Post.html;	
 	}
 	if( Post.file ){
-		/*
-		var span = $("span");
-		span.className = "post_span";
-		span.addEventListener('click', function(e){
-			$("#postimg_" + e.target.parentNode.id.substr(5)).click();
-		}, false);
-		span.innerHTML = Post.file ;
-		div.insertBefore(span,div.firstElementChild.nextElementSibling);
-		*/
+		var post_span = $("span");
+		post_span.className = "post_span";
+		post_span.onclick = function(){
+			$('#postimg_'+Post.id).click();
+		}
+		post_span.innerText = Post.file ;
+		div.appendChild(post_span);
 
-		div.innerHTML+="<span class='post_span' onclick='$(\"#postimg_" + Post.id + "\").click();'>" + Post.file + "</span>";
-		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
+		var date_span = $("span");
+		date_span.className = "date";
+		date_span.id = "date_" + Post.date.getTime();
+		date_span.onclick = function(){
+			$('#postimg_'+Post.id).click();
+		}
+		date_span.innerText = getDateString(Post.date);
+		div.appendChild(date_span);
 
 		/*
 		//수정됨 표시 ( 모바일화면작아서 일단은 보류 )
@@ -1206,7 +1238,14 @@ function makePost( Post ){
 		inside.appendChild(preview);
 		//}
 	} else {
-		div.innerHTML+="<span id='date_" + new Date(Post.date).getTime() + "' class='date'>" + getDateString(Post.date) + "</span>";
+		var date_span = $("span");
+		date_span.className = "date";
+		date_span.onclick = function(){
+			$('#postimg_'+Post.id).click();
+		}
+		date_span.innerText = getDateString(Post.date);
+		date_span.id = "date_" + Post.date.getTime();
+		div.appendChild(date_span);
 
 		/* 수정됨
 		if( Post.change ){
@@ -1326,6 +1365,7 @@ function getPosts(limit){
 						div.style[getBrowser()+"Animation"] = 'fade_post .5s linear';
 						postwrap.insertBefore(div,postwrap.firstElementChild.nextElementSibling);
 					}
+					
 				}
 			} else if( posts == 0 ){
 				var post = $("div");

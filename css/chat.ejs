@@ -306,7 +306,7 @@ input.chat_search:focus {
 	overflow : hidden;
 }
 
-.chat_body_caret .outer, .chat_body_caret .inner {
+.chat_body_caret .chat_body_caret_outer, .chat_body_caret .chat_body_caret_inner {
 	position : absolute;
 	top : 0;
 	left : 0;
@@ -314,7 +314,7 @@ input.chat_search:focus {
 	margin-left : -1px;
 }
 
-.chat_body_caret .outer {
+.chat_body_caret .chat_body_caret_outer {
 	border-right : 10px solid rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,0.8);
 	border-bottom : 10px solid transparent;
 	height : auto;
@@ -323,7 +323,7 @@ input.chat_search:focus {
 	width : auto;
 }
 
-.chat_body_caret .inner {
+.chat_body_caret .chat_body_caret_inner {
 	top : 1px;
 	left : 2px;
 	border-right : 9px solid white;
@@ -339,14 +339,14 @@ input.chat_search:focus {
 	right : -9px;
 }
 
-.my_chat .chat_body_caret .outer {
+.my_chat .chat_body_caret .chat_body_caret_outer {
 	border-right : 0;
 	border-left : 10px solid rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>,0.8);
 	left : auto;
 	right : 0px;
 }
 
-.my_chat .chat_body_caret .inner {
+.my_chat .chat_body_caret .chat_body_caret_inner {
 	border-right : 0;
 	border-left : 9px solid white;
 	left : auto;

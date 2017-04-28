@@ -637,7 +637,7 @@ function getFollows(limit,type,together){
 		if( xhr.responseText != "[]" ){
 			var users = JSON.parse(xhr.responseText);
 			for( var i = 0; i < users.length; ++i ){
-				wrap.appendChild( makeUserCard( users[i] ) );
+				wrap.appendChild( makeUserCard( users[i],true ) );
 			}
 		} else {
 			var none = $('div');

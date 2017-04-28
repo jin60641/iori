@@ -67,12 +67,12 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 					throw err;
 				} else if( result.length >= 1 ){
 					var uids = [];
-					for( var i = 0; i < result.length; ++i ){
-						uids.push(result[i][way].id);
-						if( i == result.length - 1){
-							cb( null, uids );
-						}
-					}
+					async.each( result, function( follow, callback ){
+						uids.push(follow[way].id);
+						callback( null );
+					}, function( err ){
+						cb( null, uids );
+					});
 				} else {
 					res.send("[]");
 				}
@@ -180,18 +180,13 @@ router.get('/@:uid(*)/:tab', function( req, res ){
 router.get('/@:uid(*)', getProfilePage );
 
 router.post('/@:uid(*)', function( req, res ){
-	db.Users.findOne({ be : true, uid : req.params['uid'], signUp : true }, function( err, user ){
+	db.Users.findOne({ be : true, uid : req.params['uid'], signUp : true },{ password : 0, signUp : 0, be : 0 }).lean().exec( function( err, user ){
 		if( err ){
 			throw err;
 		} else if( user ){
-			var obj = {
-				name : user.name,
-				uid : user.uid
-			}
-
 			var socket_id = socket_ids[user.id];
 			if( io.sockets.connected[socket_id] ){
-				obj.last = "접속중";
+				user.last = "접속중";
 			} else {
 				var date = new Date(user.last);
 				var now = new Date();
@@ -199,25 +194,25 @@ router.post('/@:uid(*)', function( req, res ){
 				var now_time = Math.floor(now.getTime()/1000)
 				var gap = now_time - date_time;
 				if( gap < 120 ){
-					obj.last = "마지막 접속 1분 전";
+					user.last = "마지막 접속 1분 전";
 				} else if( gap < 3600 ){
-					obj.last = "마지막 접속 " + Math.floor(gap/60)+"분 전";
+					user.last = "마지막 접속 " + Math.floor(gap/60)+"분 전";
 				} else if( gap < 86400 ){
-					obj.last = "마지막 접속 " + Math.floor(gap/3600)+"시간 전";
+					user.last = "마지막 접속 " + Math.floor(gap/3600)+"시간 전";
 				} else if( gap >= 86400 ){
 					if(Math.floor(gap/86400) == 1){
-						obj.last = "마지막 접속 어제 " + date.getHours() + ":" + date.getMinutes();
+						user.last = "마지막 접속 어제 " + date.getHours() + ":" + date.getMinutes();
 					} else {
 						var b = new Date();
 						b.setHours(0);
 						b.setMinutes(0);
 						b.setSeconds(0);
 						b.setMilliseconds(0);
-						obj.last = "마지막 접속 " + Math.floor((b.getTime()/1000 - date_time)/86400) + "일 전";
+						user.last = "마지막 접속 " + Math.floor((b.getTime()/1000 - date_time)/86400) + "일 전";
 					}
 				}
 			}
-			res.send(obj);
+			res.send(user);
 		} else {
 			res.send("존재하지 않는 사용자입니다.");
 		}

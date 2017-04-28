@@ -308,6 +308,9 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				} else {
 					chat_profileimg = $("a");
 					chat_profileimg.href = "/@"+chats[i].from.uid;
+					chat_profileimg.addEventListener('mouseover',profileHover);
+					chat_profileimg.addEventListener('mouseleave',profileLeave);
+
 				}
 				chat_profileimg.style.backgroundImage = "url('/files/profile/" + chats[i].from.uid + '?' + new Date() + "')";
 				chat_profileimg.className = "chat_profileimg";
@@ -321,6 +324,8 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 					chat_body_name = $("span");
 				} else {
 					chat_body_name = $("a");
+					chat_body_name.addEventListener('mouseover',profileHover);
+					chat_body_name.addEventListener('mouseleave',profileLeave);
 					chat_body_name.href = "/@"+chats[i].from.uid;
 				}
 				
@@ -329,7 +334,15 @@ function getChats( limit, type, dialog_id, scroll, dialog_scroll ){
 				chat_body.appendChild(chat_body_name);
 	
 				if( chats[i].text ){
-					chat_body.innerHTML += "<div class='chat_body_caret'><div class='outer'></div><div class='inner'></div></div>";
+					var caret = $('div');
+					caret.className = "chat_body_caret";
+					var outer = $('div');
+					outer.className ="chat_body_caret_outer";
+					caret.appendChild(outer);
+					var inner = $('div');
+					inner.className = "chat_body_caret_inner";
+					caret.appendChild(inner);
+					chat_body.appendChild(caret);
 					var chat_body_text = $("div");
 					chat_body_text.className = "chat_body_text";
 					chat_body_text.innerText = chats[i].text;

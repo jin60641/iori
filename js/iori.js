@@ -11,6 +11,41 @@ function $(query){
 	}
 }
 
+function profileHover(e){
+	var div = $('#profile_hover');
+	clearTimeout(profileTimer);
+	if( this != div ){
+		var uid = this.href.split('@')[1].split('/')[0];
+		var current = div.className.split('_').pop();
+		if( uid == current ){
+			return;
+		}
+		var position = this.getBoundingClientRect();
+		div.style.top = position.top + 10 + document.body.scrollTop + position.height + "px"
+		div.style.left = position.left + "px"
+		div.style.display = "block";
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+			while( div.firstChild ){
+				div.removeChild(div.firstChild);
+			}
+			div.className = "profile_hover_" + uid;
+			div.appendChild(makeUserCard(JSON.parse(xhr.responseText)));
+		}}
+		xhr.open("POST","/@" + uid, false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+	}
+}
+
+function profileLeave(){
+	profileTimer = setTimeout( closeProfileHover, 500 );
+}
+
+var profileTimer;
+function closeProfileHover(){
+	var div = $('#profile_hover');
+	div.className = "";
+	div.style.display = "";
+}
 
 //브라우저가 무엇인지 판단
 function getBrowser(){
@@ -49,7 +84,7 @@ function sessionLogOut(){
 }
 
 function followUser( uid, callback ){
-	xhr = new XMLHttpRequest();
+	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 		if( xhr.responseText == "follow" ){
 			callback(1);
@@ -114,6 +149,8 @@ function makeRecommendList(){
 			var user = result[i];
 			var li = $('div');
 			var img = $('a');
+			img.addEventListener('mouseover',profileHover);
+			img.addEventListener('mouseleave',profileLeave);
 			img.id = "recommend_img";
 			img.style.backgroundImage = "url('/files/profile/" + user.uid + "')";
 			img.href = "/@"+user.uid;
@@ -121,6 +158,8 @@ function makeRecommendList(){
 			var box = $("div");
 			box.className = "recommend_box";
 			var a = $('a');
+			a.addEventListener('mouseover',profileHover);
+			a.addEventListener('mouseleave',profileLeave);
 			a.href = img.href;
 			a.innerText = user.name;
 			var span = $('span');
@@ -128,36 +167,54 @@ function makeRecommendList(){
 			a.appendChild(span);
 			box.appendChild(a);
 			var followers = user.followers;
-			var text = $('text');
+			var text = $('div');
+			text.className = "recommend_text";
 			if( followers.length == 1 ){
 				var a1 = $('a');
+				a1.addEventListener('mouseover',profileHover);
+				a1.addEventListener('mouseleave',profileLeave);
 				a1.href = "/@"+followers[0].uid;
 				a1.innerText = followers[0].name;
-				console.log(a1);
 				text.appendChild(a1);
-				text.innerHTML += " 님이 팔로우 중";
+				var text1 = $('text');
+				text1.innerText = " 님이 팔로우 중";
+				text.appendChild(text1);
 			} else if( followers.length == 2 ){
 				var a1 = $('a');
+				a1.addEventListener('mouseover',profileHover);
+				a1.addEventListener('mouseleave',profileLeave);
 				a1.href = "/@"+followers[0].uid;
 				a1.innerText = followers[0].name;
 				text.appendChild(a1);
-				text.innerHTML += " 님, ";
+				var text1 = $('text');
+				text1.innerText = " 님, ";
+				text.appendChild(text1);
 				var a2 = $('a');
+				a2.addEventListener('mouseover',profileHover);
+				a2.addEventListener('mouseleave',profileLeave);
 				a2.href = "/@"+followers[1].uid;
 				a2.innerText = followers[1].name;
 				text.appendChild(a2);
-				text.innerHTML += " 님이 팔로우 중";
+				var text2 = $('text');
+				text2.innerText = " 님이 팔로우 중";
+				text.appendChild(text2);
 			} else {
 				var a1 = $('a');
+				a1.addEventListener('mouseover',profileHover);
+				a1.addEventListener('mouseleave',profileLeave);
 				a1.href = "/@"+followers[0].uid;
 				a1.innerText = followers[0].name;
 				text.appendChild(a1);
-				text.innerHTML += "님 외 ";
+				var text1 = $('text');
+				text1.innerText = " 님 외 ";
+				text.appendChild(text1);
 				var a2 = $('a');
 				a2.href = "/@"+user.uid+"/follower_together";
 				a2.innerText = "다수";
 				text.appendChild(a2);
-				text.innerHTML += "가 팔로우 중";
+				var text2 = $('text');
+				text2.innerText = "가 팔로우 중";
+				text.appendChild(text2);
 			}
 			box.appendChild(text);
 			var user_follow = $('div');;
@@ -214,9 +271,13 @@ window.addEventListener('load',function(){
 		wrap1.appendChild(makeUserCard(session));
 		makeRecommendList();
 	}
+
+	var hover = $('div');
+	hover.id = "profile_hover";
+	hover.addEventListener('mouseover',profileHover);
+	hover.addEventListener('mouseleave',profileLeave);
+	document.body.appendChild(hover);
 });
-
-
 
 var postOption = {};
 

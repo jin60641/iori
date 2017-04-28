@@ -646,29 +646,29 @@ router.post( '/api/newsfeed/linkpreview', function( req, res ){
 		} else {
 			request( url, function( err, response, body ){
 				if( err ){
-					throw err;
-				}
-				if( response.statusCode !== 200 ){
 					res.end();
-				}
-				var metas = getMeta(body);
-				if( metas.title ){
-					var current = new db.Links({
-						url : url,
-						title : metas.title,
-						description : metas.description,
-						image : metas.image
-					});
-					current.save( function( err2 ){
-						if( err2 ){
-							throw err2;
-							res.end();
-						} else {
-							res.send(metas);
-						}
-					});
+				} else if( response.statusCode !== 200 ){
+					res.end();
 				} else {
-					res.end();
+					var metas = getMeta(body);
+					if( metas.title ){
+						var current = new db.Links({
+							url : url,
+							title : metas.title,
+							description : metas.description,
+							image : metas.image
+						});
+						current.save( function( err2 ){
+							if( err2 ){
+								throw err2;
+								res.end();
+							} else {
+								res.send(metas);
+							}
+						});
+					} else {
+						res.end();
+					}
 				}
 			});
 		}
