@@ -193,22 +193,26 @@ function resizeContainer(){
 	}
 	*/
 
-	var header_size = 42;
-	var max_scroll = 200;
-	var save_size = parseInt(window.innerHeight/6);
-	var wrap = $('#profile_wrap');
-	var form = $('#profileimg_form');
 	var size = 170;
+	var form = $('#profileimg_form');
+	var header_size = 42;
 	var border_size = -20;
-	if( document.body.scrollTop <= wrap.clientHeight - save_size ){
-		$('#profile_container').style.top = header_size - document.body.scrollTop + "px";
-		size = 170;
-		if( document.body.clientWidth <= 1000 ){
+	if( $("#headerimg_label") ){ // profile changing now!
+		$('#profile_container').style.top = header_size + "px";
+	} else {
+		var max_scroll = 200;
+		var save_size = parseInt(window.innerHeight/6);
+		var wrap = $('#profile_wrap');
+		if( document.body.scrollTop <= wrap.clientHeight - save_size ){
+			$('#profile_container').style.top = header_size - document.body.scrollTop + "px";
+			size = 170;
+			if( document.body.clientWidth <= 1000 ){
+				size = 40;
+			}
+		} else {
+			$('#profile_container').style.top = -wrap.clientHeight + header_size + save_size + "px";
 			size = 40;
 		}
-	} else {
-		$('#profile_container').style.top = -wrap.clientHeight + header_size + save_size + "px";
-		size = 40;
 	}
 	changeLabelSize("profile");
 	changeLabelSize("header");
@@ -423,6 +427,7 @@ function settingStart(){
 		
 	headerimg_label.style.display = "block";
 	profileimg_label.style.display = "block";
+	resizeContainer();
 }
 
 function makePhotoHelper( type, boolean ){
