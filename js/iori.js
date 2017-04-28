@@ -12,15 +12,30 @@ function $(query){
 }
 
 function profileHover(e){
-	var div = $('#profile_hover');
 	clearTimeout(profileTimer);
-	if( this != div ){
-		var uid = this.href.split('@')[1].split('/')[0];
+	var target = this;
+	profileTimer = setTimeout( function(){
+		openProfileHover(target);
+	}, 100 );
+}
+
+function profileLeave(){
+	clearTimeout(profileTimer);
+	profileTimer = setTimeout( closeProfileHover, 200 );
+}
+
+var profileTimer;
+function openProfileHover(target){
+	var div = $('#profile_hover');
+	if( target != div ){
+		div.style.display = "";
+		div.style.opacity = "";
+		var uid = target.href.split('@')[1].split('/')[0];
 		var current = div.className.split('_').pop();
 		if( uid == current ){
 			return;
 		}
-		var position = this.getBoundingClientRect();
+		var position = target.getBoundingClientRect();
 		div.style.top = position.top + 10 + document.body.scrollTop + position.height + "px"
 		div.style.left = position.left + "px"
 		div.style.display = "block";
@@ -30,21 +45,16 @@ function profileHover(e){
 				div.removeChild(div.firstChild);
 			}
 			div.className = "profile_hover_" + uid;
+			div.style[getBrowser()+"Animation"] = 'fade_in .1s ease-in';
 			div.appendChild(makeUserCard(JSON.parse(xhr.responseText)));
 		}}
 		xhr.open("POST","/@" + uid, false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 	}
 }
-
-function profileLeave(){
-	profileTimer = setTimeout( closeProfileHover, 500 );
-}
-
-var profileTimer;
 function closeProfileHover(){
 	var div = $('#profile_hover');
 	div.className = "";
-	div.style.display = "";
+	div.style.opacity = "0";
 }
 
 //브라우저가 무엇인지 판단
@@ -274,6 +284,12 @@ window.addEventListener('load',function(){
 
 	var hover = $('div');
 	hover.id = "profile_hover";
+	hover.addEventListener('transitionend', function(){
+		if(this.style.opacity == "0" ){
+			this.style.display = "none";
+			div.style.opacity = "";
+		}
+	});
 	hover.addEventListener('mouseover',profileHover);
 	hover.addEventListener('mouseleave',profileLeave);
 	document.body.appendChild(hover);

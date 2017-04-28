@@ -947,7 +947,7 @@ function getReplys(obj,limit){
 			} else {
 				var reply = makeReply(Replys[i],pid);
 				if( obj.id.substr(10,1) == '_'){
-					reply.style[getBrowser()+"Animation"] = 'fade_post .5s linear';
+					reply.style[getBrowser()+"Animation"] = 'fade_in .5s linear';
 					replywrap.insertBefore(reply,replywrap.lastElementChild.previousElementSibling.previousElementSibling);
 				} else {
 					replywrap.insertBefore(reply,replywrap.firstElementChild);
@@ -1362,7 +1362,7 @@ function getPosts(limit){
 					if( limit ){
 						postwrap.appendChild(div);
 					} else {
-						div.style[getBrowser()+"Animation"] = 'fade_post .5s linear';
+						div.style[getBrowser()+"Animation"] = 'fade_in .5s linear';
 						postwrap.insertBefore(div,postwrap.firstElementChild.nextElementSibling);
 					}
 					
