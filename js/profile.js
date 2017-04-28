@@ -195,7 +195,7 @@ function resizeContainer(){
 
 	var header_size = 42;
 	var max_scroll = 200;
-	var save_size = 150;
+	var save_size = parseInt(window.innerHeight/6);
 	var wrap = $('#profile_wrap');
 	var form = $('#profileimg_form');
 	var size = 170;
