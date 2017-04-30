@@ -27,7 +27,7 @@ String.prototype.trim = function() {
 function fillSvg( req, res, path, hex ){
 	var file = fs.readFileSync( path, 'utf8' );
 	var ref = req.headers.referer;
-	if( ref.indexOf("@") >= 0 ){
+	if( ref && ref.indexOf("@") >= 0 ){
 		var uid = ref.split('@')[1].split('/')[0];
 		db.Users.findOne({ uid : uid }, function( err, result ){
 			if( err ){

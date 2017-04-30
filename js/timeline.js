@@ -986,8 +986,6 @@ function makePreview( link, text, pid, inside ){
 			preview_title.className = "link_preview_title";
 			preview_text.appendChild( preview_title );
 
-
-
 			var vid;
 			var vindex;
 			vindex = link.indexOf("youtu.be/");
@@ -999,6 +997,7 @@ function makePreview( link, text, pid, inside ){
 				vid = link.substr( vindex + 20 );
 			}
 			if( vid != "" && vid != null ){
+				vid = vid.split('&')[0];
 				preview_img.id = vid;
 				preview_img.onclick = function(event){
 					event.stopPropagation();
@@ -1010,6 +1009,7 @@ function makePreview( link, text, pid, inside ){
 					iframe.allowFullscreen = true;
 					this.parentNode.replaceChild(iframe,this);
 				}
+				$('#menu_'+pid).innerHTML+="<div id='getaudio_" + pid + "' onclick='getAudio(" + pid + ")'>음원 추출</div>";
 			} else {
 				var preview_description = $("div");
 	//			preview_description.innerHTML = metas.description;
@@ -1039,7 +1039,6 @@ function makePreview( link, text, pid, inside ){
 			var preview_helper = $("div");
 			preview_helper.className = "link_preview_helper";
 			preview_img.appendChild(preview_helper);
-			$('#menu_'+pid).innerHTML+="<div id='getaudio_" + pid + "' onclick='getAudio(" + pid + ")'>음원 추출</div>";
 		}
 	}};
 	xhr.open("POST", "/api/newsfeed/linkpreview", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('link='+link);

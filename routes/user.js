@@ -474,7 +474,23 @@ router.post( '/api/user/search', function( req, res ){
 function getUsers( req, cb ){
 	var query = req.body['query'];
 	if( query ){
-		db.Users.find({ be : true, $or : [{ name : { $regex : query } }, { uid : { $regex : query } }], signUp : true, id : { $ne : req.user.id } },{ __v : 0, _id : 0, admin : 0, be : 0, signUp : 0, notice : 0 }, function( err, result ){
+		var obj = {
+			be : true,
+			"$or" : [{
+				name : { $regex : query } 
+			}, {
+				uid : { $regex : query }
+			}],
+			signUp : true,
+			be : true,
+		}
+		if( req.user && ( req.user.id != undefined ) ){
+			obj.id = { $ne : req.user.id };
+		}
+		db.Users.find( obj, { __v : 0, _id : 0, admin : 0, be : 0, signUp : 0, notice : 0 }, function( err, result ){
+			if( err ){
+				throw err;
+			}
 			if( result ){
 				cb( result );
 			} else {

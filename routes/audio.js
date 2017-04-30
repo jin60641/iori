@@ -73,7 +73,7 @@ router.get( '/api/audio/getaudio/:vid', function( req, res ){
 	}
 });
 
-router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
+router.post( '/api/audio/add/:vid', function( req, res ){
 	var vid = req.params['vid'];
 	var wave = req.params['wave']=="true"?true:false;
 	var url = 'http://www.youtube.com/watch?v=' + vid;
@@ -98,20 +98,25 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 			res.send({ type : type });
 		}
 	} else {
-		ytdl.getInfo( url, function( err, info ){
+		ytdl.getInfo( url,[], { maxBuffer : 1000*1024 }, function( err, info ){
 			var duration;
 			if( info && info.duration ){
 				duration = info.duration.split(':');
 			}
+        if( err ){
+            console.log(err);
+        } else{
+            console.log(info);
+        }
 			
 			if( info == undefined || info.duration == undefined ){
 				res.send("잘못된 링크입니다.");
-			} else if( duration.length >= 3 || duration.length == 2 && duration[0] > 10 ){
+			} else if( duration.length >= 3 || ( duration.length == 2 && duration[0] > 10 ) ){
 				res.send("10분 이내의 영상만 음원을 추출하실 수 있습니다.");
 			} else {
 				console.log(duration);
 				console.log("format check");
-				ytdl.exec( url, ['-F'], {}, function( err, list ){
+				ytdl.exec( url, ['-F'], { maxBuffer : 1000*1024 }, function( err, list ){
 					if( err ){
 						res.send("저작권 문제로 사용하실 수 없는 영상입니다. 죄송합니다.");
 					} else {
@@ -120,7 +125,7 @@ router.post( '/api/audio/add/:vid', checkSession, function( req, res ){
 							if( value.indexOf("audio only") >= 0 && ( value.indexOf("webm") >= 0 || value.indexOf("mp4") >= 0 ) && flag == 0 ){
 								flag = 1;
 								var num = value.split(' ')[0];
-								var ystream = ytdl(url,['-f',num]);
+								var ystream = ytdl(url,['-f',num],{ maxBuffer : 1000*1024 });
 								path += ".";
 								if( value.indexOf("webm") >= 0 ){
 									type = "webm";
