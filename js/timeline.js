@@ -1,9 +1,8 @@
 'use strict';
 	
-let post_skip = 0;
-let post_cnt = 0;
-	
 inits["timeline"] = {
+	post_skip : 0,
+	post_cnt : 0,
 	postLoading : false,
 	realfiles : { '0' : [] },
 	post_origin : {},
@@ -358,7 +357,7 @@ inits["timeline"] = {
 			img.id = "postimg_" + Post.id;
 			img.className = "postimg_img";
 			img.onclick = function(){
-				viewimg(Post.id,Post.file,Post.date);
+				inits["imglayer"].viewimg(Post.id,Post.file,Post.date);
 			}
 			preview.appendChild(img);
 			inside.appendChild(preview);
@@ -547,7 +546,7 @@ inits["timeline"] = {
 			}
 		*/
 	preventDefault : function(event) {
-		if( imgviewing ){
+		if( inits["imglayer"].imgviewing ){
 			event.stopPropagation();
 			event.preventDefault();
 			event.returnValue = false;
@@ -968,7 +967,7 @@ inits["timeline"] = {
 			img.id = "postimg_" + pid;
 			img.className = "postimg_img";
 			img.onclick = function(){
-				viewimg(Post.id,post_span.innerText,d);
+				inits["imglayer"].viewimg(Post.id,post_span.innerText,d);
 			}
 			preview.appendChild(img);
 			inside.appendChild(preview);
@@ -1285,9 +1284,9 @@ inits["timeline"] = {
 					});
 					post.style.opacity="0";
 					socket.emit( 'post_remove', pid )
-					let post_cnt = $('#user_list_tab_value_post');
-					if( post_cnt ){
-						post_cnt.innerText = parseInt(post_cnt.innerText) - 1;
+					let postcnt = $('#user_list_tab_value_post');
+					if( postcnt ){
+						postcnt.innerText = parseInt(postcnt.innerText) - 1;
 					}
 					that.getPosts(1);
 				}
@@ -1376,7 +1375,7 @@ inits["timeline"] = {
 	},
 	keydown : function(e){
 		let postwrap = $('#post_wrap');
-		if( imgviewing != undefined && imgviewing == true ){
+		if( inits["imglayer"].imgviewing != undefined && inits["imglayer"].imgviewing == true ){
 			event.stopPropagation();
 		//	event.preventDefault();
 			if(e.keyCode==39 || e.keyCode == 40){
@@ -1391,7 +1390,7 @@ inits["timeline"] = {
 				$('#lefthover').style.display="none";
 				$('#righthover').style.display="none";
 				$('#imgmenuhover').style.display="none";
-				imgviewing = 0;
+				inits["imglayer"].imgviewing = 0;
 			}
 		} else if( document.activeElement == document.body ){
 			if((e.shiftKey==false&&e.keyCode==9)||e.keyCode==40||e.keyCode==39){
@@ -1510,9 +1509,9 @@ inits["timeline"] = {
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
 				let pid = parseInt(xhr.responseText);
 				that.getPosts(0);
-				let post_cnt = $('#user_list_tab_value_post');
-				if( post_cnt ){
-					post_cnt.innerText = parseInt(post_cnt.innerText) + 1;
+				let postcnt = $('#user_list_tab_value_post');
+				if( postcnt ){
+					postcnt.innerText = parseInt(postcnt.innerText) + 1;
 				}
 	//			socket.emit( 'post_write', pid );
 			}}
@@ -1674,8 +1673,8 @@ inits["timeline"] = {
 		if( $("#post_none") ){
 			postwrap.removeChild($("#post_none").parentNode);
 		}
-		if( post_skip > post_cnt ){
-			post_skip = post_cnt;
+		if( that.post_skip > that.post_cnt ){
+			that.post_skip = that.post_cnt;
 		}
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){
@@ -1684,8 +1683,8 @@ inits["timeline"] = {
 					that.postLoading = false;
 					let xhrResult = JSON.parse(xhr.responseText);
 					let Posts = xhrResult.sort(function(a,b){if(a._id < b._id){return -1;} else{ return 1;}});
-					post_cnt += Posts.length;
-					post_skip = post_cnt;
+					that.post_cnt += Posts.length;
+					that.post_skip = that.post_cnt;
 					if( that.dateUpdateId == null ){
 						setInterval(function(){
 							that.dateUpdate();
@@ -1704,7 +1703,7 @@ inits["timeline"] = {
 						}
 						
 					}
-				} else if( post_cnt == 0 ){
+				} else if( that.post_cnt == 0 ){
 					let post = $("div");
 					post.className = "post";
 					let post_inside = $("div");
@@ -1723,12 +1722,12 @@ inits["timeline"] = {
 		xhr.open("POST","/api/newsfeed/getposts", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 		let params = "skip=";
 		if( limit ){
-			params += post_skip + "&limit=" + limit;
+			params += that.post_skip + "&limit=" + limit;
 		} else if(limit == 0){
 			params += "0&limit=1";
 		}
-		if( post_skip > post_cnt ){
-			post_skip = post_cnt;
+		if( that.post_skip > that.post_cnt ){
+			that.post_skip = that.post_cnt;
 		}
 		if( postOption ){
 			let obj_keys = Object.keys(postOption);

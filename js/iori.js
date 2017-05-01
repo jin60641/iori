@@ -3,6 +3,7 @@
 let inits = {};
 let Handlers = [];
 let postOption = {};
+let user = {};
 
 function $(query){
 	switch( query[0] ){
@@ -341,6 +342,7 @@ window.addEventListener('load',function(){
 	}
 });
 var parsed;
+var test = [];
 function getPage(path){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
@@ -349,7 +351,6 @@ function getPage(path){
 		}
 		let inbody = document.body.childNodes;
 		for( let i = inbody.length - 1; i >= 0; --i ){
-			console.log(inbody[i].id);
 			if( inbody[i].id == "head" || inbody[i].id == "profile_hover" ){
 				continue;
 			} else if( inbody[i].id == "body" ){
@@ -363,8 +364,28 @@ function getPage(path){
 			}
 			document.body.removeChild(inbody[i]);
 		}
+		history.pushState(null,null,"@jin60641")
 		var parser = new DOMParser();
 		parsed = parser.parseFromString(xhr.responseText,"text/html")
+		var scripts = parsed.head.childNodes;
+		for( var i = 0 ; i <scripts.length; ++i ){	
+			if( scripts[i].tagName == "SCRIPT" ){
+				var script = $('script');
+				script.type = "text/javascript";
+				script.charset = "utf-8";
+				var src = scripts[i].getAttribute("src");
+				if( src != null ){
+					script.src = src;
+					document.head.appendChild(script);
+				} else {
+					eval(scripts[i].innerText);
+				}
+			}
+		}
+		for( let name in inits ){
+			inits[name].init();
+			Handlers.push( inits[name] );	
+		}
 	}}
 	xhr.open("GET", path +"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 }

@@ -1,8 +1,8 @@
 <script>
-let user = "<%= user %>".replace(/&#34;/g,'"');
-if( user.length > 0 ){ 
-	user = JSON.parse(user); 
-}
+	user = "<%= user %>".replace(/&#34;/g,'"');
+	if( user.length > 0 ){ 
+		user = JSON.parse(user); 
+	}
 </script>
 <style id="profile">
 	<% include ./../css/profile %>
@@ -10,4 +10,5 @@ if( user.length > 0 ){
 	<% include ./../css/imglayer %>
 </style>
 <script src="/js/timeline.js"></script>
-<script src="/js/profile.js"></script><script src="/js/imglayer.js"></script>
+<script src="/js/profile.js"></script>
+<script src="/js/imglayer.js"></script>

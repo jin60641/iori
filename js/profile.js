@@ -4,7 +4,16 @@ inits["profile"] = {
 	profileLabelScale : 1,
 	headerLabelScale : 1,
 	listeners : [],
+	getUser : function(){
+		let xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+		}}
+		xhr.open("POST","/api/user/removeimg", false); 
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.send('imgtype='+type);
+	},
 	init : function(){
+console.log(user);		
 		postOption.uid = user.id;
 		let that = this;
 		this.addListener(window,"click", this.hideLabelMenu);
@@ -581,8 +590,8 @@ inits["profile"] = {
 		label.appendChild(makePhotoHelper(type,false));
 	},
 	openUserTab : function( evt, target ){
-		post_skip = 0;
-		post_cnt = 0;
+		inits["timeline"].post_skip = 0;
+		inits["timeline"].post_cnt = 0;
 		let that = this;
 		let tab;
 		let tab_name;
