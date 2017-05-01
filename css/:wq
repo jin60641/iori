@@ -251,10 +251,6 @@
 	border-bottom : 5px solid <%= color_hex %>;
 }
 
-#user_tab > .user_tab_now::after {
-	transition : initial !important;
-}
-
 #user_tab > div:hover {
 	color : <%= color_hex %>;
 }
@@ -267,7 +263,7 @@
 	width: 100%;
 	height : 0px;
 	background : <%= color_hex %>;
-	transition : padding-bottom .1s linear;
+	transition : all .1s linear;
 }
 
 #user_tab > .user_tab_now:hover::after {

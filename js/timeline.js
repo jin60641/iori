@@ -1538,7 +1538,8 @@ window.addEventListener('load',function(){
 
 	window.addEventListener('scroll', function(e){
 		if( $('#post_wrap') != null && postLoading == false ){
-			if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
+			var top = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+			if ((window.innerHeight + top) + 200 >= document.body.scrollHeight && $('#post_wrap').style.display != "none" ){
 				postLoading = true;
 				getPosts(10);
 			}
