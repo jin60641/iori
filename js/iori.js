@@ -1,5 +1,9 @@
 'use strict';
 
+let inits = {};
+let Handlers = [];
+let postOption = {};
+
 function $(query){
 	switch( query[0] ){
 		case '#' :
@@ -330,12 +334,70 @@ window.addEventListener('load',function(){
 	hover.addEventListener('mouseover',profileHover);
 	hover.addEventListener('mouseleave',profileLeave);
 	document.body.appendChild(hover);
-});
 
-function getPage(page){
-	
+	for( let name in inits ){
+		inits[name].init();
+		Handlers.push( inits[name] );	
+	}
+});
+var parsed;
+function getPage(path){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+		for( let i = 0; i < Handlers.length; ++i ){
+			Handlers[i].exit();
+		}
+		let inbody = document.body.childNodes;
+		for( let i = inbody.length - 1; i >= 0; --i ){
+			console.log(inbody[i].id);
+			if( inbody[i].id == "head" || inbody[i].id == "profile_hover" ){
+				continue;
+			} else if( inbody[i].id == "body" ){
+				let wraps = inbody[i].childNodes;
+				for( let j = 0; j < wraps.length; ++j ){
+					while( wraps[j].firstChild ){
+						wraps[j].removeChild(wraps[j].firstChild);
+					}
+				}
+				continue;
+			}
+			document.body.removeChild(inbody[i]);
+		}
+		var parser = new DOMParser();
+		parsed = parser.parseFromString(xhr.responseText,"text/html")
+	}}
+	xhr.open("GET", path +"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 }
 
-var postOption = {};
+(function(DOMParser) {
+	var
+	  proto = DOMParser.prototype
+	, nativeParse = proto.parseFromString
+	;
 
+	// Firefox/Opera/IE throw errors on unsupported types
+	try {
+		// WebKit returns null on unsupported types
+		if ((new DOMParser()).parseFromString("", "text/html")) {
+			// text/html parsing is natively supported
+			return;
+		}
+	} catch (ex) {}
 
+	proto.parseFromString = function(markup, type) {
+		if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {
+			var
+			  doc = document.implementation.createHTMLDocument("")
+			;
+	      		if (markup.toLowerCase().indexOf('<!doctype') > -1) {
+        			doc.documentElement.innerHTML = markup;
+      			}
+      			else {
+        			doc.body.innerHTML = markup;
+      			}
+			return doc;
+		} else {
+			return nativeParse.apply(this, arguments);
+		}
+	};
+}(DOMParser));

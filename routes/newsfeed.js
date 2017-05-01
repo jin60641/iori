@@ -23,18 +23,26 @@ String.prototype.xssFilter = function() {
 router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 	var type = req.body['type'];
 	var obj_id = parseInt(req.body['obj_id']);
-	if( type == "post" || type == "reply" || obj_id != "NaN" ){
-		db.Dontsees.remove({ type : type, obj_id : obj_id, uid : req.user.id }, function( err, dontsee ){
-			if( dontsee == 1 ){
-				res.end();
+	if( type == "post" || type == "reply" || isNaN( obj_id ) == false ){
+		db.Dontsees.findOne({ type : type, obj_id : obj_id, uid : req.user.id }, function( err, dontsee ){
+			if( err ){
+				throw err;
+			}
+			if( dontsee ){
+				dontsee.remove( function( err2 ){
+					if( err2 ){
+						res.end();
+					}
+					res.end();
+				});
 			} else {
 				var current = new db.Dontsees({
 					type : type,
 					uid : req.user.id,
 					obj_id : obj_id
 				});
-				current.save( function( err ){
-					if( err ){
+				current.save( function( err2 ){
+					if( err2 ){
 						throw err;
 					}
 					res.end();

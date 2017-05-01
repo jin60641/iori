@@ -12,8 +12,8 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 var busboy = require('connect-busboy');
 router.use(busboy())
-var makeObj = require('./routes/makeObj.js');
 
+var makeObj = require('./routes/makeObj.js');
 router.use(require('./routes/auth.js').router);
 router.use(require('./routes/notice.js').router);
 router.use(require('./routes/audio.js'));
@@ -30,7 +30,7 @@ String.prototype.trim = function() {
 function fillSvg( req, res, path, hex ){
 	var file = fs.readFileSync( path, 'utf8' );
 	var ref = req.headers.referer;
-	if( ref && ref.indexOf("@") >= 0 ){
+	if( ref && ref.indexOf("@") >= 0 && hex == undefined ){
 		var uid = ref.split('@')[1].split('/')[0];
 		db.Users.findOne({ uid : uid }, function( err, result ){
 			if( err ){
@@ -61,7 +61,7 @@ function checkAdmin( req, res, next ){
 }
 router.get('/', function( req, res ){
 	if( req.user && req.user.signUp ){
-		makeObj( req, res, "index" );
+		makeObj( req, res, "timeline" );
 	} else {
 		makeObj( req, res, "slider" );
 	}
@@ -206,7 +206,12 @@ router.get('/:dir/:filename', function( req, res ){
 			if( exists == true && fs.lstatSync(url).isFile() ){
 				if( dir == "svg" ){
 					if( req.user && req.user.signUp == 1 ){
-						fillSvg(req,res,url,req.user.color.hex);
+						var ref = req.headers.referer;
+						if( ref && ref.indexOf("@") >= 0 ){
+							fillSvg(req,res,url);
+						} else {
+							fillSvg(req,res,url,req.user.color.hex);
+						}
 					} else {
 						fillSvg(req,res,url,require('./routes/settings.js').defaultColor.hex);
 					}
@@ -243,6 +248,7 @@ router.get('/:dir/:link([a-zA-Z0-9]*)', function( req, res ){
 		});
 	}
 });
+
 
 router.get('/:link(*)', function( req, res ){
 	defaultRoute( req, res, req.params['link'] );

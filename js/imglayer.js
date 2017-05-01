@@ -1,8 +1,8 @@
 'use strict';
 
-var imgviewing = 0;
+let imgviewing = 0;
 window.addEventListener('load',function(){
-	var imglayer = $("div");
+	let imglayer = $("div");
 	imglayer.id="imglayer";
 	imglayer.addEventListener('transitionend', function(){ if(this.style.opacity=="0"){
 		this.style.zIndex="-500";
@@ -24,35 +24,35 @@ window.addEventListener('load',function(){
 			document.body.style.position = "";
 		}
 	}
-	var rightbtn = $("div");
+	let rightbtn = $("div");
 	rightbtn.onclick = function(e){
 		e.stopPropagation();
 		e.preventDefault();
-		var imgbox = $('#imgbox');
-		var imgdownload = $('#imgdownload');
-		var img = $("#imglayer_img");
+		let imgbox = $('#imgbox');
+		let imgdownload = $('#imgdownload');
+		let img = $("#imglayer_img");
 		if( img != undefined ){
-			var params = { 
+			let params = { 
 				flag : "gt",
 				type : location.hash.substr(1,1),
 				dialog_id : location.hash.split('?')[1],
 				now : img.src.split('/').pop()
 			}
-			var query = "";
-			var param_key = Object.keys(params);
-			for( var i = 0; i < param_key.length; ++i ){
+			let query = "";
+			let param_key = Object.keys(params);
+			for( let i = 0; i < param_key.length; ++i ){
 				query += param_key[i] + '=' + params[param_key[i]] + "&";
 			}
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 				if( xhr.responseText != "" ){
-					var src = "/files/chat/" + xhr.responseText;
-					var image = new Image();
+					let src = "/files/chat/" + xhr.responseText;
+					let image = new Image();
 					image.src = src;
 					img.src = "";
-					var wait = setInterval( function(){
-						var w = image.naturalWidth ;
-						var h = image.naturalHeight;
+					let wait = setInterval( function(){
+						let w = image.naturalWidth ;
+						let h = image.naturalHeight;
 						if( w && h ){
 							clearInterval(wait);
 							img.src = src;
@@ -62,9 +62,9 @@ window.addEventListener('load',function(){
 			}}
 			xhr.open("POST", "/api/chat/getfile", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
 		} else {
-			for( var j = imgbox.childNodes.length - 1 ; j>=1; --j ){
+			for( let j = imgbox.childNodes.length - 1 ; j>=1; --j ){
 				if(imgbox.childNodes[j].style.display == "inline-block" ){
-					var postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
+					let postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
 					imgbox.childNodes[j].style.display = "none";
 					if(imgbox.childNodes[j+1]){
 						imgbox.childNodes[j+1].style.display = "inline-block";
@@ -81,41 +81,41 @@ window.addEventListener('load',function(){
 			}
 		}
 	}
-	var righthover = $("div");
+	let righthover = $("div");
 	righthover.onclick = rightbtn.onclick;
 	righthover.id = "righthover";
 	imglayer.appendChild(righthover);
 	rightbtn.id = "rightbtn";
 	imglayer.appendChild(rightbtn);
-	var leftbtn = $("div");
+	let leftbtn = $("div");
 	leftbtn.onclick = function(e){
 		e.stopPropagation();
 		e.preventDefault();
-		var imgbox = $('#imgbox');
-		var imgdownload = $('#imgdownload');
-		var img = $("#imglayer_img");
+		let imgbox = $('#imgbox');
+		let imgdownload = $('#imgdownload');
+		let img = $("#imglayer_img");
 		if( img != undefined ){
-			var params = {
+			let params = {
 				flag : "lt", 
 				type : location.hash.substr(1,1),
 				dialog_id : location.hash.split('?')[1],
 				now : img.src.split('/').pop()
 			}
-			var query = "";
-			var param_key = Object.keys(params);
-			for( var i = 0; i < param_key.length; ++i ){
+			let query = "";
+			let param_key = Object.keys(params);
+			for( let i = 0; i < param_key.length; ++i ){
 				query += param_key[i] + '=' + params[param_key[i]] + "&";
 			}
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 				if( xhr.responseText ){
-					var src = "/files/chat/" + xhr.responseText;
-					var image = new Image();
+					let src = "/files/chat/" + xhr.responseText;
+					let image = new Image();
 					image.src = src;
 					img.src = "";
-					var wait = setInterval( function(){
-						var w = image.naturalWidth ;
-						var h = image.naturalHeight;
+					let wait = setInterval( function(){
+						let w = image.naturalWidth ;
+						let h = image.naturalHeight;
 						if( w && h ){
 							clearInterval(wait);
 							img.src = src;
@@ -125,9 +125,9 @@ window.addEventListener('load',function(){
 			}}
 			xhr.open("POST", "/api/chat/getfile", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);		
 		} else {
-			for( var j=1; j<imgbox.childNodes.length; ++j ){
+			for( let j=1; j<imgbox.childNodes.length; ++j ){
 				if(imgbox.childNodes[j].style.display == "inline-block" ){
-					var postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
+					let postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
 					imgbox.childNodes[j].style.display = "none";
 					if(j==1){
 						imgbox.childNodes[imgbox.childNodes.length-1].style.display = "inline-block";
@@ -144,18 +144,18 @@ window.addEventListener('load',function(){
 			}
 		}
 	}
-	var lefthover = $("div");
+	let lefthover = $("div");
 	lefthover.onclick = leftbtn.onclick;
 	lefthover.id = "lefthover";
 	imglayer.appendChild(lefthover);
 	leftbtn.id = "leftbtn";
 	imglayer.appendChild(leftbtn);
-	var imgmenuhover = $("div");
+	let imgmenuhover = $("div");
 	imgmenuhover.id = "imgmenuhover";
 	imgmenuhover.onclick = function(){
 	}
 	imglayer.appendChild(imgmenuhover);
-	var imgmenu = $("div");
+	let imgmenu = $("div");
 	imgmenu.id = "imgmenu";
 	imgmenu.onclick = function(event){
 		event.stopPropagation();
@@ -173,17 +173,15 @@ window.addEventListener('load',function(){
 		event.stopPropagation();
 		event.preventDefault();
 	});
-	if( typeof postFavorite != "undefined" ){
-		var img = $('img');
-		img.id = "imgmenu_favorite";
-		img.src = "/img/favorite.png";
-		imgmenu.appendChild(img);
-	}
-	if( typeof postShare != "undefined" ){
-		var img = $('img');
-		img.id = "imgmenu_share";
-		img.src = "/img/share.png";
-		imgmenu.appendChild(img);
+	if( inits["timeline"]  != "undefined" ){
+		let imgmenu_favorite = $('img');
+		imgmenu_favorite.id = "imgmenu_favorite";
+		imgmenu_favorite.src = "/img/favorite.png";
+		imgmenu.appendChild(imgmenu_favorite);
+		let imgmenu_share = $('img');
+		imgmenu_share.id = "imgmenu_share";
+		imgmenu_share.src = "/img/share.png";
+		imgmenu.appendChild(imgmenu_share);
 	}
 	imgmenu.innerHTML+="<a id='imgdownload' download><img src='/img/download.png'></a>"; //<img src='/img/share.png'>";
 	if( !(/(BB|iPad|iPhone|iPod|Android|\.NET)/i.test( navigator.userAgent )) ){
@@ -192,7 +190,7 @@ window.addEventListener('load',function(){
 		imglayer.onclick = function(){ document.body.style.overflowY=""; imglayer.style.opacity="0";imgviewing=0;}
 	}
 	imglayer.appendChild(imgmenu);
-	var imgbox = $("div");
+	let imgbox = $("div");
 	imgbox.id = "imgbox";
 	imglayer.appendChild(imgbox);
 	
@@ -201,7 +199,6 @@ window.addEventListener('load',function(){
 	imgmenu_resize();
 
 	window.addEventListener('resize', function(){
-
 		imgmenu_resize();
 	});
 
@@ -221,7 +218,7 @@ function viewfull(obj){
 		imgbox.style.left="0";
 		imgbox.style.position="absolute";
 		imglayer.webkitRequestFullScreen();
-		for( var j=imgbox.childNodes.length - 1 ; j>=1; --j ){
+		for( let j=imgbox.childNodes.length - 1 ; j>=1; --j ){
 			imgbox.childNodes[j].style.border="0";
 		}
 		obj.src="/img/imgfull_exit.png";
@@ -233,44 +230,44 @@ function viewimg(postid,filecount,date,url,controller){
 //  document.body.style.overflowY = "scroll";
 //  document.body.style.position = "fixed";
 	imgviewing = 1;
-	var imglayer = $('#imglayer');
-	var imgmenu_favorite = $('#imgmenu_favorite');
-	var imgmenu_share = $('#imgmenu_share');
-	var imgbox = $('#imgbox');
-	var imgmenuhover = $('#imgmenuhover');
-	var lefthover= $('#lefthover');
-	var righthover= $('#righthover');
+	let imglayer = $('#imglayer');
+	let imgmenu_favorite = $('#imgmenu_favorite');
+	let imgmenu_share = $('#imgmenu_share');
+	let imgbox = $('#imgbox');
+	let imgmenuhover = $('#imgmenuhover');
+	let lefthover= $('#lefthover');
+	let righthover= $('#righthover');
 	imglayer.style.zIndex="300";
 	imglayer.style.visibility="visible";
 	imglayer.style.opacity="1";
 	imgbox.innerHTML="<div id='helper'></div>";
 	imgmenuhover.style.display="block";
 	imgmenu.style.display = "block";
-	var favorite = $('#favorite_'+postid);
-	var share = $('#share_'+postid);
+	let favorite = $('#favorite_'+postid);
+	let share = $('#share_'+postid);
 	if( url ){
 //		imgmenu.style.display = "none";
 	} else {
 		if( favorite.innerText == "관심글해제" ){
 			imgmenu_favorite.src = '/img/favorite_remove.png';
 			imgmenu_favorite.onclick = function(){
-				postFavorite(postid,0);
+				inits["timeline"].postFavorite(postid,0);
 			}
 		} else if( postid != undefined ){
 			imgmenu_favorite.src = '/img/favorite.png';
 			imgmenu_favorite.onclick = function(){
-				postFavorite(postid,1);
+				inits["timeline"].postFavorite(postid,1);
 			}
 		}
 		if( share.innerText == "공유취소" ){
 			imgmenu_share.src = '/img/share_remove.png';
 			imgmenu_share.onclick = function(){
-				postShare(postid,0);
+				inits["timeline"].postShare(postid,0);
 			}
 		} else if( postid != undefined ){
 			imgmenu_share.src = '/img/share.png';
 			imgmenu_share.onclick = function(){
-				postShare(postid,1);
+				inits["timeline"].postShare(postid,1);
 			}
 		}
 	}
@@ -281,8 +278,8 @@ function viewimg(postid,filecount,date,url,controller){
 		lefthover.style.display="none";
 		righthover.style.display="none";
 	}
-	for(var i = 1; i <= filecount; ++i){
-		var img = $("img");
+	for(let i = 1; i <= filecount; ++i){
+		let img = $("img");
 		if( url ){
 			img.src = url + '?' + date;
 			imgdownload.download = "iori_"+new Date().getTime() + ".jpg";
@@ -314,7 +311,7 @@ function viewimg(postid,filecount,date,url,controller){
 
 //이미지 메뉴 리사이징
 function imgmenu_resize(){
-	var imgmenu = $('#imgmenu');
+	let imgmenu = $('#imgmenu');
 	/*
 	if(window.innerWidth < 530 ){
 		imgmenu.style.display="none";

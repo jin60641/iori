@@ -12,13 +12,13 @@ var info = "";
 <%
 	if( locals.session != undefined ){
 %>
-		session = "<%= session %>".replace(/&#34;/g,'"');
+		var session = "<%= session %>".replace(/&#34;/g,'"');
 		if( session.length > 0 ){
 			session = JSON.parse(session);
 		}
-		info = "<%= info %>".replace(/&#34;/g,'"');
-		if( info.length > 0 ){
-			info = JSON.parse(info);
+		var my_info = "<%= my_info %>".replace(/&#34;/g,'"');
+		if( my_info.length > 0 ){
+			my_info = JSON.parse(my_info);
 		}
 <%
 	}
@@ -39,5 +39,7 @@ var info = "";
 <script src="/js/socket.js"></script>
 <script src="/js/iori.js"></script>
 <script src="/js/userlist.js"></script>
-<title>iori</title>
 <script src="/js/header.js"></script>
+<title>iori</title>
+
+

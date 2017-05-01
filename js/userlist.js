@@ -1,34 +1,34 @@
 'use strict';
 
 function makeUserCard( obj, notSelf ){
-	var div = $('div');
+	let div = $('div');
 	div.className = "user_list_div";
 	
-	var header = $('a');
+	let header = $('a');
 	header.href = "/@" + obj.uid;
 	header.style.backgroundColor = obj.color.hex;
 	if( obj.header == true ){
-		header.style.backgroundImage = "url('/files/header/" + obj.id + "?')";
+		header.style.backgroundImage = "url('/files/header/" + obj.uid + "?')";
 	} 
 	header.className = "user_list_header";
 	div.appendChild(header);
 	
-	var profile = $('a');
+	let profile = $('a');
 	profile.href = "/@" + obj.uid;
-	profile.style.backgroundImage = "url('/files/profile/" + obj.id + "')";
+	profile.style.backgroundImage = "url('/files/profile/" + obj.uid + "')";
 	profile.className = "user_list_profile";
 	div.appendChild(profile);
 	
-	var text = $('div');
+	let text = $('div');
 	text.className = "user_list_text";
 
-	var name = $('a');
+	let name = $('a');
 	name.href = "/@" + obj.uid;
 	name.innerText = obj.name;
 	name.className = "user_list_name";
 	text.appendChild(name);
 
-	var uid = $('a');
+	let uid = $('a');
 	uid.href = "/@" + obj.uid;
 	uid.innerText = '@' + obj.uid;
 	uid.className = "user_list_uid";
@@ -36,7 +36,7 @@ function makeUserCard( obj, notSelf ){
 	
 	if( obj.uid != session.uid || notSelf ){	
 		if( obj.uid != session.uid ){
-			var following = $('div');
+			let following = $('div');
 			following.id = "user_follow_btn_" + obj.id;
 			following.className = "user_follow_btn";
 			if( obj.following ){
@@ -46,7 +46,7 @@ function makeUserCard( obj, notSelf ){
 			}
 			following.onclick = function(){
 				if( session.id ){
-					var tmp = this;
+					let tmp = this;
 					followUser( this.id.split('_').pop(), function( result ){
 						if( result ){
 							tmp.innerText = "언팔로우";
@@ -60,7 +60,7 @@ function makeUserCard( obj, notSelf ){
 			}
 			div.appendChild(following);
 			if( obj.follower ){
-				var follower = $('div');
+				let follower = $('div');
 				follower.className = "user_list_follower";
 				follower.innerText = "나를 팔로우 중입니다.";
 				text.appendChild(follower);
@@ -72,8 +72,8 @@ function makeUserCard( obj, notSelf ){
 		text.className = "user_list_text_self";
 
 		div.appendChild(text);
-		if( info ){
-			var obj = [{
+		if( my_info ){
+			let obj = [{
 				en : "post",
 				kr : "게시글"
 			},{
@@ -83,22 +83,22 @@ function makeUserCard( obj, notSelf ){
 				en : "follower",
 				kr : "팔로워"
 			}];
-			var div_info = $('div');
+			let div_info = $('div');
 			div_info.className = "user_list_info";
-			for( var i = 0; i < obj.length; ++i ){
-				var tab = $('a');
+			for( let i = 0; i < obj.length; ++i ){
+				let tab = $('a');
 				tab.href = "/@"+session.uid+'/'+obj[i].en;
 				tab.className = "user_list_tab";
 				
-				var name = $('div');
+				let name = $('div');
 				name.className = "user_list_tab_name";
 				name.innerText = obj[i].kr;
 				tab.appendChild(name);
 				
-				var value = $('div');
+				let value = $('div');
 				value.className = "user_list_tab_value";
 				value.id = "user_list_tab_value_"+obj[i].en;
-				value.innerText = info[obj[i].en];
+				value.innerText = my_info[obj[i].en];
 				tab.appendChild(value);
 
 				div_info.appendChild(tab);

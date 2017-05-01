@@ -1,21 +1,12 @@
-<!doctype html>
-<html>
-	<head>
-		<% include ./header %>
-		<style id="css_chat">
-			<% include ./../css/chat %>
-			<% include ./../css/imglayer %>
-		</css>
-		<script>
-			dialogs = "<%= dialogs %>".replace(/&#34;/g,'"');
-			if( dialogs.length > 0 ){
-				dialogs = JSON.parse(dialogs)
-			}
-		</script>
-		<script src="/js/chat.js"></script>
-		<script src="/js/imglayer.js"></script>
-		<% include ./footer %>
-	</head>
-	<body>
-	</body>
-</html>
+<style id="css_chat">
+	<% include ./../css/chat %>
+	<% include ./../css/imglayer %>
+</style>
+<script>
+	var dialogs = "<%= dialogs %>".replace(/&#34;/g,'"');
+	if( dialogs.length > 0 ){
+		dialogs = JSON.parse(dialogs)
+	}
+</script>
+<script src="/js/chat.js"></script>
+<script src="/js/imglayer.js"></script>

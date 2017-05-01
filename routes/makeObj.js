@@ -38,21 +38,21 @@ function makeObj( req, res, ejs, obj ){
 				});	
 			}
 		], function( err, result ){
-			obj.info = {
+			obj.my_info = {
 				post : result[0],
 				following : result[1],
 				follower : result[2]
 			};
-			renderPage( res, ejs, obj );
+			renderPage( req, res, ejs, obj );
 		});
 	} else {
 	    obj.session = { "color" : color };
-	    obj.info = null;
-		renderPage( res, ejs, obj );
+	    obj.my_info = null;
+		renderPage( req, res, ejs, obj );
 	}
 }
 
-function renderPage( res, ejs, obj ){
+function renderPage( req, res, ejs, obj ){
 	var obj_keys = Object.keys(obj);
 	for( var i = 0; i < obj_keys.length; ++i ){
 		(function(j){
@@ -66,13 +66,20 @@ function renderPage( res, ejs, obj ){
 	var url = __dirname + "/../views/" + ejs + ".ejs";
 	fs.exists( url, function( exists ){
 		if( exists ){
-	    	res.render( url, obj );
+			if( req.url.indexOf("loaded=true") >= 0 ){
+				res.render( url, obj );
+			} else {
+				req.cookies = {};
+				req.cookies.loaded = "true";
+				obj.view = ejs;
+				res.render( __dirname + "/../views/index.ejs", obj );
+			}
 		} else {
-			res.render( __dirname + "/../views/error.ejs", obj );
+			obj.view = "error";
+			res.render( __dirname + "/../views/index.ejs", obj );
 		}
 	});
 }
-
 
 
 module.exports = makeObj;

@@ -1,23 +1,14 @@
-<!doctype html>
-<html>
-	<head>
-		<% include ./header %>
-		<style id="css_setting">
-			<% include ./../css/setting %>
-		</style>
-		<script>
-			<%
-				if( locals.page == undefined || page.length == 0 ){
-					page = "account"
-				}
-			%>
-			page = "<%= page %>";
-			
-			settings = "<%= settings %>".replace(/&#34;/g,'"');
-		</script>
-		<script src="/js/setting.js"></script>
-		<% include ./footer %>
-	</head>
-	<body>
-	</body>
-</html>
+<style id="css_setting">
+	<% include ./../css/setting %>
+</style>
+<script>
+	<%
+		if( locals.page == undefined || page.length == 0 ){
+			page = "account"
+		}
+	%>
+	page = "<%= page %>";
+	
+	settings = "<%= settings %>".replace(/&#34;/g,'"');
+</script>
+<script src="/js/setting.js"></script>

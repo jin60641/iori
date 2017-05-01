@@ -1,23 +1,13 @@
-<!doctype html>
-<html>
-	<head>
-		<% include ./header %>
-		<script>
-		user = "<%= user %>".replace(/&#34;/g,'"');
-		if( user.length > 0 ){
-	    	user = JSON.parse(user)
-		}
-		</script>
-		<style id="profile">
-			<% include ./../css/profile %>
-			<% include ./../css/timeline %>
-			<% include ./../css/imglayer %>
-		</style>
-		<script src="/js/timeline.js"></script>
-		<script src="/js/profile.js"></script>
-		<script src="/js/imglayer.js"></script>
-		<% include ./footer %>
-	</head>
-	<body>
-	</body>
-</html>
+<script>
+let user = "<%= user %>".replace(/&#34;/g,'"');
+if( user.length > 0 ){ 
+	user = JSON.parse(user); 
+}
+</script>
+<style id="profile">
+	<% include ./../css/profile %>
+	<% include ./../css/timeline %>
+	<% include ./../css/imglayer %>
+</style>
+<script src="/js/timeline.js"></script>
+<script src="/js/profile.js"></script><script src="/js/imglayer.js"></script>

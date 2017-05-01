@@ -1,31 +1,22 @@
-<!doctype html>
-<html>
-	<head>
-		<% include ./header %>
-		<script>
-		<%
-			if( locals.Post == undefined ){
-		%>
-				location.href = "/";
-		<%
-			} else {
-		%>
-				Post = "<%= Post %>".replace(/&#34;/g,'"').replace(/(\r\n|\n|\r)/gm,"<br />");
-				if( Post.length > 0 ){
-					Post = JSON.parse(Post)
-				}
-		<%
-			}
-		%>
-		</script>
-		<script src="/js/timeline.js"></script>
-		<script src="/js/imglayer.js"></script>
-		<style id="css_timeline">
-			<% include ./../css/imglayer.ejs %>
-			<% include ./../css/timeline.ejs %>
-		</style>
-		<% include ./footer %>
-	</head>
-	<body>
-	</body>
-</html>
+<script>
+<%
+	if( locals.Post == undefined ){
+%>
+		location.href = "/";
+<%
+	} else {
+%>
+		Post = "<%= Post %>".replace(/&#34;/g,'"').replace(/(\r\n|\n|\r)/gm,"<br />");
+		if( Post.length > 0 ){
+			Post = JSON.parse(Post)
+		}
+<%
+	}
+%>
+</script>
+<script src="/js/timeline.js"></script>
+<script src="/js/imglayer.js"></script>
+<style id="css_timeline">
+	<% include ./../css/imglayer.ejs %>
+	<% include ./../css/timeline.ejs %>
+</style>

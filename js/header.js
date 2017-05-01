@@ -1,8 +1,8 @@
 'use strict';
 
 function getCookie(cname) {
-	var cookie_array = document.cookie.split(', ');
-	for(var i = 0; i < cookie_array.length; ++i ){
+	let cookie_array = document.cookie.split(', ');
+	for(let i = 0; i < cookie_array.length; ++i ){
 		if( cname == cookie_array[i].split('=')[0] ){
 			return cookie_array[i].split('=')[1];
 		}
@@ -25,8 +25,8 @@ if( session.signUp == undefined && document.cookie ){
 			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(3).join('-');
 		}
 	} else if( getCookie("uid") && getCookie("password") ){
-		var params = "password=" + getCookie("password") + "&uid=" + getCookie("uid");
-		var xhr = new XMLHttpRequest();
+		let params = "password=" + getCookie("password") + "&uid=" + getCookie("uid");
+		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function(event){
 			if( xhr.readyState == 4 && xhr.status == 200 ){
 				if( xhr.responseText == "success" ){
@@ -50,9 +50,9 @@ if( session.level >= 9 ){
 }
 
 function getUsers( query, limit, cb ){
-	var xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-		var xhrResult = JSON.parse( xhr.responseText );
+		let xhrResult = JSON.parse( xhr.responseText );
 		cb(xhrResult);
 	}}
 	xhr.open("POST", "/api/user/search", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('query='+query+'&tb=user');
@@ -62,10 +62,10 @@ function getUsers( query, limit, cb ){
 function sendData_search( query ){
 	if( query ){
 		getUsers( query, 5, function(xhrResult){
-			var result = $("#head_search_result");
+			let result = $("#head_search_result");
 			result.innerHTML="";
 			if( xhrResult.length ){
-				for( var i = xhrResult.length - 1; i>=0; i--){
+				for( let i = xhrResult.length - 1; i>=0; i--){
 					result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="head_search_result_uid">@' + xhrResult[i].uid + '</div>' + xhrResult[i].name + '</span></div></a>';
 				}
 			} else {
@@ -80,7 +80,7 @@ function sendData_search( query ){
 
 // 알림로딩
 function getNotices(cnt){
-	var xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
 		if( xhr.responseText ){
 			notice.innerHTML = xhr.responseText;
@@ -94,20 +94,20 @@ function getNotices(cnt){
 // 맨위로
 
 function goTop( orix, oriy, desx, desy ){
-	var Timer;
-	var winHeight = document.body.scrollTop;
+	let Timer;
+	let winHeight = document.body.scrollTop;
 	if( Timer ){
 		clearTimeout( Timer );
 	}
-	var startx = 0;
-	var starty = winHeight;
+	let startx = 0;
+	let starty = winHeight;
 	if( !orix || orix < 0 ){
 		orix = 0;
 	}
 	if( !oriy || oriy < 0 ){
 		oriy = 0;
 	}
-	var speed = 7;
+	let speed = 7;
 	if( !desx ){
 		desx = 0 + startx;
 	}
@@ -118,8 +118,8 @@ function goTop( orix, oriy, desx, desy ){
 	if ( desx < 0 ) desx = 0;
 	desy += ( oriy - starty) / speed;
 	if ( desy < 0 ) desy = 0;
-	var posX = Math.ceil( desx );
-	var posY = Math.ceil( desy );
+	let posX = Math.ceil( desx );
+	let posY = Math.ceil( desy );
 	window.scrollTo( posX, posY );
 	if((Math.floor(Math.abs(startx - orix)) < 1) && (Math.floor(Math.abs(starty - oriy)) < 1)){
 		clearTimeout(Timer);
@@ -133,7 +133,7 @@ function goTop( orix, oriy, desx, desy ){
 
 function head_menu_show( boolean ){
 	event.stopPropagation();
-	var head_menu = $("#head_menu");
+	let head_menu = $("#head_menu");
 	if( boolean != undefined ){
 		if( boolean ){
 			search_result_show( false );
@@ -150,7 +150,7 @@ function head_menu_show( boolean ){
 }
 
 function search_result_show( boolean ){
-	var search_result = $("#head_search_result");
+	let search_result = $("#head_search_result");
 	if( boolean != undefined ){
 		if( boolean ){
 			head_menu_show( false );
@@ -172,37 +172,37 @@ function close_all(){
 }
 
 window.addEventListener('load',function(){
-	var navi_tab = $("div");
+	let navi_tab = $("div");
 	navi_tab.id = "navi_tab";
 
-	var navi_tab_home = $("a");
+	let navi_tab_home = $("a");
 	navi_tab_home.href = '/';
 	navi_tab_home.id = "navi_tab_home";
 	navi_tab_home.innerText = "홈";
 	navi_tab.appendChild(navi_tab_home);
 	
-	var navi_tab_notice = $("a");
+	let navi_tab_notice = $("a");
 	navi_tab_notice.href = '/notice';
 	navi_tab_notice.id = "navi_tab_notice";
 	navi_tab_notice.innerText = "알림";
 	navi_tab.appendChild(navi_tab_notice);
 	
-	var navi_tab_chat = $("a");
+	let navi_tab_chat = $("a");
 	navi_tab_chat.href = '/chat';
 	navi_tab_chat.id = "navi_tab_chat";
 	navi_tab_chat.innerText = "쪽지";
 	navi_tab.appendChild(navi_tab_chat);
 	
 	head.appendChild(navi_tab);
-	var path = location.pathname.substr(1);
-	var navi_tab_now = $("#navi_tab_" + path);
+	let path = location.pathname.substr(1);
+	let navi_tab_now = $("#navi_tab_" + path);
 	if( navi_tab_now ){
 		navi_tab_now.id = "navi_tab_now";
 	} else if ( path == "" ){
 		navi_tab_home.id = "navi_tab_now";
 	}
 
-	var search = $("input");
+	let search = $("input");
 	search.id = "head_search";
 	search.type = "text";
 	search.name = "query";
@@ -227,7 +227,7 @@ window.addEventListener('load',function(){
 	search.autocomplete = "off";
 	head.appendChild(search);
 
-	var search_result = $("div");
+	let search_result = $("div");
 	search_result.id = "head_search_result";
 
 	search_result.addEventListener('touch', function( evt ){
@@ -242,13 +242,13 @@ window.addEventListener('load',function(){
 	search_result.onmouseout = function(){
 		searchResultView = 0;
 	}
-	var search_none = $("div");
+	let search_none = $("div");
 	search_none.id = "head_search_none";
 	search_none.innerText = "표시할 검색 결과가 없습니다.";
 	search_result.appendChild(search_none);
 	head.appendChild(search_result);
 
-	var head_logo = $("div");
+	let head_logo = $("div");
 	head_logo.id = "head_logo";
 	head_logo.onclick = function(){ 
 		goTop();
@@ -260,18 +260,20 @@ window.addEventListener('load',function(){
 	window.addEventListener('touchstart', close_all );
 	window.addEventListener('touch', close_all );
 
-	var navi_search = $("div");
+	let navi_search = $("div");
 	navi_search.id = "navi_search";
 	navi_search.className = "navi_menu";
 	navi_search.innerHTML = "<a href='/search' ><img src='/svg/navi_search.svg'></a>";
 	head.appendChild(navi_search);
 
-	var navi_profile = $("div");
+	let navi_profile = $("div");
 	navi_profile.id = "navi_profile";
 	navi_profile.className = "navi_menu";
 	navi_profile.innerHTML = "<img src='/files/profile/" + session.id + "'>";
 	if( session == "" || session.signUp != true ){
 		navi_profile.onclick = function(){
+			console.log(document.URL);
+			console.log(document.URL.split('/'));
 			if( document.URL.indexOf("login") >= 0 ){
 				location.href = "/login/" + document.URL.split('/').slice(4).join("-");
 			} else {
@@ -283,7 +285,7 @@ window.addEventListener('load',function(){
 	}
 	head.appendChild(navi_profile);
 
-	var head_menu = $("div");
+	let head_menu = $("div");
 	head_menu.addEventListener('touch', function( evt ){
 		evt.stopPropagation();
 	});
@@ -309,10 +311,10 @@ window.addEventListener('load',function(){
 	/*
 	notice.addEventListener('click', function(){
 		if( parseInt( this.innerHTML ) >= 1 ){
-			var xhr2 = new XMLHttpRequest();
+			let xhr2 = new XMLHttpRequest();
 			xhr2.onreadystatechange = function (event){ if(xhr2.readyState == 4 && xhr2.status == 200){
-				var notices = JSON.parse( xhr2.responseText );
-				for( var i = 0; i < notices.length; ++i ){
+				let notices = JSON.parse( xhr2.responseText );
+				for( let i = 0; i < notices.length; ++i ){
 					//notice_box.innerHTML =
 				}
 			}}
@@ -324,11 +326,11 @@ window.addEventListener('load',function(){
 
 if( session.notice && session.notice.web == true ){
 	socket.on( 'notice_new', function( notice ){
-		var options = {
+		let options = {
 			body : notice.desc,
 			icon : "/files/profile/"+notice.from.uid,
 		}
-		var title = notice.from.name;
+		let title = notice.from.name;
 		switch( notice.type ){
 			case "chat":
 				break;
@@ -348,7 +350,7 @@ if( session.notice && session.notice.web == true ){
 				break;
 		}
 
-		var noti = new Notification(title,options);
+		let noti = new Notification(title,options);
 		new Audio("/sound/notification.mp3").play();
 		noti.onclick = function(){
 			location.href = notice.link
