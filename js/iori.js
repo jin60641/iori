@@ -332,6 +332,10 @@ window.addEventListener('load',function(){
 	document.body.appendChild(hover);
 });
 
+function getPage(page){
+	
+}
+
 var postOption = {};
 
 

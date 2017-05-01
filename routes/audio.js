@@ -6,10 +6,6 @@ var async = require('async');
 
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
-var busboy = require('connect-busboy');
-
-router.use(require('body-parser').urlencoded());
-router.use(busboy());
 
 Array.prototype.max = function() {
 	return Math.max.apply(null, this);

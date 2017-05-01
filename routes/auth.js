@@ -3,20 +3,17 @@
 var express = require('express');
 var router = express.Router();
 var db = require('./dbconfig.js');
-var cookieParser = require('cookie-parser')
-var cookie = require('cookie')
-router.use(cookieParser())
-var bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(bodyParser.json());
+
 var session = require('express-session')
 var sessionstore = require('sessionstore');
 global.store = sessionstore.createSessionStore();
+
 var sessionMiddleware = {
 	store: global.store,
 	secret: require('./settings.js').sessionSecret,
 	cookie: { path: '/', domain: 'iori.kr', expires : false }
 }
+
 var crypto = require('crypto');
 var smtpTransport = require("./mailconfig").smtpTransport;
 var passport = require('passport');
@@ -36,7 +33,6 @@ router.use( function( req, res, next ){
 	}
 });
 */
-
 router.use(session(sessionMiddleware));
 router.use(passport.initialize()).use(passport.session());
 passport.serializeUser(function(user, done) {

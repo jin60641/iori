@@ -5,9 +5,12 @@ var router = express.Router();
 var ejs = require('ejs');
 var db = require('./routes/dbconfig.js');
 var fs = require('fs-extra');
+var cookieParser = require('cookie-parser')
+var cookie = require('cookie')
+var bodyParser = require('body-parser');
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
 var busboy = require('connect-busboy');
-
-router.use(require('body-parser').urlencoded());
 router.use(busboy())
 var makeObj = require('./routes/makeObj.js');
 
@@ -109,7 +112,7 @@ router.get( '/files/header/:uid', function( req, res ){
 	}
 	fs.exists( __dirname + '/files/header/' + id, function( exists ){
 		if( exists ){
-			res.sendfile(__dirname + '/files/header/' + id );
+			res.sendFile(__dirname + '/files/header/' + id );
 		} else {
 			db.Users.findOne({ $or : [{ uid : uid },{ id : id }] }, function( err, user ){
 				if( err ){
@@ -117,15 +120,15 @@ router.get( '/files/header/:uid', function( req, res ){
 				} else if( user ){
 					fs.exists( __dirname + '/files/header/' + user.id, function( exists ){
 						if( exists ){
-							res.sendfile(__dirname + '/files/header/' + user.id );
+							res.sendFile(__dirname + '/files/header/' + user.id );
 						} else {
 							res.end();
-//							res.sendfile(__dirname + '/svg/profile.svg' );
+//							res.sendFile(__dirname + '/svg/profile.svg' );
 						}
 					});
 				} else {
 					res.end();
-//					res.sendfile(__dirname + '/img/profile_back.png' );
+//					res.sendFile(__dirname + '/img/profile_back.png' );
 				}
 			});
 		}
@@ -136,9 +139,9 @@ router.get( '/files/group/:gid', function( req, res ){
 	var gid = req.params['gid'];
 	fs.exists( __dirname + '/files/group/' + parseInt(gid), function( exists ){
 		if( exists ){
-			res.sendfile(__dirname + '/files/profile/' + parseInt(gid) );
+			res.sendFile(__dirname + '/files/profile/' + parseInt(gid) );
 		} else {
-			res.sendfile(__dirname + '/svg/profile.svg' );
+			res.sendFile(__dirname + '/svg/profile.svg' );
 		}
 	});
 });
@@ -151,7 +154,7 @@ router.get( '/files/profile/:uid', function( req, res ){
 	}
 	fs.exists( __dirname + '/files/profile/' + id, function( exists ){
 		if( exists ){
-			res.sendfile(__dirname + '/files/profile/' + id );
+			res.sendFile(__dirname + '/files/profile/' + id );
 		} else {
 			db.Users.findOne({ $or : [{ uid : uid },{ id : id }] }, function( err, user ){
 				if( err ){
@@ -159,7 +162,7 @@ router.get( '/files/profile/:uid', function( req, res ){
 				} else if( user ){
 					fs.exists( __dirname + '/files/profile/' + user.id, function( exists ){
 						if( exists ){
-							res.sendfile(__dirname + '/files/profile/' + user.id );
+							res.sendFile(__dirname + '/files/profile/' + user.id );
 						} else {
 							fillSvg( req, res, __dirname + '/svg/profile.svg', user.color.hex )
 						}

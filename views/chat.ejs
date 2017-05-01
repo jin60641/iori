@@ -2,8 +2,10 @@
 <html>
 	<head>
 		<% include ./header %>
-		<% include ./../css/chat %>
-		<% include ./../css/imglayer %>
+		<style id="css_chat">
+			<% include ./../css/chat %>
+			<% include ./../css/imglayer %>
+		</css>
 		<script>
 			dialogs = "<%= dialogs %>".replace(/&#34;/g,'"');
 			if( dialogs.length > 0 ){

@@ -24,8 +24,11 @@ var info = "";
 	}
 %>
 </script>
-<% include ./../css/style %>
-<% include ./../css/head %>
+<style id="css_header">
+	<% include ./../css/style %>
+	<% include ./../css/header %>
+	<% include ./../css/userlist %>
+</style>
 <noscript>
 	<link rel="stylesheet" type="text/css" href="/css/webfont_normal.css">
 </noscript>
@@ -35,7 +38,6 @@ var info = "";
 <script src="/js/socketio.js"></script>
 <script src="/js/socket.js"></script>
 <script src="/js/iori.js"></script>
-<% include ./../css/userlist %>
 <script src="/js/userlist.js"></script>
 <title>iori</title>
 <script src="/js/header.js"></script>

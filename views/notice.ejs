@@ -2,7 +2,9 @@
 <html>
 	<head>
 		<% include ./header %>
-		<% include ./../css/notice %>
+		<style id="css_notice">
+			<% include ./../css/notice %>
+		</style>
 		<script>
 			notices = "<%= notices %>".replace(/&#34;/g,'"');
 			if( notices.length > 0 ){

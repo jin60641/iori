@@ -162,7 +162,7 @@ function send_register(){
 					 show_alert(xhr.responseText.toString());
 				}
 			}
-			xhr.open("POST", "/register", false); 
+			xhr.open("POST", "/register", true); 
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 			xhr.send('name='+name+'&uid='+uid+'&email='+email+'&password='+password);
 		}

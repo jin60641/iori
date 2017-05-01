@@ -5,7 +5,6 @@ var router = express.Router();
 var db = require('./dbconfig.js');
 var async = require('async');
 
-router.use(require('body-parser').urlencoded());
 var makeObj = require('./makeObj.js');
 
 var checkSession = require('./auth.js').checkSession;

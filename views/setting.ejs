@@ -2,7 +2,9 @@
 <html>
 	<head>
 		<% include ./header %>
-		<% include ./../css/setting %>
+		<style id="css_setting">
+			<% include ./../css/setting %>
+		</style>
 		<script>
 			<%
 				if( locals.page == undefined || page.length == 0 ){

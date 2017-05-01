@@ -4,12 +4,8 @@ var express = require('express');
 var router = express.Router();
 var db = require('./dbconfig.js');
 var fs = require('fs-extra');
-var busboy = require('connect-busboy');
 var async = require('async');
 
-
-router.use(require('body-parser').urlencoded());
-router.use(busboy())
 var makeObj = require('./makeObj.js');
 var makeNotice = require('./notice.js').makeNotice;
 

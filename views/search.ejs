@@ -2,10 +2,12 @@
 <html>
 	<head>
 		<% include ./header %>
-		<% include ./../css/search %>
-		<% include ./../css/timeline %>
+		<style id="css_search">
+			<% include ./../css/search %>
+			<% include ./../css/timeline %>
+	        <% include ./../css/imglayer.ejs %>
+		</style>
         <script src="/js/imglayer.js"></script>
-        <% include ./../css/imglayer.ejs %>
 		<script src="/js/timeline.js"></script>
 		<script src="/js/search.js"></script>
 		<% include ./footer %>

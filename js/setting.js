@@ -337,6 +337,9 @@ function makeField( obj ){
 	input.name = obj.id;
 	input.id = "setting_input_" + obj.id;
 	if( obj.type ){
+		console.log(input);
+		console.log(input.type);
+		console.log(obj.type);
 		input.type = obj.type;
 		if( obj.type == "checkbox" ){
 			input.checked = session.notice[obj.id];
