@@ -5,7 +5,7 @@ function makeUserCard( obj, notSelf ){
 	div.className = "user_list_div";
 	
 	let header = $('a');
-	header.href = "/@" + obj.uid;
+	makeHref( header, "/@" + obj.uid );
 	header.style.backgroundColor = obj.color.hex;
 	if( obj.header == true ){
 		header.style.backgroundImage = "url('/files/header/" + obj.uid + "?')";
@@ -14,7 +14,7 @@ function makeUserCard( obj, notSelf ){
 	div.appendChild(header);
 	
 	let profile = $('a');
-	profile.href = "/@" + obj.uid;
+	makeHref( profile, "/@" + obj.uid );
 	profile.style.backgroundImage = "url('/files/profile/" + obj.uid + "')";
 	profile.className = "user_list_profile";
 	div.appendChild(profile);
@@ -23,13 +23,13 @@ function makeUserCard( obj, notSelf ){
 	text.className = "user_list_text";
 
 	let name = $('a');
-	name.href = "/@" + obj.uid;
+	makeHref( name, "/@" + obj.uid );
 	name.innerText = obj.name;
 	name.className = "user_list_name";
 	text.appendChild(name);
 
 	let uid = $('a');
-	uid.href = "/@" + obj.uid;
+	makeHref( uid, "/@" + obj.uid );
 	uid.innerText = '@' + obj.uid;
 	uid.className = "user_list_uid";
 	text.appendChild(uid);
@@ -87,7 +87,7 @@ function makeUserCard( obj, notSelf ){
 			div_info.className = "user_list_info";
 			for( let i = 0; i < obj.length; ++i ){
 				let tab = $('a');
-				tab.href = "/@"+session.uid+'/'+obj[i].en;
+				makeHref( tab, "/@"+session.uid+'/'+obj[i].en );
 				tab.className = "user_list_tab";
 				
 				let name = $('div');

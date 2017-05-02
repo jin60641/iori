@@ -210,7 +210,7 @@ inits["imglayer"] = {
 		
 		that.imgmenu_resize();
 	
-		this.addListener( window,'resize', function(){
+		that.addListener( window,'resize', function(){
 			that.imgmenu_resize();
 		});
 	},
@@ -223,6 +223,7 @@ inits["imglayer"] = {
 			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
+		document.body.removeChild($('#imglayer'));
 		document.body.style.overflowY = "";
 		document.body.style.position = "";
 	},
@@ -251,6 +252,7 @@ inits["imglayer"] = {
 	//  document.body.style.overflowY = "scroll";
 	//  document.body.style.position = "fixed";
 		that.imgviewing = 1;
+		let imgmenu = $('#imgmenu');
 		let imglayer = $('#imglayer');
 		let imgmenu_favorite = $('#imgmenu_favorite');
 		let imgmenu_share = $('#imgmenu_share');

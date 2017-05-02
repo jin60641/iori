@@ -66,7 +66,26 @@ function sendData_search( query ){
 			result.innerHTML="";
 			if( xhrResult.length ){
 				for( let i = xhrResult.length - 1; i>=0; i--){
-					result.innerHTML+='<a href="/@' + xhrResult[i].uid + '"><div><img src="/files/profile/' + xhrResult[i].id + '"><span><div class="head_search_result_uid">@' + xhrResult[i].uid + '</div>' + xhrResult[i].name + '</span></div></a>';
+					let a = $('a');
+					makeHref( a, "/@" + xhrResult[i].uid );
+					let div = $('div');
+					a.appendChild(div);
+					let img = $('img');
+					img.src = "/files/profile/"+ xhrResult[i].uid;
+					div.appendChild(img);
+					let span = $('span');
+					let result_uid = $('div');
+					result_uid.className = "head_search_result_uid";
+					result_uid.innerText = "@" + xhrResult[i].uid;
+					span.appendChild(result_uid);
+					let text = $('text');
+					text.innerText = xhrResult[i].name;
+					span.appendChild(text);
+					div.appendChild(span);
+					span.appendChild(result_uid);
+					span.appendChild( result_uid );
+					a.appendChild(div);
+					result.appendChild(a);
 				}
 			} else {
 				result.innerHTML='<div id="head_search_none">표시할 검색 결과가 없습니다.</div>';
@@ -171,12 +190,26 @@ function close_all(){
 	head_menu_show(false);
 }
 
+function findTabNow(){
+	let path = location.pathname.substr(1);
+	let navi_tab_now = $("#navi_tab_" + path);
+	let navi_tabs = $('#navi_tab').childNodes;
+	for( let i = 0; i < navi_tabs.length; ++i ){
+		navi_tabs[i].className = "";
+	}
+	if( navi_tab_now ){
+		navi_tab_now.className = "navi_tab_now";
+	} else if ( path == "" ){
+		$('#navi_tab_home').className = "navi_tab_now";
+	}
+}
+
 window.addEventListener('load',function(){
 	let navi_tab = $("div");
 	navi_tab.id = "navi_tab";
 
 	let navi_tab_home = $("a");
-	navi_tab_home.href = '/';
+	makeHref( navi_tab_home, '/timeline');
 	navi_tab_home.id = "navi_tab_home";
 	navi_tab_home.innerText = "홈";
 	navi_tab.appendChild(navi_tab_home);
@@ -194,13 +227,8 @@ window.addEventListener('load',function(){
 	navi_tab.appendChild(navi_tab_chat);
 	
 	head.appendChild(navi_tab);
-	let path = location.pathname.substr(1);
-	let navi_tab_now = $("#navi_tab_" + path);
-	if( navi_tab_now ){
-		navi_tab_now.id = "navi_tab_now";
-	} else if ( path == "" ){
-		navi_tab_home.id = "navi_tab_now";
-	}
+
+	findTabNow();
 
 	let search = $("input");
 	search.id = "head_search";
@@ -293,13 +321,60 @@ window.addEventListener('load',function(){
 		evt.stopPropagation();
 	});
 	head_menu.id = "head_menu";
-	head_menu.innerHTML += "<div class='dropdown_caret'><div class='caret_outer'></div><div class='caret_inner'></div></div>";
-	head_menu.innerHTML += "<a href='/@" + session.uid + "'><img src='/svg/menu_home.svg'>| 프로필</a>";
-	head_menu.innerHTML += "<a href='/activity'><img src='/svg/menu_activity.svg'>| 활동로그</a>";
-	head_menu.innerHTML += "<a href='/setting/account'><img src='/svg/menu_setting.svg'>| 설정</a>";
+
+	let head_menu_caret = $('div');
+	head_menu_caret.className = "dropdown_caret";
+	let head_menu_outer = $('div');
+	head_menu_outer.className = "head_menu_other";
+	head_menu_caret.appendChild(head_menu_outer);
+	let head_menu_inner = $('div');
+	head_menu_inner.className = "head_menu_inner";
+	head_menu_caret.appendChild(head_menu_inner);
+	head_menu.appendChild(head_menu_caret);
+		
+	let head_menu_home = $('a');
+	makeHref( head_menu_home, "/@" + session.uid );
+	let head_menu_home_img = $('img');
+	head_menu_home_img.src = "/svg/menu_home.svg";
+	head_menu_home.appendChild(head_menu_home_img);
+	let head_menu_home_text = $('text');
+	head_menu_home_text.innerText = "| 프로필";
+	head_menu_home.appendChild(head_menu_home_text);
+	head_menu.appendChild(head_menu_home);
+
+	let head_menu_activity = $('a');
+	makeHref( head_menu_activity, "/activity" );
+	let head_menu_activity_img = $('img');
+	head_menu_activity_img.src = "/svg/menu_activity.svg";
+	head_menu_activity.appendChild(head_menu_activity_img);
+	let head_menu_activity_text = $('text');
+	head_menu_activity_text.innerText = "| 활동로그";
+	head_menu_activity.appendChild(head_menu_activity_text);
+	head_menu.appendChild(head_menu_activity);
+
+	let head_menu_setting = $('a');
+	makeHref( head_menu_setting, "/setting" );
+	let head_menu_setting_img = $('img');
+	head_menu_setting_img.src = "/svg/menu_setting.svg";
+	head_menu_setting.appendChild(head_menu_setting_img);
+	let head_menu_setting_text = $('text');
+	head_menu_setting_text.innerText = "| 설정";
+	head_menu_setting.appendChild(head_menu_setting_text);
+	head_menu.appendChild(head_menu_setting);
+
 	if( session == "" ){
 	} else if( session.signUp == 1 ){
-		head_menu.innerHTML += "<a href='#' onclick='sessionLogOut(this)' ><img src='/svg/menu_logout.svg'>| 로그아웃</a>";
+		let head_menu_logout = $('a');
+		let head_menu_logout_img = $('img');
+		head_menu_logout.onclick = function(e){
+			sessionLogOut(this);
+		}
+		head_menu_logout_img.src = "/svg/menu_logout.svg";
+		head_menu_logout.appendChild(head_menu_logout_img);
+		let head_menu_logout_text = $('text');
+		head_menu_logout_text.innerText = "| 로그아웃";
+		head_menu_logout.appendChild(head_menu_logout_text);
+		head_menu.appendChild(head_menu_logout);
 	}
 
 	head_menu.style.display = "none";

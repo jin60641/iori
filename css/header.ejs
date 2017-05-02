@@ -289,13 +289,14 @@
 	padding-bottom : 5px;
 }
 
-#head #navi_tab #navi_tab_now {
+#head #navi_tab .navi_tab_now {
 	color : <%= color_hex %>;
 	border-bottom : 5px solid <%= color_hex %>;
 }
 
-#head #navi_tab #navi_tab_now:hover::after {
+#head #navi_tab .navi_tab_now:hover::after {
 	padding-bottom : 0px !important;
+    transition : initial !important;
 }
 
 #head #notice {

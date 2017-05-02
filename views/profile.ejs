@@ -1,14 +1,14 @@
-<script>
+<script class="included">
 	user = "<%= user %>".replace(/&#34;/g,'"');
 	if( user.length > 0 ){ 
 		user = JSON.parse(user); 
 	}
 </script>
-<style id="profile">
-	<% include ./../css/profile %>
+<style class="included">
 	<% include ./../css/timeline %>
+	<% include ./../css/profile %>
 	<% include ./../css/imglayer %>
 </style>
-<script src="/js/timeline.js"></script>
-<script src="/js/profile.js"></script>
-<script src="/js/imglayer.js"></script>
+<script src="/js/timeline.js" class="included" ></script>
+<script src="/js/profile.js" class="included"></script>
+<script src="/js/imglayer.js" class="included"></script>

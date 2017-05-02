@@ -157,7 +157,7 @@ window.addEventListener('load', function(){
 						}
 						chat_body_file.onclick = function(){
 							let src = this.src.split('?');
-							viewimg(null,1,src[1],src[0],true);
+							inits["imglayer"].viewimg(null,1,src[1],src[0],true);
 						};
 						chat_body.appendChild(chat_body_file);
 					}

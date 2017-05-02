@@ -13,13 +13,8 @@ inits["profile"] = {
 		xhr.send('imgtype='+type);
 	},
 	init : function(){
-console.log(user);		
-		postOption.uid = user.id;
 		let that = this;
 		this.addListener(window,"click", this.hideLabelMenu);
-		if( session.signUp ){
-			$('#user_list_self').style.display = "none";
-		}
 		let wrap = $("div");
 		wrap.id = "profile_wrap";
 		$('#wrap_top').appendChild(wrap);
@@ -39,7 +34,7 @@ console.log(user);
 			headerimg_back.style.backgroundImage = "url('/files/header/" + user.id + "?')";
 			//headerimg_back.style.backgroundImage = "url('/files/header/" + user.id + "?" + new Date().getTime() + "')";
 			headerimg_back.onclick = function(){
-				viewimg(0,1,new Date(),"/files/header/" + user.id);
+				inits["imglayer"].viewimg(0,1,new Date(),"/files/header/" + user.id);
 			}
 			container.style.height = "45vh";
 			wrap.style.height = "45vh";
@@ -64,7 +59,7 @@ console.log(user);
 		if( user.profile ){
 			profileimg_back.style.cursor = "pointer";
 			profileimg_back.onclick = function( event ){
-				viewimg(0,1,new Date(),"/files/profile/" + user.id);
+				inits["imglayer"].viewimg(0,1,new Date(),"/files/profile/" + user.id);
 			}
 		} else {
 			profileimg_back.style.backgroundColor = "white";
@@ -590,8 +585,6 @@ console.log(user);
 		label.appendChild(makePhotoHelper(type,false));
 	},
 	openUserTab : function( evt, target ){
-		inits["timeline"].post_skip = 0;
-		inits["timeline"].post_cnt = 0;
 		let that = this;
 		let tab;
 		let tab_name;
@@ -624,11 +617,17 @@ console.log(user);
 			t.style.borderBottom = "";
 		}
 		tab.className = "user_tab_now";
-		$('#post_wrap').innerHTML = "";
-		$('#post_wrap').style.display = "none";
+		if( $('#post_wrap') ){
+			$('#post_wrap').innerHTML = "";
+			$('#post_wrap').style.display = "none";
+		}
 		$('#follow_wrap').innerHTML = "";
 		$('#follow_wrap').style.display = "none";
 		$('#wrap_right').style.display = "";
+		if( inits["timeline"] ){
+			inits["timeline"].post_skip = 0;
+			inits["timeline"].post_cnt = 0;
+		}
 		switch(tab_name){
 			case "following":
 				that.getFollows(6,"following");
@@ -641,12 +640,16 @@ console.log(user);
 				that.getFollows(6,"follower",true);
 				break;
 			case "favorite":
-				postOption.favorite = "true";
-				inits["timeline"].getPosts(10);
+				if( inits["timeline"] ){
+					inits["timeline"].postOption.favorite = "true";
+					inits["timeline"].getPosts(10);
+				}
 				break;
 			default:
-				postOption.favorite = "false";
-				inits["timeline"].getPosts(10);
+				if( inits["timeline"] ){
+					inits["timeline"].postOption.favorite = "false";
+					inits["timeline"].getPosts(10);
+				}
 		}
 		history.pushState(null,null,history_str);
 	},
@@ -687,9 +690,17 @@ console.log(user);
 		this.listeners.push({ element : element, event : event, handle : handle });
 	},
 	exit : function(){
-		for( let i = 0; i < listeners.length; ++i ){
-			let h = listeners[i];
+		let that = this;
+		for( let i = 0; i < this.listeners.length; ++i ){
+			let h = that.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
+		if( inits["timeline"].postOption ){
+			delete inits["timeline"].postOption.uid;
+			delete inits["timeline"].postOption.favorite;
+		}
+		$('#wrap_top').removeChild( $('#profile_wrap') );
+		$('#wrap_mid').removeChild( $('#follow_wrap') );
+		that.listeners = [];
 	}
 }

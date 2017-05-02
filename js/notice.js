@@ -23,8 +23,8 @@ window.addEventListener('load',function(){
 	function makeNotice( notice ){
 		let box = $('a');
 		box.href = notice.link;
-		box.addEventListener('mouseover',profileHover);
-		box.addEventListener('mouseleave',profileLeave);
+//		box.addEventListener('mouseover',profileHover);
+//		box.addEventListener('mouseleave',profileLeave);
 		box.id = "notice_"+notice.id;
 		box.className = "notice";
 	

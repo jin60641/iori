@@ -1,9 +1,6 @@
 'use strict';
 
-let inits = {};
-let Handlers = [];
-let postOption = {};
-let user = {};
+let inits = [];
 
 function $(query){
 	switch( query[0] ){
@@ -18,7 +15,7 @@ function $(query){
 
 function profileHover(e){
 	clearTimeout(profileTimer);
-	var target = this;
+	let target = this;
 	profileTimer = setTimeout( function(){
 		openProfileHover(target);
 	}, 100 );
@@ -29,22 +26,22 @@ function profileLeave(){
 	profileTimer = setTimeout( closeProfileHover, 200 );
 }
 
-var profileTimer;
+let profileTimer;
 function openProfileHover(target){
-	var div = $('#profile_hover');
+	let div = $('#profile_hover');
 	if( target != div ){
 		div.style.display = "";
 		div.style.opacity = "";
-		var uid = target.href.split('@')[1].split('/')[0];
-		var current = div.className.split('_').pop();
+		let uid = target.href.split('@')[1].split('/')[0];
+		let current = div.className.split('_').pop();
 		if( uid == current ){
 			return;
 		}
-		var position = target.getBoundingClientRect();
+		let position = target.getBoundingClientRect();
 		div.style.top = position.top + 10 + document.body.scrollTop + position.height + "px"
 		div.style.left = position.left + "px"
 		div.style.display = "block";
-		var xhr = new XMLHttpRequest();
+		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 			while( div.firstChild ){
 				div.removeChild(div.firstChild);
@@ -57,7 +54,7 @@ function openProfileHover(target){
 	}
 }
 function closeProfileHover(){
-	var div = $('#profile_hover');
+	let div = $('#profile_hover');
 	div.className = "";
 	div.style.opacity = "0";
 }
@@ -76,7 +73,7 @@ function getBrowser(){
 }
 
 
-var searchResultView=0;
+let searchResultView=0;
 function searchResultNone(){
 	if(searchResultView){
 		return 0;
@@ -86,7 +83,7 @@ function searchResultNone(){
 }
 
 function sessionLogOut(){
-	var date = "Thu, 01 Jan 1970 00:00:01 GMT"
+	let date = "Thu, 01 Jan 1970 00:00:01 GMT"
 	/*
 	document.cookie = "facebook=;expires=" + date + ";domain=iori.kr;path=/";
 	document.cookie = "uid=;expires=" + date + ";domain=iori.kr;path=/";
@@ -99,7 +96,7 @@ function sessionLogOut(){
 }
 
 function followUser( uid, callback ){
-	var xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 		if( xhr.responseText == "follow" ){
 			callback(1);
@@ -111,10 +108,10 @@ function followUser( uid, callback ){
 }
 
 function fade(obj, start, end, time ) {
-	var speed = Math.round( time / 100 );
-	var timer = 0;
+	let speed = Math.round( time / 100 );
+	let timer = 0;
 	if( start > end ){
-		for( var i = start; i >= end; --i ){
+		for( let i = start; i >= end; --i ){
 			( function( tmp ){
 				setTimeout(function(){
 					obj.style.opacity = (tmp / 100);
@@ -128,7 +125,7 @@ function fade(obj, start, end, time ) {
 			}(i));
 		}
 	} else if( start < end ){
-		for( var i = start; i <= end; ++i ){
+		for( let i = start; i <= end; ++i ){
 			( function( tmp ){
 				setTimeout(function(){
 					obj.style.opacity = (tmp / 100);
@@ -140,7 +137,7 @@ function fade(obj, start, end, time ) {
 }
 
 function makeToast(text){
-	var toast = $("div");
+	let toast = $("div");
 	toast.id = "toast";
 	document.body.appendChild(toast);
 	toast.innerHTML = text;
@@ -151,109 +148,109 @@ function makeToast(text){
 }
 
 function refreshRecommendList(skip,limit){
-	var refresh = $('#recommend_refresh');
+	let refresh = $('#recommend_refresh');
 	refresh.onclick = function(){
 		refreshRecommendList(skip+3,limit);
 	}
-	var divs = $('.recommend_li');
-	var list = $('#recommend_list');
+	let divs = $('.recommend_li');
+	let list = $('#recommend_list');
 
-	for( var i = divs.length-1; i >= 0; --i ){
+	for( let i = divs.length-1; i >= 0; --i ){
 		list.removeChild(divs[i]);
 	}
 	getRecommendList(skip,limit);
 }
 
 function getRecommendList(skip,limit){
-	var xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function(event){ if( xhr.readyState == 4 && xhr.status == 200 ){
-		var result = JSON.parse(xhr.responseText);
-		var div = $('#recommend_list');
+		let result = JSON.parse(xhr.responseText);
+		let div = $('#recommend_list');
 		if( result.length < limit ){
 			$('#recommend_refresh').onclick = function(){
 				refreshRecommendList(0,limit);
 			}
 		}
-		for( var i = 0; i < result.length; ++i ){
-			var user = result[i];
-			var li = $('div');
+		for( let i = 0; i < result.length; ++i ){
+			let user = result[i];
+			let li = $('div');
 			li.className = "recommend_li";
-			var img = $('a');
+			let img = $('a');
 			img.addEventListener('mouseover',profileHover);
 			img.addEventListener('mouseleave',profileLeave);
 			img.id = "recommend_img";
 			img.style.backgroundImage = "url('/files/profile/" + user.uid + "')";
-			img.href = "/@"+user.uid;
+			makeHref( img, "/@"+user.uid );
 			li.appendChild(img);
-			var box = $("div");
+			let box = $("div");
 			box.className = "recommend_box";
-			var a = $('a');
+			let a = $('a');
 			a.addEventListener('mouseover',profileHover);
 			a.addEventListener('mouseleave',profileLeave);
-			a.href = img.href;
+			makeHref( a, img.href );
 			a.innerText = user.name;
-			var span = $('span');
+			let span = $('span');
 			span.innerText = "@"+user.uid;
 			a.appendChild(span);
 			box.appendChild(a);
-			var followers = user.followers;
-			var text = $('div');
+			let followers = user.followers;
+			let text = $('div');
 			text.className = "recommend_text";
 			if( followers.length == 1 ){
-				var a1 = $('a');
+				let a1 = $('a');
 				a1.addEventListener('mouseover',profileHover);
 				a1.addEventListener('mouseleave',profileLeave);
-				a1.href = "/@"+followers[0].uid;
+				makeHref( a1, "/@"+ followers[0].uid );
 				a1.innerText = followers[0].name;
 				text.appendChild(a1);
-				var text1 = $('text');
+				let text1 = $('text');
 				text1.innerText = " 님이 팔로우 중";
 				text.appendChild(text1);
 			} else if( followers.length == 2 ){
-				var a1 = $('a');
+				let a1 = $('a');
 				a1.addEventListener('mouseover',profileHover);
 				a1.addEventListener('mouseleave',profileLeave);
-				a1.href = "/@"+followers[0].uid;
+				makeHref( a1, "/@" + followers[0].uid );
 				a1.innerText = followers[0].name;
 				text.appendChild(a1);
-				var text1 = $('text');
+				let text1 = $('text');
 				text1.innerText = " 님, ";
 				text.appendChild(text1);
-				var a2 = $('a');
+				let a2 = $('a');
 				a2.addEventListener('mouseover',profileHover);
 				a2.addEventListener('mouseleave',profileLeave);
-				a2.href = "/@"+followers[1].uid;
+				makeHref( a2, "/@" + followers[1].uid );
 				a2.innerText = followers[1].name;
 				text.appendChild(a2);
-				var text2 = $('text');
+				let text2 = $('text');
 				text2.innerText = " 님이 팔로우 중";
 				text.appendChild(text2);
 			} else {
-				var a1 = $('a');
+				let a1 = $('a');
 				a1.addEventListener('mouseover',profileHover);
 				a1.addEventListener('mouseleave',profileLeave);
-				a1.href = "/@"+followers[0].uid;
+				makeHref( a1, "/@" + followers[0].uid );
 				a1.innerText = followers[0].name;
 				text.appendChild(a1);
-				var text1 = $('text');
+				let text1 = $('text');
 				text1.innerText = " 님 외 ";
 				text.appendChild(text1);
-				var a2 = $('a');
-				a2.href = "/@"+user.uid+"/follower_together";
+				let a2 = $('a');
+				makeHref( a2, "/@"+user.uid+"/follower_together" );
 				a2.innerText = "다수";
 				text.appendChild(a2);
-				var text2 = $('text');
+				let text2 = $('text');
 				text2.innerText = "가 팔로우 중";
 				text.appendChild(text2);
 			}
 			box.appendChild(text);
-			var user_follow = $('div');;
+			let user_follow = $('div');;
 			user_follow.innerText = "팔로우"
 			user_follow.className = "user_follow_btn_small"
 			user_follow.id = "user_follow_" + user.id;
 			user_follow.onclick = function(){
-				var uid = this.id.split('_').pop();
-				var tmp = this;
+				let uid = this.id.split('_').pop();
+				let tmp = this;
 				followUser( uid, function( result ){
 					if( result ){
 						tmp.innerText = "언팔로우"
@@ -270,62 +267,37 @@ function getRecommendList(skip,limit){
 	}}
 	xhr.open("POST", "/api/user/recommend", false);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	var params = "";
+	let params = "";
 	params += 'skip=' + skip + '&limit=' + limit;
 	xhr.send(params);
 }
 
 window.addEventListener('load',function(){
-	var body = $("div");
+	let body = $("div");
 	body.id = "body";
 	document.body.appendChild(body);
 
-	var wrap0 = $("div");
+	let wrap0 = $("div");
 	wrap0.id = "wrap_top";
 	body.appendChild(wrap0);
 
-	var wrap1 = $("div");
+	let wrap1 = $("div");
 	wrap1.id = "wrap_left";
 	body.appendChild(wrap1);
 
-	var wrap2 = $("div");
+	let wrap2 = $("div");
 	wrap2.id = "wrap_mid";
 	body.appendChild(wrap2);
 
-	var wrap3 = $("div");
+	let wrap3 = $("div");
 	wrap3.id = "wrap_right";
 	body.appendChild(wrap3);
 
-	var head = $("div");
+	let head = $("div");
 	head.id = "head";
 	document.body.insertBefore( head, document.body.firstChild );
 
-	if( session != null && session.signUp == true  ){
-		wrap1.appendChild(makeUserCard(session));
-		var div = $('div');
-		div.id = "recommend_list";
-		var title = $('span');
-		title.id = "recommend_title";
-		title.innerText = "팔로우 추천";
-		div.appendChild(title);
-		var refresh = $('span');
-		refresh.id = "recommend_refresh";
-		refresh.className = "recommend_span";
-		refresh.innerText = "새로고침";
-		refresh.onclick = function(){
-			refreshRecommendList(0,3);
-		}
-		div.appendChild(refresh);
-		var all = $('a');
-		all.href = "/recommend"
-		all.className = "recommend_span";
-		all.innerText = "모두보기";
-		div.appendChild(all);
-		wrap3.appendChild(div);
-		refresh.click();
-	}
-
-	var hover = $('div');
+	let hover = $('div');
 	hover.id = "profile_hover";
 	hover.addEventListener('transitionend', function(){
 		if(this.style.opacity == "0" ){
@@ -335,90 +307,51 @@ window.addEventListener('load',function(){
 	hover.addEventListener('mouseover',profileHover);
 	hover.addEventListener('mouseleave',profileLeave);
 	document.body.appendChild(hover);
+	$('#wrap_left').appendChild(makeUserCard(session));
+	makeRecommendList();
 
 	for( let name in inits ){
 		inits[name].init();
-		Handlers.push( inits[name] );	
 	}
 });
-var parsed;
-var test = [];
-function getPage(path){
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		for( let i = 0; i < Handlers.length; ++i ){
-			Handlers[i].exit();
+
+function makeRecommendList(){
+	if( session != null && session.signUp == true  ){
+		let div = $('div');
+		div.id = "recommend_list";
+		let title = $('span');
+		title.id = "recommend_title";
+		title.innerText = "팔로우 추천";
+		div.appendChild(title);
+		let refresh = $('span');
+		refresh.id = "recommend_refresh";
+		refresh.className = "recommend_span";
+		refresh.innerText = "새로고침";
+		refresh.onclick = function(){
+			refreshRecommendList(0,3);
 		}
-		let inbody = document.body.childNodes;
-		for( let i = inbody.length - 1; i >= 0; --i ){
-			if( inbody[i].id == "head" || inbody[i].id == "profile_hover" ){
-				continue;
-			} else if( inbody[i].id == "body" ){
-				let wraps = inbody[i].childNodes;
-				for( let j = 0; j < wraps.length; ++j ){
-					while( wraps[j].firstChild ){
-						wraps[j].removeChild(wraps[j].firstChild);
-					}
-				}
-				continue;
-			}
-			document.body.removeChild(inbody[i]);
-		}
-		history.pushState(null,null,"@jin60641")
-		var parser = new DOMParser();
-		parsed = parser.parseFromString(xhr.responseText,"text/html")
-		var scripts = parsed.head.childNodes;
-		for( var i = 0 ; i <scripts.length; ++i ){	
-			if( scripts[i].tagName == "SCRIPT" ){
-				var script = $('script');
-				script.type = "text/javascript";
-				script.charset = "utf-8";
-				var src = scripts[i].getAttribute("src");
-				if( src != null ){
-					script.src = src;
-					document.head.appendChild(script);
-				} else {
-					eval(scripts[i].innerText);
-				}
-			}
-		}
-		for( let name in inits ){
-			inits[name].init();
-			Handlers.push( inits[name] );	
-		}
-	}}
-	xhr.open("GET", path +"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+		div.appendChild(refresh);
+		let all = $('a');
+		makeHref( all, "/recommend" );
+		all.className = "recommend_span";
+		all.innerText = "모두보기";
+		div.appendChild(all);
+		$('#wrap_right').appendChild(div);
+		refresh.click();
+	}
+
 }
 
-(function(DOMParser) {
-	var
-	  proto = DOMParser.prototype
-	, nativeParse = proto.parseFromString
-	;
-
-	// Firefox/Opera/IE throw errors on unsupported types
-	try {
-		// WebKit returns null on unsupported types
-		if ((new DOMParser()).parseFromString("", "text/html")) {
-			// text/html parsing is natively supported
-			return;
-		}
-	} catch (ex) {}
-
-	proto.parseFromString = function(markup, type) {
-		if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {
-			var
-			  doc = document.implementation.createHTMLDocument("")
-			;
-	      		if (markup.toLowerCase().indexOf('<!doctype') > -1) {
-        			doc.documentElement.innerHTML = markup;
-      			}
-      			else {
-        			doc.body.innerHTML = markup;
-      			}
-			return doc;
+function makeHref(a,link){
+	a.href = link;
+/*
+	a.onclick = function(event){
+		if( event.ctrlKey || event.shiftKey ){
 		} else {
-			return nativeParse.apply(this, arguments);
+			event.preventDefault();
+			getPage(a.href);
 		}
 	};
-}(DOMParser));
+*/
+}
+

@@ -1,6 +1,7 @@
 'use strict';
 	
 inits["timeline"] = {
+	postOption : {},
 	post_skip : 0,
 	post_cnt : 0,
 	postLoading : false,
@@ -16,7 +17,7 @@ inits["timeline"] = {
 		reply.id = 'reply_' + pid + '_' + Reply.id;
 		reply.className = 'reply';
 		let a = $("a");
-		a.href = "/@" + Reply.user.uid;
+		makeHref( a,"/@" + Reply.user.uid);
 		a.addEventListener('mouseover',profileHover);
 		a.addEventListener('mouseleave',profileLeave);
 		reply.appendChild(a);
@@ -28,7 +29,7 @@ inits["timeline"] = {
 		reply_text.appendChild(btn);
 		let reply_name = $('a');
 		reply_name.innerTexxt = Reply.user.name.toString();
-		reply_name.href = a.href;
+		makeHref( reply_name, a.href );
 		reply_name.addEventListener('mouseover',profileHover);
 		reply_name.addEventListener('mouseleave',profileLeave);
 		let span = $('span');
@@ -144,6 +145,7 @@ inits["timeline"] = {
 		return date;
 	},
 	makePreview : function( link, text, pid, inside ){
+		let that = this;
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			if( xhr.responseText != "" ){
@@ -195,7 +197,7 @@ inits["timeline"] = {
 						let getaudio = $('div');
 						getaudio.id = "getaudio_" + pid;
 						getaudio.onclick = function(){
-							getAudio(pid);
+							that.getAudio(pid);
 						}
 						getaudio.innerText = "음원 추출";
 						$('#menu_'+pid).appendChild(getaudio)
@@ -249,7 +251,7 @@ inits["timeline"] = {
 		div.className = 'post';
 		if( Post.share != undefined ){
 			let share = $('a');
-			share.href = "/@" + Post.share.uid;
+			makeHref( share, "/@" + Post.share.uid );
 			share.addEventListener('mouseover',profileHover);
 			share.addEventListener('mouseleave',profileLeave);
 			share.id = "post_share_" + Post.id;
@@ -260,7 +262,7 @@ inits["timeline"] = {
 		let a = $("a");
 		a.addEventListener('mouseover',profileHover);
 		a.addEventListener('mouseleave',profileLeave);
-		a.href = '/@'+Post.user.uid;
+		makeHref( a, "/@" + Post.user.uid );
 		a.addEventListener('mouseover',profileHover);
 		a.addEventListener('mouseleave',profileLeave);
 		a.className = 'post_name';
@@ -555,7 +557,17 @@ inits["timeline"] = {
 	},
 	getAudio : function( pid ){
 		alert("영상에 따라 추출 시 약간의 시간이 소요될 수 있습니다.");
-		let vid = $('#link_preview_' + pid).href.split('v=')[1];
+		let link = $('#link_preview_' + pid).href;
+		let vid;
+		let vindex;
+		vindex = link.indexOf("youtu.be/");
+		if( vindex >= 0 ){
+			vid = link.substr( vindex + 9 );
+		}
+		vindex = link.indexOf("youtube.com/watch?v=");
+		if( vindex >= 0 ){	
+			vid = link.substr( vindex + 20 );
+		}
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			let obj;
@@ -574,6 +586,7 @@ inits["timeline"] = {
 	
 	},
 	hidemenu : function(){
+		let that = this;
 		let post_menu = $(".post_menu");
 		let reply_menu = $(".reply_menu");
 		for(let i = reply_menu.length-1;i>=0;i--){
@@ -582,9 +595,9 @@ inits["timeline"] = {
 		for(let i = post_menu.length-1;i>=0;i--){
 			post_menu[i].style.display="none";
 		}
-		if( this.selectedPost ){
-			this.selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
-			this.selectedPost.style.boxShadow = "initial";
+		if( that.selectedPost ){
+			that.selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
+			that.selectedPost.style.boxShadow = "initial";
 		}
 	},
 	dontseeReply : function(pid,reply_id){
@@ -1374,6 +1387,7 @@ inits["timeline"] = {
 		xhr.open("POST","/api/newsfeed/getreplys", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid+'&skip='+reply_skip+'&limit='+limit);
 	},
 	keydown : function(e){
+		let that = this;
 		let postwrap = $('#post_wrap');
 		if( inits["imglayer"].imgviewing != undefined && inits["imglayer"].imgviewing == true ){
 			event.stopPropagation();
@@ -1395,45 +1409,45 @@ inits["timeline"] = {
 		} else if( document.activeElement == document.body ){
 			if((e.shiftKey==false&&e.keyCode==9)||e.keyCode==40||e.keyCode==39){
 				event.preventDefault();
-				if( selectedPost ){
-					selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
-					selectedPost.style.boxShadow = "initial";
-					if( selectedPost.nextSibling ){
-						selectedPost = selectedPost.nextSibling;
-						selectedPost.scrollIntoViewIfNeeded();
-						selectedPost.style.borderColor = session.color.hex;
-						selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+				if( that.selectedPost ){
+					that.selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
+					that.selectedPost.style.boxShadow = "initial";
+					if( that.selectedPost.nextSibling ){
+						that.selectedPost = that.selectedPost.nextSibling;
+						that.selectedPost.scrollIntoViewIfNeeded();
+						that.selectedPost.style.borderColor = session.color.hex;
+						that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 					} else {
-						selectedPost.scrollIntoViewIfNeeded();
-						selectedPost.style.borderColor = session.color.hex;
-						selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+						that.selectedPost.scrollIntoViewIfNeeded();
+						that.selectedPost.style.borderColor = session.color.hex;
+						that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 						return;
 					}
 				} else {
-					selectedPost = postwrap.firstElementChild
-					selectedPost.style.borderColor = session.color.hex;
-					selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+					that.selectedPost = postwrap.firstElementChild
+					that.selectedPost.style.borderColor = session.color.hex;
+					that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 				}
 			} else if((e.shiftKey==true&&e.keyCode==9)||e.keyCode==38||e.keyCode==37){
 				event.preventDefault();
-				if( selectedPost ){
-					selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
-					selectedPost.style.boxShadow = "initial";
-					if( selectedPost.previousSibling ){
-						selectedPost = selectedPost.previousSibling;
-						selectedPost.scrollIntoViewIfNeeded();
-						selectedPost.style.borderColor = session.color.hex;
-						selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+				if( that.selectedPost ){
+					that.selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
+					that.selectedPost.style.boxShadow = "initial";
+					if( that.selectedPost.previousSibling ){
+						that.selectedPost = that.selectedPost.previousSibling;
+						that.selectedPost.scrollIntoViewIfNeeded();
+						that.selectedPost.style.borderColor = session.color.hex;
+						that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 					} else {
-						selectedPost.scrollIntoViewIfNeeded();
-						selectedPost.style.borderColor = session.color.hex;
-						selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+						that.selectedPost.scrollIntoViewIfNeeded();
+						that.selectedPost.style.borderColor = session.color.hex;
+						that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 						return;
 					}
 				} else {
-					selectedPost = postwrap.firstElementChild
-					selectedPost.style.borderColor = session.color.hex;
-					selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+					that.selectedPost = postwrap.firstElementChild
+					that.selectedPost.style.borderColor = session.color.hex;
+					that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 				}
 			}
 		}
@@ -1565,7 +1579,7 @@ inits["timeline"] = {
 		let output_post = $('div');
 		let post_file = $('input');
 		$('#wrap_mid').appendChild(postwrap);
-		if( session && postOption.uid == null && postOption.search == null){
+		if( session && that.postOption.uid == null && that.postOption.search == null){
 			let write = $("div");
 			write.id = "write";
 			output_post.id = "output_post";
@@ -1638,7 +1652,7 @@ inits["timeline"] = {
 			} else {
 				location.href = "/";
 			}
-		} else if( postOption.uid != null || postOption.search != null ){
+		} else if( that.postOption.uid != null || that.postOption.search != null ){
 			
 		} else {
 			that.getPosts(10);
@@ -1669,7 +1683,9 @@ inits["timeline"] = {
 	getPosts : function(limit){ // 게시글 불러오기
 		let that = this;
 		let postwrap = $('#post_wrap');
-		postwrap.style.display = "";
+		if( postwrap ){
+			postwrap.style.display = "";
+		}
 		if( $("#post_none") ){
 			postwrap.removeChild($("#post_none").parentNode);
 		}
@@ -1695,6 +1711,9 @@ inits["timeline"] = {
 							continue;
 						}
 						let div = that.makePost(Posts[i]);
+						if( postwrap == undefined ){
+							postwrap = $('#post_wrap');
+						}
 						if( limit ){
 							postwrap.appendChild(div);
 						} else {
@@ -1709,7 +1728,7 @@ inits["timeline"] = {
 					let post_inside = $("div");
 					post_inside.className = "post_inside";
 					post_inside.id = "post_none";
-					if( postOption.favorite == "true" ){
+					if( that.postOption.favorite == "true" ){
 						post_inside.innerText = "아직 관심글로 표시한 게시글이 없습니다.";
 					} else {
 						post_inside.innerText = "아직 작성된 게시글이 없습니다.";
@@ -1729,10 +1748,10 @@ inits["timeline"] = {
 		if( that.post_skip > that.post_cnt ){
 			that.post_skip = that.post_cnt;
 		}
-		if( postOption ){
-			let obj_keys = Object.keys(postOption);
+		if( that.postOption ){
+			let obj_keys = Object.keys(that.postOption);
 			for( let i = 0; obj_keys.length > i; ++i ){
-				params += "&" + obj_keys[i] + "=" + postOption[obj_keys[i]];
+				params += "&" + obj_keys[i] + "=" + that.postOption[obj_keys[i]];
 			}
 		}
 		xhr.send(params);
@@ -1746,5 +1765,11 @@ inits["timeline"] = {
 			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
+		$('#wrap_mid').removeChild($('#post_wrap'));
+		$('#wrap_left').removeChild($('#user_list_self'));
+		$('#wrap_right').removeChild($('#recommend_list'));
+		this.listeners = [];
+		this.post_skip = 0;
+		this.post_cnt = 0;
 	}
 }
