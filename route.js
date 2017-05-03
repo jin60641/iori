@@ -67,6 +67,14 @@ router.get('/', function( req, res ){
 	}
 });
 
+router.get('/timeline', function( req, res ){
+	if( req.user && req.user.signUp ){
+		makeObj( req, res, "timeline" );
+	} else {
+		makeObj( req, res, "slider" );
+	}
+});
+
 router.get('/login', function( req, res ){
 	if( req.user && req.user.signUp ){
 		res.redirect('/');

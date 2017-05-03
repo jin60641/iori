@@ -1,63 +1,73 @@
 'use strict';
+
 	
-window.addEventListener('load', function(){
-	function form_onkeydown(e){
+inits["findpw"] = {
+	form_onkeydown : function(e){
+		let that = this;
 		if(e.keyCode == 13 ){
 			e.preventDefault();
-			send_submit();
+			that.send_submit();
 			return false;
 		}
-	}
-	
-	function show_alert(msg){
-		var form_alert = $("#form_alert");
+	},
+	show_alert : function(msg){
+		let form_alert = $("#form_alert");
 		form_alert.innerText = msg;
 		form_alert.style.opacity = 1;
-	}
-	
-	function send_submit(){
-		var email = $("#form_email").value;
+	},
+	send_submit : function(){
+		let that = this;
+		let email = $("#form_email").value;
 		if( email.length == 0 ){
-			show_alert("이메일을 입력해 주세요.");
+			that.show_alert("이메일을 입력해 주세요.");
 			$("#form_email").focus();
 		} else {
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function(event){
 				if( xhr.readyState == 4 && xhr.status == 200 ){
-					show_alert(xhr.responseText);
+					that.show_alert(xhr.responseText);
 				}
 			}
-			show_alert("서버의 응답을 기다리는 중입니다.");
+			that.show_alert("서버의 응답을 기다리는 중입니다.");
 			xhr.open("POST", "/api/auth/findpw", true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.send('email='+email);
 		}
-	};
-
-	var form = $("form");
-	form.id = "form";
-	form.onkeydown = form_onkeydown;
+	},
+	init : function(){
+		let that = this;
+		let form = $("form");
+		form.id = "form";
+		form.onkeydown = function(e){
+			that.form_onkeydown(e);
+		}
+		
+		let form_email_label = $("label");
+		form_email_label.innerText = "이메일";
+		form_email_label.htmlFor = "form_email";
+		form.appendChild(form_email_label);
+		let form_email = $("input");
+		form_email.id = "form_email";
+		form_email.type = "email";
+		form.appendChild(form_email);
 	
-	var form_email_label = $("label");
-	form_email_label.innerText = "이메일";
-	form_email_label.htmlFor = "form_email";
-	form.appendChild(form_email_label);
-	var form_email = $("input");
-	form_email.id = "form_email";
-	form_email.type = "email";
-	form.appendChild(form_email);
-
-	var form_submit_btn = $("div");
-	form_submit_btn.id = "form_submit_btn";
-	form_submit_btn.onclick = send_submit;
-	form_submit_btn.className = "form_btn";
-	form_submit_btn.innerText = "안내 이메일 받기";
-	form.appendChild(form_submit_btn);
-	
-	var form_alert = $("div");
-	form_alert.id = "form_alert";
-	form_alert.innerText = "'";
-	form.appendChild(form_alert);
-	
-	$('#wrap_top').appendChild(form);
-});
+		let form_submit_btn = $("div");
+		form_submit_btn.id = "form_submit_btn";
+		form_submit_btn.onclick = function(e){
+			that.send_submit(e);
+		}
+		form_submit_btn.className = "form_btn";
+		form_submit_btn.innerText = "안내 이메일 받기";
+		form.appendChild(form_submit_btn);
+		
+		let form_alert = $("div");
+		form_alert.id = "form_alert";
+		form_alert.innerText = "'";
+		form.appendChild(form_alert);
+		
+		$('#wrap_top').appendChild(form);
+	},
+	exit : function(){
+		$('#wrap_top').removeChild($('#form'));
+	}
+}

@@ -1,6 +1,10 @@
 'use strict';
 
 function makeUserCard( obj, notSelf ){
+	if( obj != undefined && obj.uid != undefined  ){
+	} else {
+		return $('div');
+	}
 	let div = $('div');
 	div.className = "user_list_div";
 	
@@ -109,7 +113,5 @@ function makeUserCard( obj, notSelf ){
 		
 	}
 
-	
-	
 	return div;
 }

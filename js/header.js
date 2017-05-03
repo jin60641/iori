@@ -209,7 +209,7 @@ window.addEventListener('load',function(){
 	navi_tab.id = "navi_tab";
 
 	let navi_tab_home = $("a");
-	makeHref( navi_tab_home, '/timeline');
+	makeHref( navi_tab_home, '/');
 	navi_tab_home.id = "navi_tab_home";
 	navi_tab_home.innerText = "홈";
 	navi_tab.appendChild(navi_tab_home);

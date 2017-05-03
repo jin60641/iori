@@ -307,6 +307,8 @@ window.addEventListener('load',function(){
 	hover.addEventListener('mouseover',profileHover);
 	hover.addEventListener('mouseleave',profileLeave);
 	document.body.appendChild(hover);
+
+	//
 	$('#wrap_left').appendChild(makeUserCard(session));
 	makeRecommendList();
 

@@ -1,13 +1,12 @@
 'use strict';
-	
-window.addEventListener('load',function(){
-	let listeners = [];
-	function addListener( element, event, handle ){
-		element.addEventListener( event, handle, false );
-		listeners.push({ element : element, event : event, handle : handle });
-	}
 
-	function getDateString(origin_date){
+inits["notice"] = {	
+	listeners : [],
+	addListener : function( element, event, handle ){
+		element.addEventListener( event, handle, false );
+		this.listeners.push({ element : element, event : event, handle : handle });
+	},
+	getDateString : function(origin_date){
 		let date = new Date(origin_date);
 		let now = new Date();
 		let date_time = Math.floor(date.getTime()/1000)
@@ -18,9 +17,9 @@ window.addEventListener('load',function(){
 		} else if( date.getDate() != now.getDate() ){
 			return (date.getYear()-100)+'/'+(date.getMonth()<=8?"0":"")+(date.getMonth()+1)+'/'+(date.getDate()<=9?0:"")+date.getDate();
 		}
-	}
-	
-	function makeNotice( notice ){
+	},
+	makeNotice : function( notice ){
+		let that = this;
 		let box = $('a');
 		box.href = notice.link;
 //		box.addEventListener('mouseover',profileHover);
@@ -30,7 +29,7 @@ window.addEventListener('load',function(){
 	
 		let date = $('div');
 		date.className = "notice_date";
-		date.innerText = getDateString(notice.date);
+		date.innerText = that.getDateString(notice.date);
 		box.appendChild(date);
 	
 		let profileimg = $('img');
@@ -74,9 +73,9 @@ window.addEventListener('load',function(){
 	
 	
 		return box;
-	}
-	
-	function getNotice( limit ){
+	},
+	getNotice : function( limit ){
+		let that = this;
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 			let Notices = JSON.parse(xhr.responseText);
@@ -84,7 +83,7 @@ window.addEventListener('load',function(){
 				let wrap = $('#notice_wrap');
 				for( let i = 0; i < Notices.length; ++i ){
 					notices.push(Notices[i]);
-					let div = makeNotice(Notices[i]);
+					let div = that.makeNotice(Notices[i]);
 					if( limit >= 1 ){
 						wrap.appendChild(div);
 					} else {
@@ -96,7 +95,7 @@ window.addEventListener('load',function(){
 						}
 					}
 				}
-				checkNoticeNone();
+				that.checkNoticeNone();
 			}
 		}}
 		xhr.open("POST","/api/notice/getnotices", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -108,9 +107,8 @@ window.addEventListener('load',function(){
 			params += "0&limit=1";
 		}
 		xhr.send(params);
-	}
-	
-	function checkNoticeNone(){
+	},
+	checkNoticeNone : function(){
 		let wrap = $('#notice_wrap');
 		let none = $('#notice_wrap_none')
 		if( notices.length == 0 && none == undefined ){
@@ -121,29 +119,34 @@ window.addEventListener('load',function(){
 		} else if( none ){
 			wrap.removeChild(none);
 		}
-	}
-
-	let wrap = $('div');
-	wrap.id = "notice_wrap";
-	$('#wrap_mid').appendChild(wrap);
-	for( let i = 0; i < notices.length; ++i ){
-		wrap.appendChild(makeNotice(notices[i]));
-	}
-	socket.on( 'notice_new', function( notice ){
-		getNotice(0);
-	});
-	checkNoticeNone();
-	addListener(window,'scroll', function(e){
-		if( $('#notice_wrap') != null ){
-			if ((window.innerHeight + document.body.scrollTop) + 200 >= document.body.scrollHeight  ){
-				getNotice(10);
-			}
+	},
+	init : function(){
+		let wrap = $('div');
+		let that = this;
+		wrap.id = "notice_wrap";
+		$('#wrap_mid').appendChild(wrap);
+		for( let i = 0; i < notices.length; ++i ){
+			wrap.appendChild(that.makeNotice(notices[i]));
 		}
-	});
-	return function(){
+		socket.on( 'notice_new', function( notice ){
+			that.getNotice(0);
+		});
+		that.checkNoticeNone();
+		that.addListener(window,'scroll', function(e){
+			if( $('#notice_wrap') != null ){
+				let top = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+
+				if ((window.innerHeight + top) + 200 >= document.body.scrollHeight  ){
+					that.getNotice(10);
+				}
+			}
+		});
+	},
+	exit : function(){
 		for( let i = 0; i < listeners.length; ++i ){
 			let h = listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
+		$('wrap_mid').removeChild($('#notice_wrap'));
 	}
-});
+}

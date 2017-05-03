@@ -3,10 +3,6 @@
 	<% include ./../css/imglayer %>
 </style>
 <script class="included">
-	var dialogs = "<%= dialogs %>".replace(/&#34;/g,'"');
-	if( dialogs.length > 0 ){
-		dialogs = JSON.parse(dialogs)
-	}
+	<% include ./../js/chat %>
 </script>
-<script src="/js/chat.js" class="included"></script>
 <script src="/js/imglayer.js" class="included"></script>

@@ -140,5 +140,8 @@ inits["login"] = {
 		form.appendChild(form_findpw);
 		form.appendChild(form_register);
 		$('#wrap_top').appendChild(form);
+	},
+	exit : function(){
+		$('#wrap_top').removeChild($('#form'));
 	}
 }

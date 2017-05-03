@@ -1,13 +1,12 @@
 'use strict';
 	
-window.addEventListener('load', function(){
-	let listeners = [];
-	function addListener( element, event, handle ){
+inits["setting"] = {
+	listeners : [],
+	addListener : function( element, event, handle ){
 		element.addEventListener( event, handle, false );
-		listeners.push({ element : element, event : event, handle : handle });
-	}
-
-	const settings = {
+		this.listeners.push({ element : element, event : event, handle : handle });
+	},
+	settings : {
 		account : {
 			tabs : [{
 				id : "uid",
@@ -69,7 +68,7 @@ window.addEventListener('load', function(){
 				id : "web",
 				name : "웹알림",
 				type : "checkbox",
-				onclick : checkChangeWebNotify
+				onclick : this.checkChangeWebNotify
 			}],
 			kr : "알림"
 		},
@@ -86,19 +85,16 @@ window.addEventListener('load', function(){
 			tabs : [],
 			kr : "회원 탈퇴"
 		}
-	}
-	
-	
-	function settingResize(){
+	},
+	settingResize : function(){
 		if( $("#wrap_left").clientWidth == 0 ){
 			$("#setting_wrap").insertBefore( $('#setting_tab'), $("#setting_wrap").firstElementChild );
 		} else {
 			$("#wrap_left").appendChild( $('#setting_tab') );
 		}
-	}
-	
-	
-	function openSettingTab( newtab ){
+	},
+	openSettingTab : function( newtab ){
+		let that = this;
 		if( page == newtab ){
 			return;
 		}
@@ -108,7 +104,7 @@ window.addEventListener('load', function(){
 		}
 	
 	
-		if( settings[page] == undefined ){
+		if( that.settings[page] == undefined ){
 			page = "account";
 		}
 	
@@ -134,35 +130,34 @@ window.addEventListener('load', function(){
 		let title = $("#setting_title");
 		let submit = $("#setting_submit");
 		submit.innerText = "저장";
-		for( let i = 0; i < settings[page].tabs.length; ++i ){
-			box.insertBefore(makeField(settings[page].tabs[i]),submit);
+		for( let i = 0; i < that.settings[page].tabs.length; ++i ){
+			box.insertBefore(that.makeField(that.settings[page].tabs[i]),submit);
 		}
-		title.innerText = settings[page].kr;
+		title.innerText = that.settings[page].kr;
 		if( page == "account" ){
-			$('#setting_input_uid').addEventListener('keyup', checkChangeUid );
-			$('#setting_input_email').addEventListener( 'keyup', checkChangeEmail );
+			$('#setting_input_uid').addEventListener('keyup', that.checkChangeUid );
+			$('#setting_input_email').addEventListener( 'keyup', that.checkChangeEmail );
 			submit.onclick = function(){
-				checkChangeUid("true");
-				checkChangeEmail("true");
+				that.checkChangeUid("true");
+				that.checkChangeEmail("true");
 			};
 		} else if( page == "password" ){
-			$('#setting_input_newpw').addEventListener( 'keyup', checkPassword );
-			$('#setting_input_newpw').addEventListener( 'keyup', checkChangePassword );
-			$('#setting_input_checkpw').addEventListener( 'keyup', checkPassword );
+			$('#setting_input_newpw').addEventListener( 'keyup', that.checkPassword );
+			$('#setting_input_newpw').addEventListener( 'keyup', that.checkChangePassword );
+			$('#setting_input_checkpw').addEventListener( 'keyup', that.checkPassword );
 			submit.onclick = function(){
-				checkChangePassword("true");
+				that.checkChangePassword("true");
 			};
 		} else if( page == "notice" ){
-			submit.onclick = checkChangeNotice;
+			submit.onclick = that.checkChangeNotice;
 		} else if( page == "color" ){
-			submit.onclick = checkChangeColor;
+			submit.onclick = that.checkChangeColor;
 		} else if( page == "drop" ){
 			submit.innerText = "회원 탈퇴";
-			submit.onclick = checkDropUser;
+			submit.onclick = that.checkDropUser;
 		}
-	}
-	
-	function checkDropUser(){
+	},
+	checkDropUser : function(){
 		if( confirm("정말로 회원 탈퇴를 진행하시려면 확인을 눌러주세요") == true ){
 			let xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
@@ -174,9 +169,8 @@ window.addEventListener('load', function(){
 			xhr.open("POST", "/api/user/drop", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 			xhr.send();
 		}
-	}
-	
-	function checkChangeColor(){
+	},
+	checkChangeColor : function(){
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			alert(xhr.responseText);
@@ -184,9 +178,8 @@ window.addEventListener('load', function(){
 		}};
 		xhr.open("POST", "/api/user/change/color", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 		xhr.send('color='+setting_input_color.value);
-	}
-	
-	function checkChangeNotice(){
+	},
+	checkChangeNotice : function(){
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			alert(xhr.responseText);
@@ -197,11 +190,9 @@ window.addEventListener('load', function(){
 		for( let i = 0; i < input.length; ++i ){
 			query += input[i].name + '=' + input[i].checked + '&';
 		}
-		console.log(query);
 		xhr.send(query);
-	}
-	
-	function checkPassword(){
+	},
+	checkPassword : function(){
 		if( $('#setting_input_newpw').value != $('#setting_input_checkpw').value ){
 			$('#setting_text_checkpw').innerText = "비밀번호가 일치하지 않습니다.";
 			return false;
@@ -209,9 +200,8 @@ window.addEventListener('load', function(){
 			$('#setting_text_checkpw').innerText = "";
 			return true;
 		}
-	}
-	
-	function checkChangePassword(save){
+	},
+	checkChangePassword : function(save){
 		if( save == "true" ){
 			if( !checkPassword() ){
 				alert("새 비밀번호 확인이 일치하지 않습니다.");
@@ -235,9 +225,8 @@ window.addEventListener('load', function(){
 			query += "&oldpw=" + $('#setting_input_oldpw').value
 		}
 		xhr.send(query);
-	}
-	
-	function checkChangeUid(save){
+	},
+	checkChangeUid : function(save){
 		$('#setting_text_uid').innerText = "iori.kr/@" + $('#setting_input_uid').value;
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
@@ -249,19 +238,16 @@ window.addEventListener('load', function(){
 		}};
 		xhr.open("POST", "/api/user/change/uid", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 		xhr.send('uid='+$('#setting_input_uid').value+'&save='+save);
-	}
-	
-	function checkChangeEmail(save){
+	},
+	checkChangeEmail : function(save){
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			$('#setting_info_email').innerText = xhr.responseText;
 		}};
 		xhr.open("POST", "/api/user/change/email", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 		xhr.send('email='+$('#setting_input_email').value+'&save='+save);
-	}
-	
-	
-	function checkChangeWebNotify(){
+	},
+	checkChangeWebNotify : function(){
 		let tmp = this;
 		if( this.checked == true ){
 			if (!("Notification" in window)) {
@@ -276,20 +262,20 @@ window.addEventListener('load', function(){
 				});
 			}
 		}
-	}
-	function makeSettingTab( en, kr ){
+	},
+	makeSettingTab : function( en, kr ){
+		let that = this;
 		let tab = $('div');
 		tab.id = "setting_tab_"+en;
 		
 		tab.innerText = kr;
 		tab.onclick = function(){
-			openSettingTab(en);
+			that.openSettingTab(en);
 		}
 		
 		return tab;
-	}
-	
-	function makeField( obj ){
+	},
+	 makeField : function( obj ){
 		let field = $('div');
 		field.className = "setting_field";
 	
@@ -314,9 +300,6 @@ window.addEventListener('load', function(){
 		input.name = obj.id;
 		input.id = "setting_input_" + obj.id;
 		if( obj.type ){
-			console.log(input);
-			console.log(input.type);
-			console.log(obj.type);
 			input.type = obj.type;
 			if( obj.type == "checkbox" ){
 				input.checked = session.notice[obj.id];
@@ -341,46 +324,46 @@ window.addEventListener('load', function(){
 			input.onclick = obj.onclick;
 		}
 		div.appendChild(text);
-	
-	
 		return field;
-	}
-
-	let wrap = $('div');
-	wrap.id = "setting_wrap";
-
-	let box = $('div');
-	box.id = "setting_box";
-	let title = $('div');
-	title.id = "setting_title";
-	box.appendChild(title);
-	wrap.appendChild(box);
-	$('#wrap_mid').appendChild(wrap);
-
-	let tabs = $('div');
-	tabs.id = "setting_tab";
-
-	let keys = Object.keys(settings);
-	for( let i = 0; i < keys.length; ++i ){
-		tabs.appendChild(makeSettingTab(keys[i],settings[keys[i]].kr));
-	}
-	$('#wrap_left').appendChild(tabs);
+	},
+	init : function(){
+		let that = this;
+		let wrap = $('div');
+		wrap.id = "setting_wrap";
 	
-	let submit = $('div');
-	submit.innerText = "저장";
-	submit.id = "setting_submit";
-	box.appendChild(submit);
-
-	openSettingTab();
-	addListener(window,'resize', settingResize );
-	settingResize();
+		let box = $('div');
+		box.id = "setting_box";
+		let title = $('div');
+		title.id = "setting_title";
+		box.appendChild(title);
+		wrap.appendChild(box);
+		$('#wrap_mid').appendChild(wrap);
 	
+		let tabs = $('div');
+		tabs.id = "setting_tab";
+	
+		let keys = Object.keys(that.settings);
+		for( let i = 0; i < keys.length; ++i ){
+			tabs.appendChild(that.makeSettingTab(keys[i],that.settings[keys[i]].kr));
+		}
+		$('#wrap_left').appendChild(tabs);
+		
+		let submit = $('div');
+		submit.innerText = "저장";
+		submit.id = "setting_submit";
+		box.appendChild(submit);
+	
+		that.openSettingTab();
+		that.addListener(window,'resize', that.settingResize );
+		that.settingResize();
 
-	return function(){
-		for( let i = 0; i < listeners.length; ++i ){
-			let h = listeners[i];
+	},
+	exit : function(){
+		for( let i = 0; i < this.listeners.length; ++i ){
+			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
+		$('#wrap_left').removeChild($('#setting_tab'));
+		$('#wrap_mid').removeChild($('#setting_wrap'));
 	}
-
-});
+}

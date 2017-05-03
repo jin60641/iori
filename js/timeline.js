@@ -250,13 +250,18 @@ inits["timeline"] = {
 		div.id = 'post_' + Post.id;
 		div.className = 'post';
 		if( Post.share != undefined ){
-			let share = $('a');
-			makeHref( share, "/@" + Post.share.uid );
-			share.addEventListener('mouseover',profileHover);
-			share.addEventListener('mouseleave',profileLeave);
+			let share = $('span');
 			share.id = "post_share_" + Post.id;
 			share.className = "post_share";
-			share.innerText = Post.share.name += "님이 공유하셨습니다";
+			let share_name = $('a');
+			makeHref( share_name, "/@" + Post.share.uid );
+			share_name.addEventListener('mouseover',profileHover);
+			share_name.addEventListener('mouseleave',profileLeave);
+			share_name.innerText = Post.share.name;
+			share.appendChild(share_name);
+			let share_text = $('text');
+			share_text.innerText = "님이 공유하셨습니다";
+			share.appendChild(share_text);
 			div.appendChild(share);
 		}
 		let a = $("a");
@@ -1424,9 +1429,11 @@ inits["timeline"] = {
 						return;
 					}
 				} else {
-					that.selectedPost = postwrap.firstElementChild
-					that.selectedPost.style.borderColor = session.color.hex;
-					that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+					that.selectedPost = postwrap.firstElementChild;
+					if( that.slectedPost ){
+						that.selectedPost.style.borderColor = session.color.hex;
+						that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
+					}
 				}
 			} else if((e.shiftKey==true&&e.keyCode==9)||e.keyCode==38||e.keyCode==37){
 				event.preventDefault();
@@ -1723,6 +1730,9 @@ inits["timeline"] = {
 						
 					}
 				} else if( that.post_cnt == 0 ){
+					if( postwrap == undefined ){
+						postwrap = $('#post_wrap');
+					}
 					let post = $("div");
 					post.className = "post";
 					let post_inside = $("div");
@@ -1768,8 +1778,5 @@ inits["timeline"] = {
 		$('#wrap_mid').removeChild($('#post_wrap'));
 		$('#wrap_left').removeChild($('#user_list_self'));
 		$('#wrap_right').removeChild($('#recommend_list'));
-		this.listeners = [];
-		this.post_skip = 0;
-		this.post_cnt = 0;
 	}
 }

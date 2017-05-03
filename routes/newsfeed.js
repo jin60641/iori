@@ -637,7 +637,7 @@ router.post( '/api/newsfeed/share', checkSession, function( req, res ){
 						if( err3 ){
 							throw err3;
 						}
-						makeNotice( post.user, req.user, "share", current );
+						makeNotice( post.user, req.user, "share", post );
 						res.send("success");
 					});
 				}
