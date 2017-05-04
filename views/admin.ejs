@@ -1,21 +1,6 @@
 <style id="css_admin">
 	<% include ./../css/admin %>
 </style>
-<script>
-	var doc;
-	<%
-		if( locals.page == undefined || page.length == 0 ){
-			page = "stat"
-		}
-		if( locals.doc != undefined ){
-	%>
-			doc = "<%= doc %>".replace(/&#34;/g,'"');
-			if( doc.length > 0 ){
-				doc = JSON.parse(doc)
-			}
-	<%
-		}
-	%>
-	page = "<%= page %>";
+<script class="included">
+	<% include ./../js/admin %>
 </script>
-<script src="/js/admin.js"></script>

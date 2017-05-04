@@ -591,7 +591,9 @@ inits["chat"] = {
 			let info_exit = $("div");
 			info_exit.id = "chat_info_menu_exit";
 			info_exit.innerText = "나가기";
-			info_exit.onclick = that.groupExit;
+			info_exit.onclick = function(e){
+				that.groupExit(e);
+			}
 	
 			info_menu.appendChild(info_exit);
 		
@@ -653,7 +655,9 @@ inits["chat"] = {
 			let group_file = $("input");
 			group_file.type = "file";
 			group_file.id = "chat_layer_group_file";
-			group_file.onchange = that.openfilegroup;
+			group_file.onchange = function(e){
+				that.openfilegroup(e);
+			}
 			group.appendChild(group_file);
 			
 			let group_label = $("label");
@@ -839,10 +843,14 @@ inits["chat"] = {
 				if( cnt ){
 					if( group_flag ){
 						title.innerText = cnt + " 명과 대화하기";
-						next.onclick = that.makeGroup;
+						next.onclick = function(e){
+							that.makeGroup(e);
+						}
 					} else {
 						title.innerText = cnt + " 명을 초대하기";
-						next.onclick = that.groupInvite;
+						next.onclick = function(e){
+							that.makeGroup(e);
+						}
 					}
 					next.className = "chat_layer_menu_active";
 				} else {
@@ -1154,9 +1162,15 @@ inits["chat"] = {
 		chat_input.id = "chat_input";
 		send_panel.appendChild(chat_input);
 	
-		chat_input.onkeypress = that.inputResize;
-		chat_input.onkeyup = that.inputResize;
-		chat_input.onkeydown = that.captureKey;
+		chat_input.onkeypress = function(e){
+			that.inputResize(e);
+		}
+		chat_input.onkeyup = function(e){
+			that.inputResize(e);
+		}
+		chat_input.onkeydown = function(e){
+			that.captureKey(e);
+		}
 	
 	
 		let chat_file_input = $("input");
@@ -1164,7 +1178,9 @@ inits["chat"] = {
 		chat_file_input.id = "chat_file_input";
 		chat_file_input.accept = "image/*";
 		chat_file_input.multiple = "multiple";
-		chat_file_input.onchange = that.chatWrite;
+		chat_file_input.onchange = function(e){
+			that.chatWrite(e);
+		}
 	
 		send_panel.appendChild(chat_file_input);
 	
@@ -1176,7 +1192,9 @@ inits["chat"] = {
 		let send_btn = $("div");
 		send_btn.innerText = "보내기";
 		send_btn.id = "send_btn";
-		send_btn.onclick = that.chatWrite;
+		send_btn.onclick = function(e){
+			that.chatWrite(e);
+		}
 		send_panel.appendChild(send_btn);
 	
 		chat_box.appendChild(send_panel);

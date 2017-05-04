@@ -55,15 +55,15 @@ router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 });
 
 router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
-	var postid = parseInt(req.body['postid']);
-	if( isNaN(postid) == false ){
-		db.Posts.findOne({ id : postid, be : true }, function( err2, post ){
+	var pid = parseInt(req.body['pid']);
+	if( isNaN(pid) == false ){
+		db.Posts.findOne({ id : pid, be : true }, function( err2, post ){
 			if( err2 ){
 				throw err2;
 			} else if( post == undefined ){
 				res.send("존재하지 않는 게시글입니다.");
 			} else {
-				db.Favorites.findOne({ pid : postid, uid : req.user.id }, function( err, result ){
+				db.Favorites.findOne({ pid : pid, uid : req.user.id }, function( err, result ){
 					if( result ){
 						result.remove( function(){
 							res.end();
@@ -71,7 +71,7 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 					} else {
 						var current = new db.Favorites({
 							uid : req.user.id,
-							pid : postid
+							pid : pid
 						});
 						current.save( function( err ){
 							if( err ){
@@ -328,9 +328,9 @@ router.post( '/api/newsfeed/removepost' , checkSession, function( req, res){
 	});
 });
 
-router.post( '/api/newsfeed/writereply/:postid' , checkSession, function( req, res ){
+router.post( '/api/newsfeed/writereply/:pid' , checkSession, function( req, res ){
 	var replyid;
-	var pid = parseInt(req.params['postid']);
+	var pid = parseInt(req.params['pid']);
 	var filecount = 0;
 	var text = "";
 	var post;
@@ -450,19 +450,19 @@ router.post( '/api/newsfeed/changereply/:replyid' , checkSession, function( req,
 	});
 });
 
-router.post( '/api/newsfeed/changepost/:postid/:change' , checkSession, function( req, res ){
-	var postid = parseInt( req.params['postid'] );
+router.post( '/api/newsfeed/changepost/:pid/:change' , checkSession, function( req, res ){
+	var pid = parseInt( req.params['pid'] );
 	var change = req.params['change'];
 	var date = new Date();
 	var text = "";
 	var filecount = 0;
-	var uploadedFile = __dirname + '/../files/post/' + postid +'/';
+	var uploadedFile = __dirname + '/../files/post/' + pid +'/';
 	if( change == "0" ){
 		change = [];
 	} else {
 		change = change.split(',');
 	}
-	db.Posts.findOne({ id : postid, "user.id" : req.user.id, be : true }, function( err, post ){
+	db.Posts.findOne({ id : pid, "user.id" : req.user.id, be : true }, function( err, post ){
 		if( err ){
 			throw err;
 		} else if( post ){
@@ -501,7 +501,7 @@ router.post( '/api/newsfeed/changepost/:postid/:change' , checkSession, function
 				for( var i = 1; i <= change.length; ++i ){
 					fs.rename( uploadedFile + change[i-1], uploadedFile + i);
 				}
-				db.Posts.update({ id : postid },{ text : text, file : change.length, change : date }, function( err, result ){
+				db.Posts.update({ id : pid },{ text : text, file : change.length, change : date }, function( err, result ){
 					   res.send({ file : change.length, date : date });
 				});
 			});
@@ -515,13 +515,13 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 	var filecount = 0;
 	var text = "";
 	db.Posts.findOne().sort({id:-1}).exec( function( err, result ){
-		var postid;
+		var pid;
 		if( !result ){
-			postid = 1;
+			pid = 1;
 		} else {
-			postid = result.id + 1;
+			pid = result.id + 1;
 		}
-		var uploadedFile = __dirname + '/../files/post/' + postid;
+		var uploadedFile = __dirname + '/../files/post/' + pid;
 		fs.mkdir( uploadedFile, "0755", function( err ){
 			if( err ){
 				throw err;
@@ -542,7 +542,7 @@ router.post( '/api/newsfeed/writepost' , checkSession, function( req, res ){
 			});
 			req.busboy.on( 'finish', function(){
 				var current = new db.Posts({
-					id : postid,
+					id : pid,
 					user : {
 						id : req.user.id,
 						uid : req.user.uid,

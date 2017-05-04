@@ -1,22 +1,8 @@
-<script>
-<%
-	if( locals.Post == undefined ){
-%>
-		location.href = "/";
-<%
-	} else {
-%>
-		Post = "<%= Post %>".replace(/&#34;/g,'"').replace(/(\r\n|\n|\r)/gm,"<br />");
-		if( Post.length > 0 ){
-			Post = JSON.parse(Post)
-		}
-<%
-	}
-%>
+<script class="included">
+	<% include ./../js/timeline.ejs %>
 </script>
-<script src="/js/timeline.js"></script>
 <script src="/js/imglayer.js"></script>
-<style id="css_timeline">
+<style class="included">
 	<% include ./../css/imglayer.ejs %>
 	<% include ./../css/timeline.ejs %>
 </style>
