@@ -71,6 +71,7 @@ router.get( '/api/audio/getaudio/:vid', function( req, res ){
 
 router.post( '/api/audio/add/:vid', function( req, res ){
 	var vid = req.params['vid'];
+	console.log(vid);
 	var wave = req.params['wave']=="true"?true:false;
 	var url = 'http://www.youtube.com/watch?v=' + vid;
 	var path = __dirname + "/../audio/" + vid;

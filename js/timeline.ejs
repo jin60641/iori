@@ -501,10 +501,13 @@ inits["timeline"] = {
 			textarea.onkeydown = textarea.onkeyup;
 			textarea.onkeypress = textarea.onkeyup;
 			textarea.placeholder = "댓글을 입력하세요...";
+			textarea.id = "reply_textarea_" + Post.id;
+			textarea.onpaste = function(event){ that.openfile_reply(event) }
 			reply.appendChild(textarea);
 			
 			let label = $('label');
 			label.htmlFor = "replyinput_" + Post.id;
+			label.id = "replyinput_label_" + Post.id;
 			label.className = "replyinput_label";
 			reply.appendChild(label);
 			
@@ -513,6 +516,7 @@ inits["timeline"] = {
 			reply_upload.type = "file";
 			reply_upload.accept = 'image/*';
 			reply_upload.id="replyinput_" + Post.id;
+
 			reply_upload.onchange = function(event){ that.openfile_reply(event) }
 			replywrap.appendChild(reply_upload);
 			let reply_output = $("div");
@@ -659,7 +663,6 @@ inits["timeline"] = {
 		xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+pid);
 	},
 	postFavorite : function(pid,add){
-		console.log(pid,add);
 		let that = this;
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
@@ -998,8 +1001,6 @@ inits["timeline"] = {
 	},
 	//////////
 	//파일열기(writepost) paste
-	openfile_paste : function(event,pid){
-	},
 	openfile_post : function(event,pid){
 		let that = this;
 		event.stopPropagation();
@@ -1021,15 +1022,24 @@ inits["timeline"] = {
 			}
 			output = $('#output_post');
 		}
-		let input=event.target;
-		let files;
+		let input = event.target;
+		let files = [];
 		if(input.files){
 			input.style.borderTop="1px solid rgb(86,210,199)";
 			input.style.borderBottom="1px solid rgb(86,210,199)";
 			input.focus();
 			files = input.files;
 		} else {
-			files = event.dataTransfer.files;
+			if( event.clipboardData ){
+				let items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+				for( let i = 0; i < items.length; ++i ){
+					if( items[i].type.indexOf("image") === 0 ){
+						files.push( items[i].getAsFile() );
+					}
+				}
+			} else {
+				files = event.dataTransfer.files;
+			}
 		}
 		for( let i = 0; i<files.length; ++i){
 			if(realfiles_tmp.length>=20){
@@ -1060,7 +1070,7 @@ inits["timeline"] = {
 					}
 				}
 			});
-			reader.addEventListener("load",function(event){
+			reader.addEventListener("load",function(e){
 				let imgbox = $("div");
 				imgbox.id = "postimg_" +( output.childElementCount + 1);
 				imgbox.className='post_imgbox';
@@ -1071,7 +1081,7 @@ inits["timeline"] = {
 					evt.preventDefault();
 					return false;
 				});
-				let dataURL = event.target.result;
+				let dataURL = e.target.result;
 				imgbox.style.background="url('"+dataURL+"') center center no-repeat"
 				imgbox.style.backgroundSize="cover";
 				imgbox.style.backgroundClip="content-box";
@@ -1110,25 +1120,44 @@ inits["timeline"] = {
 		//input.value="";
 	},
 	openfile_reply : function(event,change){
-		let input=event.target;
+		let file;
+		let input = event.target;
+		let rid = input.id.split('_').pop();
+		if( event.clipboardData ){
+			let items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+			for( let i = 0; i < items.length; ++i ) {
+				let item = items[i];
+				if( item.type.indexOf("image") === 0 ){
+					file = item.getAsFile();
+					break;
+				}
+			}
+		} else {
+			file = input.files[0];
+		}
+		if( !file ){
+			return;
+		}
 		let reader = new FileReader();
-		reader.addEventListener("load",function(event){
+		reader.addEventListener("load",function(e){
 			let deleteimg = $("div");
 			deleteimg.className = "delete_replyimg";
+			let output;
 			if( change ){
-				let output = $("#replyoutput_change_"+input.id.split('_').pop());
-				$("#replyinput_change_"+input.id.split('_').pop()).style.display="none";
+				output = $("#replyoutput_change_"+rid);
+				
+				$("#replyinput_change_"+rid).style.display="none";
 				deleteimg.onclick= function(){
-					input.previousElementSibling.previousElementSibling.style.display="";
+					$('#replyinput_label_'+rid).style.display="";
 					this.parentNode.removeChild(this.previousElementSibling); 
 					this.style.display = "none";
 					input.value="";
 				}
 			} else {
-				let output = $("#replyoutput_"+input.id.split('_').pop());
-				$("#replywrite_"+input.id.split('_').pop()).lastElementChild.style.display="none";
+				output = $("#replyoutput_"+rid);
+				$("#replywrite_"+rid).lastElementChild.style.display="none";
 				deleteimg.onclick= function(){
-					input.previousElementSibling.lastElementChild.style.display="";
+					$('#replyinput_label_'+rid).style.display="";
 					this.parentNode.removeChild(this.previousElementSibling);
 					this.style.display = "none";
 					input.value="";
@@ -1137,7 +1166,7 @@ inits["timeline"] = {
 					this.style.display = "block";
 				}
 			}
-			let dataURL = event.target.result;
+			let dataURL = e.target.result;
 			output.style.display="block";
 			let div = $("div");
 			div.className = "replyoutput_img"
@@ -1154,7 +1183,7 @@ inits["timeline"] = {
 			output.appendChild(div);
 			output.appendChild(deleteimg);
 		});
-		reader.readAsDataURL(input.files[0]);
+		reader.readAsDataURL(file);
 	},
 	changeReply : function(pid,id){
 		let that = this;
@@ -1176,6 +1205,7 @@ inits["timeline"] = {
 			
 		let label = $('label');
 		label.htmlFor = "replyinput_change_" + id;
+		label.id = "replyinput_label_" + id;
 		label.className = "replyinput_label";
 		reply.appendChild(label);
 			
@@ -1206,6 +1236,7 @@ inits["timeline"] = {
 			cancel.style.color = session.color.hex;
 			cancel.style.cursor = "pointer";
 		});
+		replywrite.onpaste = function(event){ that.openfile_reply(event,1) }
 		replywrite.focus();
 		let reply_upload = $("input");
 		reply_upload.type = "file";
@@ -1630,7 +1661,7 @@ inits["timeline"] = {
 				that.openfile_post(e);
 			}, false);
 			postwrite.addEventListener('paste', function(e){
-				that.openfile_paste(e);
+				that.openfile_post(e);
 			}, false);
 			
 			write.insertBefore(postwrite,write.firstElementChild);

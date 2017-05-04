@@ -5,6 +5,7 @@ inits["chat"] = {
 	chat_panel_obj : {},
 	make_group_arr : [],
 	skip_obj : {},
+	realfiles : [],
 	addListener : function( element, event, handle ){
 		element.addEventListener( event, handle, false );
 		this.listeners.push({ element : element, event : event, handle : handle });
@@ -14,7 +15,7 @@ inits["chat"] = {
 			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
-        document.body.removeChild($('#chat_wrap'));
+		document.body.removeChild($('#chat_wrap'));
 	},
 	getChats : function( limit, type, dialog_id, scroll, dialog_scroll ){
 		let that = this;
@@ -441,12 +442,16 @@ inits["chat"] = {
 		let chat_input = $("#chat_input");
 		let file_input = $("#chat_file_input");
 		let tmp = chat_input.value;
-		if( file_input.files.length >= 1 ){
-			for( let i = 0; i < file_input.files.length; ++i ){
+		for( let i = 0; i < file_input.files.length; ++i ){
+			that.realfiles.push( file_input.files[i] );
+		}
+		file_input.value = "";
+		if( that.realfiles.length >= 1 ){
+			for( let i = 0; i < that.realfiles.length; ++i ){
 				let formdata = new FormData();
 				formdata.append("type",location.hash.substr(1,1));
 				formdata.append("to_id",location.hash.split('?')[1]);
-				formdata.append("file",file_input.files[i]);
+				formdata.append("file",that.realfiles[i]);
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
 					let to = JSON.parse(xhr.responseText);
@@ -456,7 +461,7 @@ inits["chat"] = {
 				}}
 				xhr.open("POST","/api/chat/writechat", false);  xhr.send(formdata);
 			}
-			file_input.value = "";
+			that.realfiles = [];
 		} else if( tmp.length >= 1 ){
 			let formdata = new FormData();
 			formdata.append("type",location.hash.substr(1,1));
@@ -1028,8 +1033,22 @@ inits["chat"] = {
 		event.stopPropagation();
 		event.preventDefault();
 		let file_input = $("#chat_file_input");
-		file_input.files = event.dataTransfer.files;
+		if( event.clipboardData ){
+			let items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+			for( let i = 0; i < items.length; ++i ){
+				let item = items[i];
+				if( item.type.indexOf("image") === 0 ){
+					that.realfiles.push( item.getAsFile() );
+				}
+			}
+		} else {
+			let files = event.dataTransfer.files;
+			for( let i = 0; i < files.length; ++i ){
+				that.realfiles.push( files[i] );
+			}
+		}
 		that.DragOut();
+		that.chatWrite();
 	},
 	DragOut : function(evt){
 		let that = this;
@@ -1138,10 +1157,15 @@ inits["chat"] = {
 	
 		let chat_box = $("div");
 		chat_box.id = "chat_box";
-		chat_box.addEventListener('dragover', that.DragOver, false);
-		chat_box.addEventListener('dragleave', that.DragOut, false);
-		chat_box.addEventListener('drop', that.openfilechat, false);
-	//	chat_box.addEventListener('paste', that.openfilechat_paste, false);
+		chat_box.addEventListener('dragover', function(e){
+			that.DragOver(e);
+		}, false);
+		chat_box.addEventListener('dragleave', function(e){
+			that.DragOut(e);
+		}, false);
+		chat_box.addEventListener('drop', function(e){
+			that.openfilechat(e);
+		}, false);
 		chat_wrap.appendChild(chat_box);
 	
 		let chat_panel = $("div");
@@ -1161,6 +1185,10 @@ inits["chat"] = {
 		chat_input.placeholder = "메세지를 입력하세요";
 		chat_input.id = "chat_input";
 		send_panel.appendChild(chat_input);
+
+		chat_input.onpaste = function(e){
+			that.openfilechat(e);
+		}
 	
 		chat_input.onkeypress = function(e){
 			that.inputResize(e);
@@ -1178,10 +1206,10 @@ inits["chat"] = {
 		chat_file_input.id = "chat_file_input";
 		chat_file_input.accept = "image/*";
 		chat_file_input.multiple = "multiple";
-		chat_file_input.onchange = function(e){
-			that.chatWrite(e);
+		chat_file_input.onchange = function(){
+			that.chatWrite();
 		}
-	
+		
 		send_panel.appendChild(chat_file_input);
 	
 		let chat_file_label = $("label");
@@ -1193,7 +1221,7 @@ inits["chat"] = {
 		send_btn.innerText = "보내기";
 		send_btn.id = "send_btn";
 		send_btn.onclick = function(e){
-			that.chatWrite(e);
+			that.chatWrite();
 		}
 		send_panel.appendChild(send_btn);
 	
