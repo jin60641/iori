@@ -28,7 +28,10 @@ inits["search"] = {
 		$('#search_result_wrap').innerHTML = "";
 		$('#search_result_wrap').style.display = "none";
 		if( tab_name == "post" ){
-			inits["timeline"].getPosts(10);
+			let that = this;
+			inits["timeline"].getPosts(10, function(){
+				that.isResultNone(tab_name);
+			});
 		} else {
 			$('#search_result_wrap').style.display = "";
 			getUsers(inits["timeline"].postOption.search, 9, function( users ){
@@ -36,11 +39,24 @@ inits["search"] = {
 					$('#search_result_wrap').appendChild(makeUserCard( users[i] ));
 				}
 			});
+			this.isResultNone(tab_name);
 		}
 		history.pushState(null,null,history_str);
 	
 		tab.style.color = session.color.hex;
 		tab.style.borderBottom = "5px solid " + session.color.hex;
+	},
+	isResultNone : function(tab_name){
+		let none = $('#search_result_none');
+		if( none ){
+			none.parentNode.removeChild(none);
+		}
+		none = $('div');
+		none.id = "search_result_none";
+		none.innerText = "검색결과가 없습니다.";
+		if( ( tab_name == "post" && $('#post_wrap') && $('#post_wrap').childNodes.length == 0 ) || ( tab_name == "user" && $('#search_result_wrap').childNodes.length == 0 ) ){
+			$('#wrap_mid').appendChild(none);
+		}
 	},
 	init : function(){
 		inits["timeline"].postOption.search = location.pathname.split('/')[2];
@@ -53,7 +69,7 @@ inits["search"] = {
 		back.id = "search_container_back";
 		let container_query = $('div');
 		container_query.id = "container_query";
-		container_query.innerText = location.pathname.split('/')[2];
+		container_query.innerText = decodeURI(location.pathname.split('/')[2]);
 		back.appendChild(container_query);
 		container.appendChild(back);
 		container_wrap.appendChild(container);

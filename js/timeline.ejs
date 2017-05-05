@@ -1737,7 +1737,7 @@ inits["timeline"] = {
 			$("#"+replyid).parentNode.removeChild($("#" + replyid));	
 		});
 	},
-	getPosts : function(limit){ // 게시글 불러오기
+	getPosts : function(limit,cb){ // 게시글 불러오기
 		let that = this;
 		let postwrap = $('#post_wrap');
 		if( postwrap ){
@@ -1777,7 +1777,6 @@ inits["timeline"] = {
 							div.style[getBrowser()+"Animation"] = 'fade_in .5s linear';
 							postwrap.insertBefore(div,postwrap.firstElementChild.nextElementSibling);
 						}
-						
 					}
 				} else if( that.post_cnt == 0 ){
 					if( postwrap == undefined ){
@@ -1796,6 +1795,7 @@ inits["timeline"] = {
 					post.appendChild(post_inside);
 					postwrap.appendChild(post);
 				}
+				cb(null);
 			}
 		}
 		xhr.open("POST","/api/newsfeed/getposts", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 

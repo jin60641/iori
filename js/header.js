@@ -291,7 +291,7 @@ window.addEventListener('load',function(){
 	let navi_search = $("div");
 	navi_search.id = "navi_search";
 	navi_search.className = "navi_menu";
-	navi_search.innerHTML = "<a href='/search' ><img src='/svg/navi_search.svg'></a>";
+	navi_search.innerHTML = "<a href='/search//post' ><img src='/svg/navi_search.svg'></a>";
 	head.appendChild(navi_search);
 
 	let navi_profile = $("div");
