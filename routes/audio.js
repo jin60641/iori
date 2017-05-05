@@ -134,7 +134,7 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 								if( wave ){
 									path += "mp3";
 									var fstream = fs.createWriteStream( path );
-									var command = ffmpeg(ystream).format('adts');
+									var command = ffmpeg(ystream).format('mp3').audioCodec('libmp3lame');
 									var stream = command.pipe(fstream);
 									stream.on('finish',function(){
 										makeWave( fs.createReadStream( path ), function( vals ){
@@ -149,7 +149,7 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 									var fstream = fs.createWriteStream( path );
 									var stream;
 									if( type == "mp3" ){
-										var command = ffmpeg(ystream).format('adts');
+										var command = ffmpeg(ystream).format('mp3').audioCodec('libmp3lame');
 										stream = command.pipe(fstream);
 									} else {
 										stream = ystream.pipe(fstream);
