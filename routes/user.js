@@ -209,7 +209,21 @@ router.post('/@:uid(*)', function( req, res ){
 					}
 				}
 			}
-			res.send(user);
+			if( req.user && req.user.id ){
+				db.Follows.findOne({ "from.id" : req.user.id, "to.id" : user.id }, function( err2, follow ){
+					if( err2 ){
+						throw err2;
+					}
+					if( follow ){
+						user.following = true;
+					} else {
+						user.following = false;
+					}
+					res.send(user);
+				});
+			} else {
+				res.send(user);
+			}
 		} else {
 			res.send("존재하지 않는 사용자입니다.");
 		}

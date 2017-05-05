@@ -37,7 +37,6 @@ function makeUserCard( obj, notSelf ){
 	uid.innerText = '@' + obj.uid;
 	uid.className = "user_list_uid";
 	text.appendChild(uid);
-	
 	if( obj.uid != session.uid || notSelf ){	
 		if( obj.uid != session.uid ){
 			let following = $('div');

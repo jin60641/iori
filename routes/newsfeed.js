@@ -116,10 +116,10 @@ function getPosts( req, cb ){
 	var search = req.body['search'];
 	var tos = new Array();
 	var favorites = new Array();
-	if( skip >= 0 == false ){
+	if( isNaN(skip) ){
 		skip = 0;
 	}
-	if( limit >= 0 == false ){
+	if( isNaN(limit) ){
 		limit = 1;
 	}
 	async.waterfall([
@@ -184,7 +184,7 @@ function getPosts( req, cb ){
 			var query;
 			if( search != undefined && search.length >= 1 ){
 				query = { $or : [{ text : { $regex : search } }, { html : { $regex : search } }]  }
-			} else if( pid > 0 ){
+			} else if( isNaN(pid) == false ){
 				query = { id : pid };
 			} else if( req.body['favorite'] == "true" && uid != null ){
 				query = { id : { $in : favorites } };

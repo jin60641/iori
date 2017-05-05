@@ -112,7 +112,7 @@ function makeNotice( to, from, type, obj ){
 				current.link = "/post/" + obj.pid;
 				break;
 			case "share":
-				current.link = "/post/" + obj.pid;
+				current.link = "/post/" + obj.id;
 				break;
 		}
 		current.save( function( err ){

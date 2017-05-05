@@ -1588,6 +1588,9 @@ inits["timeline"] = {
 	init : function(){
 
 		let that = this;
+		this.addListener(window,"touchstart", function(){
+			that.hidemenu()
+		});
 		this.addListener(window,"click", function(){
 			that.hidemenu()
 		});
@@ -1795,7 +1798,9 @@ inits["timeline"] = {
 					post.appendChild(post_inside);
 					postwrap.appendChild(post);
 				}
-				cb(null);
+				if( cb ){
+					cb(null);
+				}
 			}
 		}
 		xhr.open("POST","/api/newsfeed/getposts", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 

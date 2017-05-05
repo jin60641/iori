@@ -323,12 +323,12 @@ window.addEventListener('load',function(){
 	head_menu.id = "head_menu";
 
 	let head_menu_caret = $('div');
-	head_menu_caret.className = "dropdown_caret";
+	head_menu_caret.className = "head_menu_caret";
 	let head_menu_outer = $('div');
-	head_menu_outer.className = "head_menu_other";
+	head_menu_outer.className = "head_menu_caret_other";
 	head_menu_caret.appendChild(head_menu_outer);
 	let head_menu_inner = $('div');
-	head_menu_inner.className = "head_menu_inner";
+	head_menu_inner.className = "head_menu_caret_inner";
 	head_menu_caret.appendChild(head_menu_inner);
 	head_menu.appendChild(head_menu_caret);
 		
