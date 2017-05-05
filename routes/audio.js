@@ -53,11 +53,13 @@ router.get( '/api/audio/getaudio/:uid/:start', checkSession, function( req, res 
 router.get( '/api/audio/getaudio/:vid', function( req, res ){
 	var path = __dirname + "/../audio/" + req.params['vid'] + ".";
 	var flag;
-	if( fs.existsSync(path+"mp4") ){
+	if( fs.existsSync(path+"mp3") ){
+		flag = "mp3";
+	} else if( fs.existsSync(path+"mp4") ){
 		flag = "mp4";
 	} else if( fs.existsSync(path+"webm") ){
 		flag = "webm";
-	}
+	} 
 	path += flag;
 	if( flag != undefined ){
 		var file = fs.readFileSync( path );
@@ -71,20 +73,23 @@ router.get( '/api/audio/getaudio/:vid', function( req, res ){
 
 router.post( '/api/audio/add/:vid', function( req, res ){
 	var vid = req.params['vid'];
-	console.log(vid);
 	var wave = req.params['wave']=="true"?true:false;
 	var url = 'http://www.youtube.com/watch?v=' + vid;
 	var path = __dirname + "/../audio/" + vid;
 //	var path = __dirname + "/../audio/" + req.user.id + ".mp3";
 	
-	var type = "mp4";
-	var exists = fs.existsSync(path+".mp4");
-	if( exists ){
-		path += ".mp4";
+	var type;
+	var exists = false;
+	if( req.body["mp3"] == "true" ){
+		type = "mp3";
+		exists = fs.existsSync(path+".mp3");
+		console.log(path+"."+type, exists);
+	} else if( fs.existsSync(path+".mp4") ){
+		exists = true;
+		type = "mp4";
 	} else if( fs.existsSync(path+".webm") ){
 		exists = true;
 		type = "webm";
-		path += ".webm";
 	}
 	if( exists ){
 		if( wave ){
@@ -100,12 +105,11 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 			if( info && info.duration ){
 				duration = info.duration.split(':');
 			}
-        if( err ){
-            console.log(err);
-        } else{
-            console.log(info);
-        }
-			
+	        if( err ){
+	            console.log(err);
+	        } else{
+	            console.log("not error");
+	        }
 			if( info == undefined || info.duration == undefined ){
 				res.send("잘못된 링크입니다.");
 			} else if( duration.length >= 3 || ( duration.length == 2 && duration[0] > 10 ) ){
@@ -128,7 +132,8 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 									type = "webm";
 								}
 								if( wave ){
-									var fstream = fs.createWriteStream( path+".mp3" );
+									path += "mp3";
+									var fstream = fs.createWriteStream( path );
 									var command = ffmpeg(ystream).format('adts');
 									var stream = command.pipe(fstream);
 									stream.on('finish',function(){
@@ -137,9 +142,18 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 										});
 									});
 								} else {
+									if( req.body["mp3"] == "true" ){
+										type = "mp3";
+									}
 									path += type;
 									var fstream = fs.createWriteStream( path );
-									var stream = ystream.pipe(fstream);
+									var stream;
+									if( type == "mp3" ){
+										var command = ffmpeg(ystream).format('adts');
+										stream = command.pipe(fstream);
+									} else {
+										stream = ystream.pipe(fstream);
+									}
 									stream.on('finish',function(){
 										res.send({info:info,type:type});
 									});

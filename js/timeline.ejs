@@ -568,7 +568,7 @@ inits["timeline"] = {
 		}
 	},
 	getAudio : function( pid ){
-		alert("영상에 따라 추출 시 약간의 시간이 소요될 수 있습니다.");
+		let mp3 = confirm("mp3로 변환받으시겠습니까?(영상에 따라 시간이 추가로 소요될 수 있습니다)");
 		let link = $('#link_preview_' + pid).href;
 		let vid;
 		let vindex;
@@ -594,7 +594,7 @@ inits["timeline"] = {
 				alert(xhr.responseText);
 			}
 		}};
-		xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+		xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('mp3='+mp3);
 	
 	},
 	hidemenu : function(){
@@ -1003,8 +1003,6 @@ inits["timeline"] = {
 	//파일열기(writepost) paste
 	openfile_post : function(event,pid){
 		let that = this;
-		event.stopPropagation();
-		event.preventDefault();
 		if( event.dataTransfer ){
 			event.dataTransfer.dropEffect = 'copy';
 		}
@@ -1040,6 +1038,10 @@ inits["timeline"] = {
 			} else {
 				files = event.dataTransfer.files;
 			}
+		}
+		if( files.length ){
+			event.stopPropagation();
+			event.preventDefault();
 		}
 		for( let i = 0; i<files.length; ++i){
 			if(realfiles_tmp.length>=20){
