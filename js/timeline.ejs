@@ -1725,12 +1725,6 @@ inits["timeline"] = {
 		}
 	
 	
-		socket.on( 'connect_failed', function(){
-		});
-		socket.onbeforeunload = function(){
-		}
-		socket.on( 'disconnect', function(){
-		});
 		socket.on( 'reply_new', function( data ){
 			if( $( "#post_" + data.pid ) ){
 				that.getReplys( $( "#replywrite_" + data.pid ), 1 );
@@ -1833,5 +1827,9 @@ inits["timeline"] = {
 		$('#wrap_mid').removeChild($('#post_wrap'));
 		$('#wrap_left').removeChild($('#user_list_self'));
 		$('#wrap_right').removeChild($('#recommend_list'));
+		const socket_listeners = [ "post_new", "post_removed", "reply_new", "reply_removed" ]
+		for( let i = 0; i < socket_listeners.length; ++i ){
+			socket.removeAllListeners(socket_listeners[i]);
+		}
 	}
 }

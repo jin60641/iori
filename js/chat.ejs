@@ -16,6 +16,11 @@ inits["chat"] = {
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
 		document.body.removeChild($('#chat_wrap'));
+        const socket_listeners = [ "chat_new", "update_last" ]
+        for( let i = 0; i < socket_listeners.length; ++i ){
+            socket.removeAllListeners(socket_listeners[i]);
+        }
+
 	},
 	getChats : function( limit, type, dialog_id, scroll, dialog_scroll ){
 		let that = this;

@@ -357,3 +357,6 @@ function makeHref(a,link){
 */
 }
 
+
+function getPage(){
+}

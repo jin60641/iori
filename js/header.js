@@ -407,7 +407,7 @@ if( session.notice && session.notice.web == true ){
 		}
 		let title = notice.from.name;
 		switch( notice.type ){
-			case "chat":
+				case "chat":
 				break;
 			case "follow":
 				title = "새 팔로워";

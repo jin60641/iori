@@ -22,7 +22,7 @@ inits["error"] = {
 	
 		$('#wrap_mid').appendChild(container);
 	},
-	exit : {
+	exit : function(){
 		$('#wrap_mid').removeChild($('#error_container'));
 	}
 }
