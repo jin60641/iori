@@ -9,9 +9,17 @@ var makeObj = require('./makeObj.js');
 
 var checkSession = require('./auth.js').checkSession;
 
+router.get( '/activity', checkSession, function( req, res ){
+	makeObj( req, res, "activity" );
+});
+
 router.get( '/notice', checkSession, function( req, res ){
-	getNotices( req, function( result ){
-		makeObj( req, res, "notice", { notices : result } );
+	makeObj( req, res, "notice" );
+});
+
+router.post( '/api/notice/getactivitys', checkSession, function( req, res ){
+	getActivitys( req, function( result ){
+		res.send( result );
 	});
 });
 
@@ -21,7 +29,7 @@ router.post( '/api/notice/getnotices', checkSession, function( req, res ){
 	});
 });
 
-function getNotices( req, cb ){
+function getActivitys( req, cb ){
 	var skip = parseInt(req.body['skip']);
 	var limit = parseInt(req.body['limit']);
 	if( skip >= 0 == false ){
@@ -30,12 +38,53 @@ function getNotices( req, cb ){
 	if( limit >= 0 == false ){
 		limit = 20;
 	}
-	db.Notices.find({ "to.id" : req.user.id }).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, result ){
+	db.Notices.find({ "from.id" : req.user.id }).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, result ){
 		if( err ){
 			throw err;
 		} else {
 			cb( result );
 		}
+	});
+};
+
+function getNotices( req, cb ){
+	db.Users.findOne({ id : req.user.id }, function( err2, user ){
+		if( err2 ){
+			throw err2;
+		}
+		var skip = parseInt(req.body['skip']);
+		var limit = parseInt(req.body['limit']);
+		if( skip >= 0 == false ){
+			skip = 0;
+		}
+		if( limit >= 0 == false ){
+			limit = 20;
+		}
+		var types = [];
+		var type_key = Object.keys( user.notice );
+		async.each( type_key, function( type, cb ){
+			if( user.notice[ type ] == true ){
+				types.push( type );
+			}
+			cb(null);
+		}, function( err3 ){
+			if( err3 ){
+				throw err3;
+			}
+			var query = {
+				"to.id" : req.user.id,
+				type : { 
+					$in : types
+				}
+			}
+			db.Notices.find(query).sort({ id : -1 }).limit( limit ).skip( skip ).exec( function( err, result ){
+				if( err ){
+					throw err;
+				} else {
+					cb( result );
+				}
+			});
+		});
 	});
 };
 
@@ -61,12 +110,6 @@ function makeNotice( to, from, type, obj ){
 					cb( null );
 				}
 			});
-		}, function( cb ){
-			if( user.notice[type] == false ){ // 알람꺼둠
-				return;
-			} else {
-				cb( null );
-			}
 		}, function( cb ){
 			db.Notices.findOne().sort({id:-1}).exec( function( err, result ){
 				if( err ){
@@ -125,7 +168,7 @@ function makeNotice( to, from, type, obj ){
 			if( user.notice.web == true ){
 				//웹알람발송
 			}
-			if( sid && io.sockets.connected[sid] ){
+			if( sid && io.sockets.connected[sid] && user.notice[type] == true ){ 
 				//소켓(iori)알람 발송
 				io.sockets.connected[sid].emit( 'notice_new', current );
 			}

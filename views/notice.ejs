@@ -1,10 +1,4 @@
-<style id="css_notice">
+<style class="included">
 	<% include ./../css/notice %>
 </style>
-<script>
-	notices = "<%= notices %>".replace(/&#34;/g,'"');
-	if( notices.length > 0 ){
-		notices = JSON.parse(notices)
-	}
-</script>
 <script async src="/js/notice.js"></script>

@@ -2,6 +2,7 @@
 
 inits["notice"] = {	
 	listeners : [],
+	notices : [],
 	addListener : function( element, event, handle ){
 		element.addEventListener( event, handle, false );
 		this.listeners.push({ element : element, event : event, handle : handle });
@@ -40,7 +41,9 @@ inits["notice"] = {
 		let message = $('div');
 		message.className = "notice_message";
 		let text = $('div');
-		text.innerHTML = "<span>" + notice.from.name + "</span>";
+		let span = $('span');
+		text.appendChild(span);
+		span.innerText = notice.from.name;
 		switch( notice.type ){
 			case "chat":
 				text.innerHTML += "님이 쪽지를 보내셨습니다";
@@ -82,7 +85,7 @@ inits["notice"] = {
 			if( Notices.length >= 1 ){
 				let wrap = $('#notice_wrap');
 				for( let i = 0; i < Notices.length; ++i ){
-					notices.push(Notices[i]);
+					that.notices.push(Notices[i]);
 					let div = that.makeNotice(Notices[i]);
 					if( limit >= 1 ){
 						wrap.appendChild(div);
@@ -109,9 +112,10 @@ inits["notice"] = {
 		xhr.send(params);
 	},
 	checkNoticeNone : function(){
+		let that = this;
 		let wrap = $('#notice_wrap');
 		let none = $('#notice_wrap_none')
-		if( notices.length == 0 && none == undefined ){
+		if( that.notices.length == 0 && none == undefined ){
 			none = $('div');
 			none.id = "notice_wrap_none";
 			none.innerText = "아직 확인하지 않은 알림이 없습니다";
@@ -125,12 +129,13 @@ inits["notice"] = {
 		let that = this;
 		wrap.id = "notice_wrap";
 		$('#wrap_mid').appendChild(wrap);
-		for( let i = 0; i < notices.length; ++i ){
-			wrap.appendChild(that.makeNotice(notices[i]));
+		for( let i = 0; i < that.notices.length; ++i ){
+			wrap.appendChild(that.makeNotice(that.notices[i]));
 		}
 		socket.on( 'notice_new', function( notice ){
 			that.getNotice(0);
 		});
+		that.getNotice(20);
 		that.checkNoticeNone();
 		that.addListener(window,'scroll', function(e){
 			if( $('#notice_wrap') != null ){
