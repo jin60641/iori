@@ -8,7 +8,6 @@
 <script src="/js/webfont.js"></script>
 <script>
 var session = "";
-var info = "";
 <%
 	if( locals.session != undefined ){
 %>
@@ -24,11 +23,9 @@ var info = "";
 	}
 %>
 </script>
-<style id="css_header">
-	<% include ./../css/style %>
-	<% include ./../css/header %>
-	<% include ./../css/userlist %>
-</style>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+<link rel="stylesheet" type="text/css" href="/css/header.css">
+<link rel="stylesheet" type="text/css" href="/css/userlist.css">
 <noscript>
 	<link rel="stylesheet" type="text/css" href="/css/webfont_normal.css">
 </noscript>

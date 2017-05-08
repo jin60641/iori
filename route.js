@@ -28,29 +28,20 @@ String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");
 }
 
+function fillCss( req, res, path, color ){
+	var file = fs.readFileSync( path.replace('.css','.ejs'), 'utf8' );
+	file = file.replace(/<%= color_hex %>/gi,color.hex).replace(/<%= color_r %>/gi,color.r).replace(/<%= color_g %>/gi,color.g).replace(/<%= color_b %>/gi,color.b);
+	var type = "text/css";
+	res.writeHead(200, { 'Content-Type' : type });
+	res.end( file );
+}
+
 function fillSvg( req, res, path, hex ){
 	var file = fs.readFileSync( path, 'utf8' );
-	var ref = req.headers.referer;
-	if( ref && ref.indexOf("@") >= 0 && hex == undefined ){
-		var uid = ref.split('@')[1].split('/')[0];
-		db.Users.findOne({ uid : uid }, function( err, result ){
-			if( err ){
-				throw err;
-			} else if( result ){
-				file = file.replace("#000000",result.color.hex);
-				var type = "image/svg+xml";
-				res.writeHead(200, { 'Content-Type' : type });
-				res.end( file );
-			} else {
-				res.end();
-			}
-		});
-	} else {
-		file = file.replace("#000000",hex);
-		var type = "image/svg+xml";
-		res.writeHead(200, { 'Content-Type' : type });
-		res.end( file );
-	}
+	file = file.replace("#000000",hex);
+	var type = "image/svg+xml";
+	res.writeHead(200, { 'Content-Type' : type });
+	res.end( file );
 }
 
 function checkAdmin( req, res, next ){
@@ -184,7 +175,6 @@ router.get( '/files/profile/:uid', function( req, res ){
 	});
 });
 
-
 router.get('/:dir/:filename', function( req, res ){
 	var dir = req.params['dir'];
 	var filename = req.params['filename'];
@@ -215,12 +205,7 @@ router.get('/:dir/:filename', function( req, res ){
 			if( exists == true && fs.lstatSync(url).isFile() ){
 				if( dir == "svg" ){
 					if( req.user && req.user.signUp == 1 ){
-						var ref = req.headers.referer;
-						if( ref && ref.indexOf("@") >= 0 ){
-							fillSvg(req,res,url);
-						} else {
-							fillSvg(req,res,url,req.user.color.hex);
-						}
+						fillSvg(req,res,url,req.user.color.hex);
 					} else {
 						fillSvg(req,res,url,require('./routes/settings.js').defaultColor.hex);
 					}
@@ -228,6 +213,12 @@ router.get('/:dir/:filename', function( req, res ){
 					var file = fs.readFileSync( url );
 					res.writeHead(200, { 'Content-Type' : type });
 					res.end( file );
+				}
+			} else if( dir == "css" ){
+				if( req.user && req.user.signUp == 1 ){
+					fillCss(req,res,url,req.user.color);
+				} else {
+					fillCss(req,res,url,require('./routes/settings.js').defaultColor);
 				}
 			} else {
 				defaultRoute( req, res, "error" );

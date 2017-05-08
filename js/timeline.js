@@ -1586,7 +1586,6 @@ inits["timeline"] = {
 		}
 	},
 	init : function(){
-
 		let that = this;
 		this.addListener(window,"touchstart", function(){
 			that.hidemenu()
