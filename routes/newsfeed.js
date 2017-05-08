@@ -89,10 +89,13 @@ router.post( '/api/newsfeed/favorite', checkSession, function( req, res ){
 	}
 });
 
-router.get( '/post/:pid', function( req, res ){
+router.post( '/post/:pid', function( req, res ){
 	getPosts( req, function( post ){
-		makeObj( req, res, "post", { "Post" : post });
+		res.send( post );
 	});
+});
+router.get( '/post/:pid', function( req, res ){
+	makeObj( req, res, "post" );
 });
 
 router.post( '/api/newsfeed/getposts', function( req, res ){

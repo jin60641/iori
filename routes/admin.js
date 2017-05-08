@@ -16,21 +16,21 @@ function showAdminPage( req, res ){
 	var page = req.params['page'];
 	if( page == undefined || page.length == 0 ){
 		page = "stat";
-	}
-	var obj = { page : page };
-	var oid = parseInt(req.params['oid']);
-	var schema = db[page[0].toUpperCase() + page.substr(1) + 's'];
-	if( oid != undefined && schema != undefined && oid > 0 ){
-		schema.findOne({ id : oid }, function( err, result ){
-			if( err ){
-				throw err;
-			} else {
-				obj.doc = result;
-				makeObj( req, res, "admin", obj );
-			}
-		})
+		res.redirect('/admin/' + page);
 	} else {
-		makeObj( req, res, "admin", obj );
+		var oid = parseInt(req.params['oid']);
+		var schema = db[page[0].toUpperCase() + page.substr(1) + 's'];
+		if( oid != undefined && schema != undefined && oid > 0 ){
+			schema.findOne({ id : oid }, function( err, result ){
+				if( err ){
+					throw err;
+				} else {
+					makeObj( req, res, "admin" );
+				}
+			})
+		} else {
+			makeObj( req, res, "admin" );
+		}
 	}
 }
 

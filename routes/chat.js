@@ -19,8 +19,10 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" ).replace( /"/g , '\\"' ).replace( /'/g, "\\'" );
 }
 
-
 router.get('/chat', checkSession, function( req, res ){
+	makeObj( req, res, "chat" );
+});
+router.post('/chat', checkSession, function( req, res ){
 	var dialogs = {};
 	var result = [];
 	var group_ids = [];
@@ -74,7 +76,7 @@ router.get('/chat', checkSession, function( req, res ){
 			if( error ){
 				throw error;
 			}
-			makeObj( req, res, "chat", { dialogs : result });
+			res.send( result );
 		});
 	});
 });

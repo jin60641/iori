@@ -19,6 +19,10 @@ var ytdl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var AudioContext = require('web-audio-api').AudioContext;
 
+router.get( '/upload', checkSession, function( req, res ){
+	makeObj(req,res,"upload");
+});
+
 router.get( '/api/audio/getaudio/youtube/:vid/:start', checkSession, function( req, res ){
 	var vid = req.params['vid'];
 	var read_path = __dirname + "/../audio/" + vid + ".mp3";
@@ -39,7 +43,9 @@ router.get( '/api/audio/getaudio/:uid/:start', checkSession, function( req, res 
 	var read_path = __dirname + "/../audio/" + uid + ".mp3";
 	var write_path = __dirname + "/../audio/" + uid + "-" + req.user.id + ".mp3";
 	var start = Math.floor(parseInt((req.params['start'])));
-	console.log(" start : " + start);
+	if( isNaN( start ) ){
+		res.end();
+	} else {
 	if( fs.existsSync( read_path ) ){
 		ffmpeg(fs.createReadStream(read_path)).setStartTime(start).duration(3).on('end', function(){
 			fs.createReadStream( write_path ).pipe(res);
@@ -47,6 +53,7 @@ router.get( '/api/audio/getaudio/:uid/:start', checkSession, function( req, res 
 	} else {
 		console.log("파일이 존재하지 않습니다.");
 		res.end();
+	}
 	}
 });
 
@@ -176,12 +183,14 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 
 router.post( '/api/audio/add', checkSession, function( req, res ){
 	req.pipe( req.busboy );
+	console.log("upload start");
 	req.busboy.on( 'file', function( fieldname, file, filename ){
 		var path = __dirname + "/../audio/" + req.user.id + ".mp3";
 		var fstream = fs.createWriteStream( path );
 		var command = ffmpeg(file).format('adts');
 		var stream = command.pipe(fstream);
 		stream.on('finish',function(){
+			console.log("upload finish");
 			makeWave( fs.createReadStream( path ), function( vals ){
 //			makeWave( command, function( vals ){
 //			makeWave( file, function( vals ){

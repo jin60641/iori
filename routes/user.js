@@ -23,14 +23,10 @@ String.prototype.xssFilter = function() {
 }
 
 router.get('/setting', checkSession, function( req, res ){
-	makeObj( req, res, "setting", { page : null });
+	res.redirect('/setting/'+'account');
 });
 router.get('/setting/:page', checkSession, function( req, res ){
-	var page = req.params['page'];
-	if( page == undefined || page.length == 0 ){
-		page = "account";
-	}
-	makeObj( req, res, "setting", { page : page });
+	makeObj( req, res, "setting" );
 });
 
 router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
@@ -136,45 +132,19 @@ router.post('/@:uid(*)/favorite', function( req, res ){
 });
 
 
-function getProfilePage( req, res ){
-	var uid = req.params['uid'];
-	db.Users.findOne({ uid : uid, be : true },{ id : 1, name : 1, uid : 1, profile : 1, header : 1, color : 1 }).lean().exec( function( err, user ){
-		if( err ){
-			throw err;
-		} else if( user ){
-			var obj = user;
-			obj.following = false;
-			if( req.user && req.user.id ){
-				db.Follows.findOne({ "to.id" : user.id, "from.id" : req.user.id }, function( err2, following ){
-					if( err2 ){
-						throw err2;
-					} else {
-						if( following ){
-							obj.following = true;
-						}
-						makeObj( req, res, "profile", { "user" : obj } );
-					}
-				});
-			} else {
-				makeObj( req, res, "profile", { "user" : obj } );
-			}
-		} else {
-			//makeObj( req, res, "anyone" );
-			res.send("존재하지 않는 사용자입니다.");
-		}
-	});
-}
 
 router.get('/@:uid(*)/:tab', function( req, res ){
 	if( req.params['tab'] == 'follower_together' ){
 		checkSession( req, res, function(){
-			getProfilePage( req, res );
+			makeObj( req, res, "profile" );
 		});
 	} else {
-		getProfilePage( req, res );
+		makeObj( req, res, "profile" );
 	}
 });
-router.get('/@:uid(*)', getProfilePage );
+router.get('/@:uid(*)', function( req, res ){
+	makeObj( req, res, "profile" );
+});
 
 router.post('/@:uid(*)', function( req, res ){
 	db.Users.findOne({ be : true, uid : req.params['uid'], signUp : true },{ password : 0, signUp : 0, be : 0 }).lean().exec( function( err, user ){
