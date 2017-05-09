@@ -21,15 +21,23 @@ inits["login"] = {
 			var xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function(event){
 				if( xhr.readyState == 4 && xhr.status == 200 ){
-					if( xhr.responseText == "success" ){
+					let result = JSON.parse(xhr.responseText);
+					if( result.session ){
+						session = result.session;
 						if( auto.checked == true ){
 							var now = new Date();
 							now.setTime(now.getTime() + (7*24*60*60*1000));
 							document.cookie = "facebook=false, uid="+uid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
 						}
-						getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
+						if( document.URL.indexOf("login") >= 0 ){
+							location.href =  "/" + document.URL.split('/').slice(4).toString().split('-').join('/');
+							//getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
+						} else {
+							location.reload();
+							//getPage( location.pathname );
+						}
 					} else {
-						that.show_alert(xhr.responseText);
+						that.show_alert(result.msg);
 					}
 				}
 			}
@@ -44,6 +52,13 @@ inits["login"] = {
 		}
 	},
 	init : function(){
+		if( session.signUp ){
+			if( document.URL.indexOf("login") >= 0 ){
+				getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
+			} else {
+				getPage( location.pathname );
+			}
+		}
 		var form = $("form");
 		form.id = "form";
 			
@@ -100,8 +115,8 @@ inits["login"] = {
 	
 		var form_login_btn = $("div");
 		form_login_btn.id = "form_login_btn";
-		form_login_btn.onclick = function(){
-			this.send_login(e);
+		form_login_btn.onclick = function(e){
+			that.send_login(e);
 		}
 		form_login_btn.className = "form_btn";
 		form_login_btn.innerText = "로그인";
@@ -111,9 +126,9 @@ inits["login"] = {
 		form_alert.id = "form_alert";
 		form_alert.innerText = "'";
 		form.appendChild(form_alert);
-	
-		if( session.signUp && ( session.name || session.email || session.uid ) ){
-			form_uid.value =  session.uid;
+		
+		if( ( session.name || session.email || session.uid ) ){
+			form_uid.value = session.uid;
 		} else {
 			var form_facebook_btn = $("div");
 			form_facebook_btn.id = "form_facebook_btn";

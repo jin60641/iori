@@ -54,7 +54,7 @@ function checkAdmin( req, res, next ){
 	if( req.user && req.user.signUp && req.user.level == 9 ){
 		return next();
 	} else {
-		res.redirect('/');
+		makeObj( req, res, "error" );
 	}
 }
 router.get('/', function( req, res ){
@@ -75,7 +75,7 @@ router.get('/timeline', function( req, res ){
 
 router.get('/login', function( req, res ){
 	if( req.user && req.user.signUp ){
-		res.redirect('/');
+		makeObj( req, res, "timeline" );
 	} else {
 		req.session.returnTo = "/";
 		makeObj( req, res, "login" );
@@ -87,14 +87,16 @@ router.get('/login/:link', function( req, res ){
 	if(!link){
 		link = "";
 	}
+	console.log(link);
 	if( req.user && req.user.signUp ){
-		res.redirect('/');
+		console.log(1);
+		makeObj( req, res, req.params['link'].replace(/\-/g,'/') );
 	} else {
+		console.log(2);
 		req.session.returnTo = "/" + req.params['link'].replace(/\-/g,'/');
 		makeObj( req, res, "login" );
 	}
 });
-
 
 router.get('/register', function( req, res ){
 	if( req.user && req.user.signUp ){

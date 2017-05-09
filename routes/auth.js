@@ -187,13 +187,13 @@ router.post('/api/auth/local', function( req, res, next ){
 		if( err ){
 			return next(err);
 		} else if( !user ){
-			return res.send(info.message);
+			return res.send({ msg : info.message });
 		} else {
 			req.logIn( user, function( error ){
 				if( error ){
 					return next( error );
 				} else {
-					return res.send("success");
+					return res.send({ session : user });
 				}
 			});
 		}

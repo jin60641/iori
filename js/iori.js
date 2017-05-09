@@ -387,7 +387,7 @@ function getPage(path){
 	inits = [];
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		let obj = JSON.parse(xhr.responseText);
+		var obj = JSON.parse(xhr.responseText);
 		for( let i in obj.js ){
 			var script = $('script');
 			script.className = "included";
@@ -410,5 +410,7 @@ function getPage(path){
 			head.appendChild(link);
 		}
 	}}
-	xhr.open("GET",path+"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+	console.log(path);
+	console.log(path.split('#')[0]+"?loaded=true");
+	xhr.open("GET",path.split('#')[0]+"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 }
