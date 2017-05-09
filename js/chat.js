@@ -26,16 +26,17 @@ inits["chat"] = {
 		let that = this;
 		let params = { limit : limit }
 	
+	
 		if( type ){
 			params.type = type;
 		} else {
-			params.type = location.hash.substr(1,1);
+			params.type = location.pathname.split('/')[2];
 		}
 	
 		if( dialog_id ){
 			params.dialog_id = dialog_id;
 		} else {
-			params.dialog_id = location.hash.split('?')[1];
+			params.dialog_id = location.pathname.split('/')[3];
 		}
 	
 		if( limit == 0 ){
@@ -208,7 +209,7 @@ inits["chat"] = {
 					let new_dialog = that.makeDialog( chats[i] );
 					new_dialog.className = className;
 					if( chats[i].type == "u" ){
-						if( location.hash == "#u?" + chats[i].to.uid || location.hash == "#u?" + chats[i].from.uid ){
+						if( location.pathname.substr(6) == "u/" + chats[i].to.uid || location.pathname.substr(6) == "u/" + chats[i].from.uid ){
 							new_dialog.className = "chat_dialogs chat_dialogs_selected";
 						}
 					} else {
@@ -306,7 +307,7 @@ inits["chat"] = {
 		}
 	
 		if( dialog == undefined || dialog.id == undefined ){
-			dialog = $( "#chat_dialogs_" + location.hash.substr(1,1) + "_" + location.hash.substr(3) );
+			dialog = $( "#chat_dialogs_" + location.pathname.substr(6).replace('/','_') );
 		}
 	
 		let dialog_id;
@@ -320,7 +321,7 @@ inits["chat"] = {
 				
 			}
 			*/
-			location.hash = "#" + type + "?" + dialog_id;
+			history.pushState(null,null,"/chat/" + type + "/" + dialog_id);
 	
 			dialog_id = dialog.id
 			that.showChatLayer(false);
@@ -447,6 +448,9 @@ inits["chat"] = {
 		let chat_input = $("#chat_input");
 		let file_input = $("#chat_file_input");
 		let tmp = chat_input.value;
+		let pathname = location.pathname.split('/');
+		let type = pathname[2];
+		let to_id = pathname[3];
 		for( let i = 0; i < file_input.files.length; ++i ){
 			that.realfiles.push( file_input.files[i] );
 		}
@@ -454,8 +458,8 @@ inits["chat"] = {
 		if( that.realfiles.length >= 1 ){
 			for( let i = 0; i < that.realfiles.length; ++i ){
 				let formdata = new FormData();
-				formdata.append("type",location.hash.substr(1,1));
-				formdata.append("to_id",location.hash.split('?')[1]);
+				formdata.append("type",type);
+				formdata.append("to_id",to_id);
 				formdata.append("file",that.realfiles[i]);
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
@@ -469,8 +473,8 @@ inits["chat"] = {
 			that.realfiles = [];
 		} else if( tmp.length >= 1 ){
 			let formdata = new FormData();
-			formdata.append("type",location.hash.substr(1,1));
-			formdata.append("to_id",location.hash.split('?')[1]);
+			formdata.append("type",type);
+			formdata.append("to_id",to_id);
 			formdata.append("text",tmp);
 	
 			let xhr = new XMLHttpRequest();
@@ -495,7 +499,7 @@ inits["chat"] = {
 			$('.chat_dialogs_selected')[0].className = "chat_dialogs";
 			$('#chat_menu').style.backgroundImage = "";
 			$('#chat_menu').style.backgroundSize = "";
-			location.hash = "";
+			history.pushState(null,null,"/chat");
 			return;
 		}
 		let chat_menu_box = $("#chat_menu_box");
@@ -565,7 +569,7 @@ inits["chat"] = {
 			}
 			*/
 			info_img.id = "chat_info_img";
-			info_img.style.backgroundImage = "url('/files/group/" + location.hash.split('?')[1] + "')";
+			info_img.style.backgroundImage = "url('/files/group/" + location.pathname.split('/')[3] + "')";
 			info_div.appendChild(info_img);
 		
 			let info_text = $("div");
@@ -647,7 +651,7 @@ inits["chat"] = {
 		document.body.appendChild(layer);
 	
 		if( type == "info" ){
-			that.updateList("info",location.hash.split('?')[1]);
+			that.updateList("info", location.pathname.split('/')[3]);
 		} else if( type == "invite" ){
 			that.updateList("invite",uids);
 		} else {
@@ -696,7 +700,7 @@ inits["chat"] = {
 						xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 							if( xhr.responseText ){
 								let gid = xhr.responseText;
-								location.hash = "#g?" + gid;
+								history.pushState( null, null, "/chat/g/" + gid );
 								that.showChatLayer(false);
 								that.openDialog();
 							}
@@ -930,9 +934,10 @@ inits["chat"] = {
 	updateTitle : function(){
 		let that = this;
 		let title = $("#chat_title");
+		let pathname = location.pathname.split('/');
 		let params = {
-			type : location.hash.substr(1,1),
-			dialog_id : location.hash.split('?')[1]
+			type : pathname[2],
+			dialog_id : pathname[3]
 		}
 		let query = "";
 		let param_key = Object.keys(params);
@@ -980,7 +985,7 @@ inits["chat"] = {
 		}}
 		xhr.open("POST", "/api/chat/exit", false); 
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-		xhr.send('gid='+location.hash.split('?')[1]);
+		xhr.send('gid='+location.pathname.split('/')[3]);
 	},
 	groupInvite : function(){
 		let that = this;
@@ -992,12 +997,12 @@ inits["chat"] = {
 		}}
 		xhr.open("POST", "/api/chat/invite", false); 
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-		xhr.send('uids='+that.make_group_arr.toString()+'&gid='+location.hash.split('?')[1]);
+		xhr.send('uids='+that.make_group_arr.toString()+'&gid='+location.pathname.split('/')[3]);
 	},
 	makeGroup : function(){
 		let that = this;
 		if( that.make_group_arr.length == 1){
-			location.hash = "#u?" + that.make_group_arr[0];
+			history.pushState(null,null,"/chat/u/" + that.make_group_arr[0] );
 			return that.openDialog();
 		}
 	
@@ -1264,7 +1269,7 @@ inits["chat"] = {
 			that.showChatMenu(false);
 		});
 	
-		if( location.hash.length > 0 ){
+		if( location.pathname.split('/').length >= 3 ){
 			that.openDialog();
 		}
 	}

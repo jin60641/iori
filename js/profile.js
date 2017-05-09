@@ -22,7 +22,7 @@ inits["profile"] = {
 				that.start([]);
 			}
 		}}
-		xhr.open("POST",location.pathname, false);  xhr.send();
+		xhr.open("POST",location.pathname.split('/').slice(0,2).join('/'), false);  xhr.send();
 	},
 	start : function(user){
 		let that = this;
@@ -55,6 +55,7 @@ inits["profile"] = {
 			container.style.height = "45vh";
 			wrap.style.height = "45vh";
 		} else {
+			console.log(that.user);
 			headerimg_back.style.backgroundColor = that.user.color.hex;
 		}
 		headerimg_form.appendChild(headerimg_back);

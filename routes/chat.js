@@ -22,6 +22,11 @@ String.prototype.xssFilter = function() {
 router.get('/chat', checkSession, function( req, res ){
 	makeObj( req, res, "chat" );
 });
+
+router.get('/chat/:type/:to', checkSession, function( req, res ){
+	makeObj( req, res, "chat" );
+});
+
 router.post('/chat', checkSession, function( req, res ){
 	var dialogs = {};
 	var result = [];

@@ -353,10 +353,13 @@ function makeHref(a,link){
 			event.preventDefault();
 			getPage(a.href);
 		}
-	};
-*/
+	};*/
 }
 
 
-function getPage(){
+function getPage(path){
+	let xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+	}}
+	xhr.open("POST",path, false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 }

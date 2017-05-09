@@ -1431,6 +1431,9 @@ inits["timeline"] = {
 	keydown : function(e){
 		let that = this;
 		let postwrap = $('#post_wrap');
+		if( that.selectedPost != null && that.selectedPost.clientWidth == 0 ){
+			that.selectedPost = null;
+		}
 		if( inits["imglayer"].imgviewing != undefined && inits["imglayer"].imgviewing == true ){
 			event.stopPropagation();
 		//	event.preventDefault();
@@ -1489,7 +1492,7 @@ inits["timeline"] = {
 						return;
 					}
 				} else {
-					that.selectedPost = postwrap.firstElementChild
+					that.selectedPost = postwrap.firstElementChild;
 					that.selectedPost.style.borderColor = session.color.hex;
 					that.selectedPost.style.boxShadow = "inset 0px 0px 0px 1px " + session.color.hex;
 				}

@@ -6,10 +6,10 @@ var ejs = require('ejs');
 var db = require('./routes/dbconfig.js');
 var fs = require('fs-extra');
 var cookieParser = require('cookie-parser')
-var cookie = require('cookie')
 var bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
+router.use(cookieParser());
 var busboy = require('connect-busboy');
 router.use(busboy())
 var makeObj = require('./routes/makeObj.js');

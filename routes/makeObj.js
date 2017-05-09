@@ -66,11 +66,9 @@ function renderPage( req, res, ejs, obj ){
 	var url = __dirname + "/../views/" + ejs + ".ejs";
 	fs.exists( url, function( exists ){
 		if( exists ){
-			if( req.url.indexOf("loaded=true") >= 0 ){
-				res.render( url, obj );
+			if( false ){ // loaded
 			} else {
-				req.cookies = {};
-				req.cookies.loaded = "true";
+				res.cookie("loaded","true");
 				obj.view = ejs;
 				res.render( __dirname + "/../views/index.ejs", obj );
 			}
