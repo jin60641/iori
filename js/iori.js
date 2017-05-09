@@ -364,7 +364,7 @@ window.onpopstate = function(e){
 */
 
 function getPage(path){
-	if( view == path ){
+	if(  view == "/" + path.split('/').slice(3).join('/').split('#')[0].split('?')[0] ){
 		return ;
 	}
 	history.pushState(null,null,path);

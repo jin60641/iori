@@ -9,7 +9,6 @@ function makeObj( req, res, ejs, obj ){
     if( obj == undefined ){
         obj = new Object();
     }
-	console.log(req.url);
 	if( req.url.indexOf("loaded=true") != -1 ){ // loaded
 		if( views[ejs] ){
 			res.send(views[ejs]);

@@ -59,8 +59,10 @@ function checkAdmin( req, res, next ){
 }
 router.get('/', function( req, res ){
 	if( req.user && req.user.signUp ){
+		console.log("timeline");
 		makeObj( req, res, "timeline" );
 	} else {
+		console.log("slider");
 		makeObj( req, res, "slider" );
 	}
 });
@@ -87,12 +89,9 @@ router.get('/login/:link', function( req, res ){
 	if(!link){
 		link = "";
 	}
-	console.log(link);
 	if( req.user && req.user.signUp ){
-		console.log(1);
 		makeObj( req, res, req.params['link'].replace(/\-/g,'/') );
 	} else {
-		console.log(2);
 		req.session.returnTo = "/" + req.params['link'].replace(/\-/g,'/');
 		makeObj( req, res, "login" );
 	}
