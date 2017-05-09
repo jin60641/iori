@@ -308,13 +308,10 @@ window.addEventListener('load',function(){
 	hover.addEventListener('mouseleave',profileLeave);
 	document.body.appendChild(hover);
 
-	//
 	$('#wrap_left').appendChild(makeUserCard(session));
 	makeRecommendList();
 
-	for( let name in inits ){
-		inits[name].init();
-	}
+	getPage(view);
 });
 
 function makeRecommendList(){
@@ -346,20 +343,55 @@ function makeRecommendList(){
 
 function makeHref(a,link){
 	a.href = link;
-/*
 	a.onclick = function(event){
 		if( event.ctrlKey || event.shiftKey ){
 		} else {
 			event.preventDefault();
+			history.pushState(null,null,a.href);
 			getPage(a.href);
 		}
-	};*/
+	};
 }
 
 
 function getPage(path){
+	view = path;
+	if( $('#navi_tab') ){
+		findTabNow();
+	}
+	var head = document.getElementsByTagName('head')[0];
+	for( let name in inits ){
+		inits[name].exit();
+	}
+	let includes = $('.included');
+	for( let i = includes.length - 1; i >= 0 ; --i ){
+		head.removeChild(includes[i]);
+	}
+	inits = [];
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+		let obj = JSON.parse(xhr.responseText);
+		for( let i in obj.js ){
+			var script = $('script');
+			script.className = "included";
+			script.src = '/js/' + obj.js[i] + '.js';
+			script.onload = function(){
+				if( Object.keys(inits).length == obj.js.length ){
+					for( let j in inits ){
+						inits[j].init();
+					}
+				}
+			}
+			head.appendChild(script);
+		}
+		for( let i in obj.css ){
+			let link = $('link');
+			link.className = "included";
+			link.rel = "stylesheet";
+			link.type = "text/css";
+			link.href = '/css/' + obj.css[i] + '.css';
+			head.appendChild(link);
+		}
 	}}
-	xhr.open("POST",path, false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+	xhr.open("GET",path+"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 }

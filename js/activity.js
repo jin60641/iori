@@ -148,8 +148,8 @@ inits["activity"] = {
 		});
 	},
 	exit : function(){
-		for( let i = 0; i < listeners.length; ++i ){
-			let h = listeners[i];
+		for( let i = 0; i < this.listeners.length; ++i ){
+			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
 		$('wrap_mid').removeChild($('#activity_wrap'));

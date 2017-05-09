@@ -29,11 +29,17 @@ String.prototype.trim = function() {
 }
 
 function fillCss( req, res, path, color ){
-	var file = fs.readFileSync( path.replace('.css','.ejs'), 'utf8' );
-	file = file.replace(/<%= color_hex %>/gi,color.hex).replace(/<%= color_r %>/gi,color.r).replace(/<%= color_g %>/gi,color.g).replace(/<%= color_b %>/gi,color.b);
-	var type = "text/css";
-	res.writeHead(200, { 'Content-Type' : type });
-	res.end( file );
+	let link = path.replace('.css','.ejs');
+	if( fs.existsSync( link ) ){
+		var file = fs.readFileSync( link, 'utf8' );
+	
+		file = file.replace(/<%= color_hex %>/gi,color.hex).replace(/<%= color_r %>/gi,color.r).replace(/<%= color_g %>/gi,color.g).replace(/<%= color_b %>/gi,color.b);
+		var type = "text/css";
+		res.writeHead(200, { 'Content-Type' : type });
+		res.end( file );
+	} else {
+		res.end();
+	}
 }
 
 function fillSvg( req, res, path, hex ){

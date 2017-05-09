@@ -1629,6 +1629,9 @@ inits["timeline"] = {
 		let output_post = $('div');
 		let post_file = $('input');
 		$('#wrap_mid').appendChild(postwrap);
+		if( location.pathname.substr(1,1) == "@" ){
+			that.postOption.uid = location.pathname.split('/')[1].substr(1);
+		}
 		if( session && that.postOption.uid == null && that.postOption.search == null && location.pathname.substr(0,6) != "/post/" ){
 			let write = $("div");
 			write.id = "write";
@@ -1818,8 +1821,6 @@ inits["timeline"] = {
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
 		$('#wrap_mid').removeChild($('#post_wrap'));
-		$('#wrap_left').removeChild($('#user_list_self'));
-		$('#wrap_right').removeChild($('#recommend_list'));
 		const socket_listeners = [ "post_new", "post_removed", "reply_new", "reply_removed" ]
 		for( let i = 0; i < socket_listeners.length; ++i ){
 			socket.removeAllListeners(socket_listeners[i]);

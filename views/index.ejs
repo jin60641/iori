@@ -2,7 +2,9 @@
 <html>
 	<head>
 		<% include ./header %>
-		<%- include(view) %>
+		<script>
+			let view = "/<%= view %>";
+		</script>
 		<% include ./footer %>
 	</head>
 	<body>

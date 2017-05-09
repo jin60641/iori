@@ -215,13 +215,13 @@ window.addEventListener('load',function(){
 	navi_tab.appendChild(navi_tab_home);
 	
 	let navi_tab_notice = $("a");
-	navi_tab_notice.href = '/notice';
+	makeHref( navi_tab_notice, '/notice' );
 	navi_tab_notice.id = "navi_tab_notice";
 	navi_tab_notice.innerText = "알림";
 	navi_tab.appendChild(navi_tab_notice);
 	
 	let navi_tab_chat = $("a");
-	navi_tab_chat.href = '/chat';
+	makeHref( navi_tab_chat, '/chat' );
 	navi_tab_chat.id = "navi_tab_chat";
 	navi_tab_chat.innerText = "쪽지";
 	navi_tab.appendChild(navi_tab_chat);
@@ -353,7 +353,7 @@ window.addEventListener('load',function(){
 	head_menu.appendChild(head_menu_activity);
 
 	let head_menu_setting = $('a');
-	makeHref( head_menu_setting, "/setting" );
+	makeHref( head_menu_setting, "/setting/account" );
 	let head_menu_setting_img = $('img');
 	head_menu_setting_img.src = "/svg/menu_setting.svg";
 	head_menu_setting.appendChild(head_menu_setting_img);

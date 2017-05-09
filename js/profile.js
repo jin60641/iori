@@ -29,7 +29,6 @@ inits["profile"] = {
 		if( user ){
 			that.user = user;
 		}
-		inits["timeline"].postOption.uid = that.user.id;
 		this.addListener(window,"click", this.hideLabelMenu);
 		let wrap = $("div");
 		wrap.id = "profile_wrap";

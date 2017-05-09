@@ -108,7 +108,6 @@ router.get( '/api/auth/findpw/:email/:link', function( req, res ){
 		if( err ){
 			throw err;
 		} else if( user ){
-			console.log("??");
 			var shasum = crypto.createHash('sha1');
 			shasum.update(user.email);
 			var sha_email = shasum.digest('hex');
@@ -337,7 +336,7 @@ function checkSession( req, res, next ){
 	if( req.user && req.user.signUp ){
 		return next();
 	} else {
-		res.redirect('/login/' + req.url.substr(1).replace(/\//g,'-'));
+		makeObj( req, res, "login" );
 	}
 }
 

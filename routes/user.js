@@ -22,9 +22,6 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
-router.get('/setting', checkSession, function( req, res ){
-	res.redirect('/setting/'+'account');
-});
 router.get('/setting/:page', checkSession, function( req, res ){
 	makeObj( req, res, "setting" );
 });
