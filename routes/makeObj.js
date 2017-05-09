@@ -49,10 +49,8 @@ function makeObj( req, res, ejs, obj ){
 
 function renderPage( req, res, ejs, obj ){
 	if( views[ejs] ){
-		obj.view = ejs;
 		res.render( __dirname + "/../views/index.ejs", obj );
 	} else {
-		obj.view = "error";
 		res.render( __dirname + "/../views/index.ejs", obj );
 	}
 }

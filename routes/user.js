@@ -172,7 +172,13 @@ router.post('/@:uid(*)', function( req, res ){
 						b.setMinutes(0);
 						b.setSeconds(0);
 						b.setMilliseconds(0);
-						user.last = "마지막 접속 " + Math.floor((b.getTime()/1000 - date_time)/86400) + "일 전";
+						user.last = "마지막 접속 ";
+		                let days =  Math.floor((b.getTime()/1000 - date_time)/86400);
+		                if( days/30 >= 1 ){
+		                    user.last += Math.floor(days/30)+"달 전";
+		                } else {
+		                    user.last += days+ "일 전";
+		                }
 					}
 				}
 			}

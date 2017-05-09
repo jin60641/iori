@@ -138,7 +138,12 @@ inits["timeline"] = {
 				b.setMinutes(0);
 				b.setSeconds(0);
 				b.setMilliseconds(0);
-				return Math.floor((b.getTime()/1000 - postdate_time)/86400) + "일 전";
+				let days =  Math.floor((b.getTime()/1000 - postdate_time)/86400);
+				if( days/30 >= 1 ){
+					return Math.floor(days/30)+"달 전";
+				} else {
+					return days+ "일 전";
+				}
 				/*
 				return "<span style='padding-right:25px;'>" + Math.floor((b.getTime()/1000 - postdate_time)/86400) + "일 전</span><img src='/img/postdate.png' onclick='alert(\"" + dateString + "\")' style='cursor:pointer'>";
 				*/

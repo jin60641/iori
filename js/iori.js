@@ -1,6 +1,7 @@
 'use strict';
 
 let inits = [];
+let view;
 
 function $(query){
 	switch( query[0] ){
@@ -311,7 +312,7 @@ window.addEventListener('load',function(){
 	$('#wrap_left').appendChild(makeUserCard(session));
 	makeRecommendList();
 
-	getPage(view);
+	getPage(location.pathname);
 });
 
 function makeRecommendList(){
@@ -355,6 +356,9 @@ function makeHref(a,link){
 
 
 function getPage(path){
+	if( view == path ){
+		return ;
+	}
 	view = path;
 	if( $('#navi_tab') ){
 		findTabNow();
