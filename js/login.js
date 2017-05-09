@@ -27,7 +27,7 @@ inits["login"] = {
 							now.setTime(now.getTime() + (7*24*60*60*1000));
 							document.cookie = "facebook=false, uid="+uid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
 						}
-						location.href = "/" + document.URL.split('/').slice(4).toString().split('-').join('/');
+						getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
 					} else {
 						that.show_alert(xhr.responseText);
 					}
@@ -134,11 +134,21 @@ inits["login"] = {
 	
 	
 		var form_findpw = $("text");
-		form_findpw.innerHTML = "비밀번호를 잊으셨나요?<a href='/findpw'>비밀번호 찾기</a>"
-		var form_register = $("text");
-		form_register.innerHTML = "아직 회원이 아니신가요?<a href='/register'>회원가입</a>"
+		form_findpw.innerText = "비밀번호를 잊으셨나요?"
+		let form_findpw_a = $('a');
+		makeHref(form_findpw_a,"/findpw");
+		form_findpw_a.innerText = "비밀번호 찾기";
+		form_findpw.appendChild(form_findpw_a);
 		form.appendChild(form_findpw);
+
+		var form_register = $("text");
+		form_register.innerText = "아직 회원이 아니신가요?";
+		let form_register_a = $('a');
+		makeHref(form_register_a,"/register");
+		form_register_a.innerText = "회원가입";
+		form_register.appendChild(form_register_a);
 		form.appendChild(form_register);
+
 		$('#wrap_top').appendChild(form);
 	},
 	exit : function(){

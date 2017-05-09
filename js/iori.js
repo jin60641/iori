@@ -348,18 +348,31 @@ function makeHref(a,link){
 		if( event.ctrlKey || event.shiftKey ){
 		} else {
 			event.preventDefault();
-			history.pushState(null,null,a.href);
 			getPage(a.href);
 		}
 	};
 }
 
+/*
+window.onpopstate = function(e){
+	if( view != location.pathname ){
+		getPage(location.pathname);
+	} else {
+		history.go(-1);
+	}
+}
+*/
 
 function getPage(path){
 	if( view == path ){
 		return ;
 	}
-	view = path;
+	history.pushState(null,null,path);
+	document.title = "iori.kr";
+	if( location.pathname.length >= 2 ){
+		document.title += " - " + location.pathname.substr(1);
+	}
+	view = location.pathname;
 	if( $('#navi_tab') ){
 		findTabNow();
 	}

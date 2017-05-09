@@ -54,7 +54,6 @@ inits["profile"] = {
 			container.style.height = "45vh";
 			wrap.style.height = "45vh";
 		} else {
-			console.log(that.user);
 			headerimg_back.style.backgroundColor = that.user.color.hex;
 		}
 		headerimg_form.appendChild(headerimg_back);
@@ -153,7 +152,7 @@ inits["profile"] = {
 	
 			let user_chat = that.makeUserButton("message");
 			user_chat.onclick = function(){
-				location.href = "/chat/#u?" + that.user.uid;
+				location.href = "/chat/u/" + that.user.uid;
 			}
 			user_chat.innerText = "쪽지";
 			container.appendChild(user_chat);

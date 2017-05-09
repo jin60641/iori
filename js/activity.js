@@ -152,6 +152,6 @@ inits["activity"] = {
 			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
-		$('wrap_mid').removeChild($('#activity_wrap'));
+		$('#wrap_mid').removeChild($('#activity_wrap'));
 	}
 }

@@ -102,5 +102,9 @@ inits["search"] = {
 	},
 	exit : function(){
 		$('#wrap_mid').removeChild($('#search_result_wrap'));
+		$('#wrap_top').removeChild($('#search_wrap'));
+		if( $('#search_result_none') ){
+			$('#wrap_mid').removeChild( $('#search_result_none') );
+		}
 	}
 }

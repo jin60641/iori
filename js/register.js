@@ -96,7 +96,11 @@ inits["register"] = {
 		}
 	
 		let form_login = $("text");
-		form_login.innerHTML = "이미 회원이신가요?<a href='/login'>로그인하기</a>"
+		form_login.innerHTML = "이미 회원이신가요?";
+		let form_login_a = $('a');
+		makeHref(form_login_a,'/login');
+		form_login_a.innerText = "로그인하기";
+		form_login.appendChild(form_login_a);
 		form.appendChild(form_login);
 
 		$('#wrap_top').appendChild(form);

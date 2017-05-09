@@ -294,7 +294,6 @@ inits["chat"] = {
 		dialog.onclick = function(e){
 			that.openDialog(e,this);
 		}
-		
 	
 		return dialog;
 	}, 
@@ -1265,6 +1264,10 @@ inits["chat"] = {
 		});
 		that.addListener(window,'keydown', that.imgmenu_keydown );
 	
+		that.addListener(window,'popstate', function(){
+			that.openDialog();
+		});
+
 		that.addListener(window,'click', function(e){
 			that.showChatMenu(false);
 		});

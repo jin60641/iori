@@ -236,7 +236,7 @@ window.addEventListener('load',function(){
 	search.name = "query";
 	search.onkeyup = function(e){
 		if( e.keyCode == 13 ){
-			location.href = "/search/"+this.value+"/user";
+			getPage( "/search/"+this.value+"/user" );
 		} else {
 			sendData_search(this.value);
 		}
@@ -291,7 +291,12 @@ window.addEventListener('load',function(){
 	let navi_search = $("div");
 	navi_search.id = "navi_search";
 	navi_search.className = "navi_menu";
-	navi_search.innerHTML = "<a href='/search//post' ><img src='/svg/navi_search.svg'></a>";
+	let navi_search_a = $('a');
+	makeHref( navi_search_a, "/search//post" );
+	let navi_search_img = $('img');
+	navi_search_img.src = "/svg/navi_search.svg";
+	navi_search_a.appendChild(navi_search_img);
+	navi_search.appendChild(navi_search_a);
 	head.appendChild(navi_search);
 
 	let navi_profile = $("div");
@@ -303,9 +308,9 @@ window.addEventListener('load',function(){
 			console.log(document.URL);
 			console.log(document.URL.split('/'));
 			if( document.URL.indexOf("login") >= 0 ){
-				location.href = "/login/" + document.URL.split('/').slice(4).join("-");
+				getPage( "/login/" + document.URL.split('/').slice(4).join("-") );
 			} else {
-				location.href = "/login/" + document.URL.split('/').slice(3).join("-");
+				getPage( "/login/" + document.URL.split('/').slice(3).join("-") );
 			}
 		}
 	} else {
@@ -428,7 +433,7 @@ if( session.notice && session.notice.web == true ){
 		let noti = new Notification(title,options);
 		new Audio("/sound/notification.mp3").play();
 		noti.onclick = function(){
-			location.href = notice.link
+			getPage( notice.link );
 		}
 	});
 }
