@@ -59,10 +59,8 @@ function checkAdmin( req, res, next ){
 }
 router.get('/', function( req, res ){
 	if( req.user && req.user.signUp ){
-		console.log("timeline");
 		makeObj( req, res, "timeline" );
 	} else {
-		console.log("slider");
 		makeObj( req, res, "slider" );
 	}
 });

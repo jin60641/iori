@@ -364,7 +364,10 @@ window.onpopstate = function(e){
 */
 
 function getPage(path){
-	if(  view == "/" + path.split('/').slice(3).join('/').split('#')[0].split('?')[0] ){
+	if( path.split('/iori.kr/')[1] ){
+		path = path.split('/iori.kr/')[1];
+	}
+	if(  view == "/" + path.split('#')[0].split('?')[0] ){
 		return ;
 	}
 	history.pushState(null,null,path);
@@ -389,6 +392,7 @@ function getPage(path){
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 		var obj = JSON.parse(xhr.responseText);
 		for( let i in obj.js ){
+			console.log(obj.js[i]);
 			var script = $('script');
 			script.className = "included";
 			script.src = '/js/' + obj.js[i] + '.js';
@@ -410,7 +414,5 @@ function getPage(path){
 			head.appendChild(link);
 		}
 	}}
-	console.log(path);
-	console.log(path.split('#')[0]+"?loaded=true");
 	xhr.open("GET",path.split('#')[0]+"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 }

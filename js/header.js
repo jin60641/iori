@@ -151,7 +151,9 @@ function goTop( orix, oriy, desx, desy ){
 }
 
 function head_menu_show( boolean ){
-	event.stopPropagation();
+	if( event.stopPropagation ){
+		event.stopPropagation();
+	}	
 	let head_menu = $("#head_menu");
 	if( boolean != undefined ){
 		if( boolean ){
@@ -305,8 +307,6 @@ window.addEventListener('load',function(){
 	navi_profile.innerHTML = "<img src='/files/profile/" + session.id + "'>";
 	if( session == "" || session.signUp != true ){
 		navi_profile.onclick = function(){
-			console.log(document.URL);
-			console.log(document.URL.split('/'));
 			if( document.URL.indexOf("login") >= 0 ){
 				getPage( "/login/" + document.URL.split('/').slice(4).join("-") );
 			} else {

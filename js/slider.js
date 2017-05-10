@@ -50,6 +50,10 @@ inits["slider"] = {
 		}
 	},
 	init : function(){
+		if( session && session.signUp ){
+			this.exit = function(){};
+			return getPage("timeline");
+		}
 		let that = this;
 		let post_slider = $("div");
 		post_slider.id = "post_slider";
