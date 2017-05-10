@@ -29,6 +29,9 @@ function profileLeave(){
 
 let profileTimer;
 function openProfileHover(target){
+	if( (/(BB|iPad|iPhone|iPod|Android|\.NET)/i.test( navigator.userAgent )) ){
+		return;
+	}
 	let div = $('#profile_hover');
 	if( target != div ){
 		div.style.display = "";
@@ -298,16 +301,18 @@ window.addEventListener('load',function(){
 	head.id = "head";
 	document.body.insertBefore( head, document.body.firstChild );
 
-	let hover = $('div');
-	hover.id = "profile_hover";
-	hover.addEventListener('transitionend', function(){
-		if(this.style.opacity == "0" ){
-			this.style.display = "none";
-		}
-	});
-	hover.addEventListener('mouseover',profileHover);
-	hover.addEventListener('mouseleave',profileLeave);
-	document.body.appendChild(hover);
+	if( !(/(BB|iPad|iPhone|iPod|Android|\.NET)/i.test( navigator.userAgent )) ){
+		let hover = $('div');
+		hover.id = "profile_hover";
+		hover.addEventListener('transitionend', function(){
+			if(this.style.opacity == "0" ){
+				this.style.display = "none";
+			}
+		});
+		hover.addEventListener('mouseover',profileHover);
+		hover.addEventListener('mouseleave',profileLeave);
+		document.body.appendChild(hover);
+	}
 
 	$('#wrap_left').appendChild(makeUserCard(session));
 	makeRecommendList();

@@ -22,7 +22,7 @@ inits["notice"] = {
 	makeNotice : function( notice ){
 		let that = this;
 		let box = $('a');
-		box.href = notice.link;
+		makeHref( box, notice.link );
 //		box.addEventListener('mouseover',profileHover);
 //		box.addEventListener('mouseleave',profileLeave);
 		box.id = "notice_"+notice.id;

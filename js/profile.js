@@ -709,6 +709,7 @@ inits["profile"] = {
 			delete inits["timeline"].postOption.uid;
 			delete inits["timeline"].postOption.favorite;
 		}
+		$('#user_tab').parentNode.removeChild($('#user_tab'));
 		$('#wrap_right').style.display = "";
 		$('#wrap_top').removeChild( $('#profile_wrap') );
 		$('#wrap_mid').removeChild( $('#follow_wrap') );
