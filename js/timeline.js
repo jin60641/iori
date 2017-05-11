@@ -401,6 +401,7 @@ inits["timeline"] = {
 			let btn = $("div");
 			btn.className = 'postmenubtn';
 			btn.addEventListener('click', function(){ that.showmenu(this) });
+			btn.addEventListener('touchstart', function(){ that.showmenu(this) });
 			div.appendChild(btn);
 			let menu = $("div")
 			menu.id = 'menu_' + Post.id;
@@ -409,6 +410,12 @@ inits["timeline"] = {
 				menu.style.top = "44px";
 			}
 			menu.className = 'post_menu';
+			menu.ontouchstart = function(e){
+				e.stopPropagation();
+			}
+			menu.onclick = function(e){
+				e.stopPropagation();
+			}
 			if( session.id == Post.user.id ){
 				let postremove = $('div');
 				postremove.className = "postremove";

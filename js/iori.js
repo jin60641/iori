@@ -58,9 +58,12 @@ function openProfileHover(target){
 	}
 }
 function closeProfileHover(){
+	clearTimeout(profileTimer);
 	let div = $('#profile_hover');
-	div.className = "";
-	div.style.opacity = "0";
+	if( div ){
+		div.className = "";
+		div.style.opacity = "0";
+	}
 }
 
 //브라우저가 무엇인지 판단
@@ -369,10 +372,11 @@ window.onpopstate = function(e){
 */
 
 function getPage(path){
-	if( path.split('/iori.kr/')[1] ){
-		path = path.split('/iori.kr/')[1];
+	closeProfileHover();
+	if( path.split('/iori.kr')[1] ){
+		path = path.split('/iori.kr')[1];
 	}
-	if(  view == "/" + path.split('#')[0].split('?')[0] ){
+	if( view == path.split('#')[0].split('?')[0] ){
 		return ;
 	}
 	history.pushState(null,null,path);
@@ -385,16 +389,16 @@ function getPage(path){
 		findTabNow();
 	}
 	var head = document.getElementsByTagName('head')[0];
-	for( let name in inits ){
-		inits[name].exit();
-	}
-	let includes = $('.included');
-	for( let i = includes.length - 1; i >= 0 ; --i ){
-		head.removeChild(includes[i]);
-	}
-	inits = [];
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
+		for( let name in inits ){
+			inits[name].exit();
+		}
+		let includes = $('.included');
+		for( let i = includes.length - 1; i >= 0 ; --i ){
+			head.removeChild(includes[i]);
+		}
+		inits = [];
 		var obj = JSON.parse(xhr.responseText);
 		for( let i in obj.js ){
 			console.log(obj.js[i]);
