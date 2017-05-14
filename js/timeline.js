@@ -580,6 +580,7 @@ inits["timeline"] = {
 		}
 	},
 	getAudio : function( pid ){
+		this.hidemenu();
 		let mp3 = confirm("mp3로 변환받으시겠습니까?(영상에 따라 시간이 추가로 소요될 수 있습니다)");
 		let link = $('#link_preview_' + pid).href;
 		let vid;
@@ -671,6 +672,7 @@ inits["timeline"] = {
 			let post = $("#post_"+pid);
 			post.style.display="";
 			postwrap.removeChild(post.previousElementSibling);
+			that.hidemenu();
 		}}
 		xhr.open("POST", "/api/newsfeed/dontsee", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('type=post&obj_id='+pid);
 	},
@@ -708,6 +710,7 @@ inits["timeline"] = {
 					}
 				}
 			}
+			that.hidemenu();
 		}}
 		xhr.open("POST", "/api/newsfeed/favorite", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid);
 	},
@@ -740,11 +743,13 @@ inits["timeline"] = {
 					}
 				}
 			}
+			that.hidemenu();
 		}}
 		xhr.open("POST", "/api/newsfeed/share", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid);
 	},
 	changePost : function(pid){
 		let that = this;
+		that.hidemenu();
 		let cancel = $("div");
 		cancel.id = "changecancel_"+pid;
 		cancel.onclick = function(){
@@ -956,6 +961,7 @@ inits["timeline"] = {
 	},
 	cancelChange : function(pid,change){
 		let that = this;
+		that.hidemenu();
 		delete that.realfiles[pid];
 		delete that.fileindex[pid];
 		let div = $("div")
@@ -1360,6 +1366,7 @@ inits["timeline"] = {
 			} else {
 				alert(xhr.responseText);
 			}
+			that.hidemenu();
 		}}
 		xhr.open("POST", "/api/newsfeed/removepost", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('pid='+pid);
 	},

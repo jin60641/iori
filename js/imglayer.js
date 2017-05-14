@@ -17,7 +17,7 @@ inits["imglayer"] = {
 				evt.stopPropagation();
 				evt.preventDefault();
 			} else {
-				imglayer.style.zIndex="300";
+				imglayer.style.zIndex="1000";
 				imglayer.style.opacity="0";
 				that.imgviewing=0;
 				lefthover.style.display="none";
@@ -260,7 +260,7 @@ inits["imglayer"] = {
 		let imgmenuhover = $('#imgmenuhover');
 		let lefthover= $('#lefthover');
 		let righthover= $('#righthover');
-		imglayer.style.zIndex="300";
+		imglayer.style.zIndex="1000";
 		imglayer.style.visibility="visible";
 		imglayer.style.opacity="1";
 		imgbox.innerHTML="<div id='helper'></div>";

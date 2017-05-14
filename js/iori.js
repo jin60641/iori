@@ -372,6 +372,9 @@ window.onpopstate = function(e){
 */
 
 function getPage(path){
+	if( $('#page_loading') ){
+		return ;
+	}
 	closeProfileHover();
 	if( path.split('/iori.kr')[1] ){
 		path = path.split('/iori.kr')[1];
@@ -389,11 +392,16 @@ function getPage(path){
 		findTabNow();
 	}
 	var head = document.getElementsByTagName('head')[0];
+	for( let name in inits ){
+		inits[name].exit();
+	}
+	let loading = $('div');
+	loading.id = "page_loading";
+	$('#wrap_mid').appendChild(loading);
+
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		for( let name in inits ){
-			inits[name].exit();
-		}
+		$('#wrap_mid').removeChild(loading);
 		let includes = $('.included');
 		for( let i = includes.length - 1; i >= 0 ; --i ){
 			head.removeChild(includes[i]);
@@ -401,7 +409,6 @@ function getPage(path){
 		inits = [];
 		var obj = JSON.parse(xhr.responseText);
 		for( let i in obj.js ){
-			console.log(obj.js[i]);
 			var script = $('script');
 			script.className = "included";
 			script.src = '/js/' + obj.js[i] + '.js';

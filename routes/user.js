@@ -77,30 +77,28 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 			});
 		}, function( users, cb ){
 			if( req.user && req.user.id ){
-				for( var j = 0; j < users.length; ++j ){
-					( function(i){
-						db.Follows.find({ $or : [{ "to.id" : req.user.id, "from.id" : users[i].id },{ "from.id" : user.id, "to.id" : users[i].id }] }, function( err, result ){
-							if( err ){
-								throw err;
-							}
-							if( result != null ){
-								if( result.length == 2 ){
-									users[i].following = true;
-									users[i].follower = true;
-								} else if( result.length ){
-									if( result[0].to.id == req.user.id ){
-										users[i].follower = true;
-									} else {
-										users[i].following = true;
-									}
+				async.each( users, function( u, callback ){
+					db.Follows.find({ $or : [{ "to.id" : req.user.id, "from.id" : u.id },{ "from.id" : user.id, "to.id" : u.id }] }, function( err, result ){
+						if( err ){
+							throw err;
+						}
+						if( result != null ){
+							if( result.length == 2 ){
+								u.following = true;
+								u.follower = true;
+							} else if( result.length ){
+								if( result[0].to.id == req.user.id ){
+									u.follower = true;
+								} else {
+									u.following = true;
 								}
-							} 
-							if( i+1 == users.length ){
-								cb( null, users );
 							}
-						});
-					})(j);
-				}
+						} 
+						callback();
+					});
+				}, function( err ){
+					cb( null, users );
+				});
 			} else {
 				cb( null, users );
 			}

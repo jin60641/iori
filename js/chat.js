@@ -16,6 +16,9 @@ inits["chat"] = {
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
 		document.body.removeChild($('#chat_wrap'));
+		if( $('#chat_layer') ){
+			document.body.removeChild($('#chat_layer'));
+		}
         const socket_listeners = [ "chat_new", "update_last" ]
         for( let i = 0; i < socket_listeners.length; ++i ){
             socket.removeAllListeners(socket_listeners[i]);
@@ -1123,7 +1126,9 @@ inits["chat"] = {
 		let chat_new_user = $("div");
 		chat_new_user.id = "chat_new_user";
 		chat_new_user.innerText = "1:1 시작하기";
-		chat_new_user.onclick = that.showChatLayer;
+		chat_new_user.onclick = function(){
+			that.showChatLayer(true,"user");
+		}
 		chat_menu_box.appendChild(chat_new_user);
 	
 		let chat_new_group = $("div");

@@ -51,8 +51,10 @@ inits["profile"] = {
 			headerimg_back.onclick = function(){
 				inits["imglayer"].viewimg(0,1,new Date(),"/files/header/" + that.user.id);
 			}
-			container.style.height = "45vh";
-			wrap.style.height = "45vh";
+			if( document.clientWidth <= 1000 ){
+				container.style.height = "25vh";
+				wrap.style.height = "25vh";
+			}
 		} else {
 			headerimg_back.style.backgroundColor = that.user.color.hex;
 		}
@@ -258,7 +260,7 @@ inits["profile"] = {
 		if( document.body.clientWidth >= 1000 ){
 			$('#profile_container').appendChild($('#user_tab'));
 		} else {
-			$('#wrap_mid').insertBefore(user_tab,$('#post_wrap'));
+			$('#wrap_mid').insertBefore(user_tab,$('#wrap_mid').firstChild);
 		}
 	},
 	changeLabelSize : function(type){
@@ -671,6 +673,7 @@ inits["profile"] = {
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 			if( xhr.responseText != "[]" ){
 				let users = JSON.parse(xhr.responseText);
+				console.log(users);
 				for( let i = 0; i < users.length; ++i ){
 					wrap.appendChild( makeUserCard( users[i],true ) );
 				}

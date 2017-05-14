@@ -5,7 +5,7 @@
 	visibility : hidden;
 	opacity : 0;
 	transition : opacity 0.1s linear;
-	z-index : 200;
+	z-index : 1000;
 	width : 100%;
 	text-align : center;
 	background-color : rgba(0,0,0,0.8)
@@ -126,11 +126,13 @@
 	height : 100%;
 }
 @media screen and ( max-width : 669px ){
-	#imglayer #leftbtn, #imglayer #rightbtn {
-		display : none;
+	#imglayer #leftbtn, #imglayer #rightbtn, #imglayer #lefthover, #imglayer #righthover {
+		display : none !important;
 	}
 	#imglayer {
-		background : rgba(0,0,0,.8);
+		height : 100vh;
+		top : 0px;
+		background : rgba(0,0,0,1);
 	}
 	#imglayer #imgbox {
 		top : 0px;
@@ -140,6 +142,10 @@
 		background : 0;
 	}
 	#imglayer #imgbox img {
+		max-width : 100vw;
+		max-height : 100vh;
 		border : 0;
+	}
+	#imglayer > #imgbox > #helper {
 	}
 }

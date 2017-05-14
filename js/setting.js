@@ -366,7 +366,7 @@ inits["setting"] = {
 			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
-		$('#wrap_left').removeChild($('#setting_tab'));
+		$('#setting_tab').parentNode.removeChild($('#setting_tab'));
 		$('#wrap_mid').removeChild($('#setting_wrap'));
 	}
 }
