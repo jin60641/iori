@@ -36,6 +36,9 @@ inits["findpw"] = {
 	},
 	init : function(){
 		let that = this;
+		let helper = $('div');
+		helper.id = "helper";
+		$('#wrap_top').appendChild(helper);
 		let form = $("form");
 		form.id = "form";
 		form.onkeydown = function(e){
@@ -68,6 +71,7 @@ inits["findpw"] = {
 		$('#wrap_top').appendChild(form);
 	},
 	exit : function(){
+		$('#wrap_top').removeChild($('#helper'));
 		$('#wrap_top').removeChild($('#form'));
 	}
 }

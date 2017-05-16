@@ -3,6 +3,9 @@
 inits["register"] = {
 	init : function(){
 		let that = this;
+		let helper = $('div');
+		helper.id = "helper";
+		$('#wrap_top').appendChild(helper);
 
 		let form = $("form");
 		form.id = "form";
@@ -177,6 +180,7 @@ inits["register"] = {
 		}
 	},
 	exit : function(){
+		$('#wrap_top').removeChild($('#helper'));
 		$('#wrap_top').removeChild($('#form'));
 	}
 }
