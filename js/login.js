@@ -139,7 +139,12 @@ inits["login"] = {
 			form_facebook_btn.onclick = function(){
 				let now = new Date();
 				now.setTime(now.getTime() + (7*24*60*60*1000));
-				let returnTo = document.URL.split('/').slice(4).toString();
+				let returnTo;
+				if( document.URL.indexOf("login") >= 0 ){
+					returnTo = document.URL.split('/').slice(4).toString();
+				} else {
+					returnTo = document.URL.split('/').slice(3).toString();
+				}
 				let auto = $("#form_auto_login");
 				if( auto.checked == true ){
 	//				document.cookie = "facebook=true;expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
