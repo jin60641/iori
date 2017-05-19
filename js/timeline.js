@@ -602,7 +602,10 @@ inits["timeline"] = {
 				let title = $('#link_preview_title_' + pid);
 				download.download = title.innerText + "." + obj.type;
 				download.href = '/api/audio/getaudio/' + vid;
+				download.style.display = "none";
+				document.body.appendChild(download);
 				download.click();
+				document.body.removeChild(download);
 			} catch(e){
 				alert(xhr.responseText);
 			}
