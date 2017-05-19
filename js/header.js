@@ -150,6 +150,19 @@ function goTop( orix, oriy, desx, desy ){
 	}
 }
 
+function head_search_show( boolean ){
+	let head_search = $('#head_search');
+	if( boolean != undefined ){
+		if( boolean ){
+			head_search.style.display = "block";
+		} else {
+			head_search.style.display = "none";
+		}
+	} else {
+		head_search.style.display = "block";
+	}
+}
+
 function head_menu_show( boolean ){
 	if( event.stopPropagation ){
 		event.stopPropagation();
@@ -228,6 +241,12 @@ window.addEventListener('load',function(){
 	navi_tab_chat.innerText = "쪽지";
 	navi_tab.appendChild(navi_tab_chat);
 	
+	let navi_tab_search = $("a");
+	makeHref( navi_tab_search, "/search/ /post" );
+	navi_tab_search.id = "navi_tab_search";
+	navi_tab_search.innerText = "검색";
+	navi_tab.appendChild(navi_tab_search);
+	
 	head.appendChild(navi_tab);
 
 	findTabNow();
@@ -243,7 +262,6 @@ window.addEventListener('load',function(){
 			sendData_search(this.value);
 		}
 	}
-	search.placeholder = "친구 찾기";
 	search.onfocus = function(){
 		search_result_show(true);
 	}
