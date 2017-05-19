@@ -42,7 +42,6 @@ inits["search"] = {
 			this.isResultNone(tab_name);
 		}
 		history.pushState(null,null,history_str);
-	
 		tab.style.color = session.color.hex;
 		tab.style.borderBottom = "5px solid " + session.color.hex;
 	},

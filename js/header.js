@@ -152,14 +152,18 @@ function goTop( orix, oriy, desx, desy ){
 
 function head_search_show( boolean ){
 	let head_search = $('#head_search');
-	if( boolean != undefined ){
-		if( boolean ){
-			head_search.style.display = "block";
-		} else {
-			head_search.style.display = "none";
-		}
-	} else {
+	if( boolean == false ){
+		head_search.style.display = "";
+		$('#head_search_result').style.display = "none";
+	} else if( boolean == true ){
 		head_search.style.display = "block";
+	} else {
+		if( head_search.style.display == "block" ){
+			head_search.style.display = "";
+			$('#head_search_result').style.display = "none";
+		} else {
+			head_search.style.display = "block";
+		}
 	}
 }
 
@@ -242,7 +246,7 @@ window.addEventListener('load',function(){
 	navi_tab.appendChild(navi_tab_chat);
 	
 	let navi_tab_search = $("a");
-	makeHref( navi_tab_search, "/search/ /post" );
+	navi_tab_search.onclick = head_search_show;
 	navi_tab_search.id = "navi_tab_search";
 	navi_tab_search.innerText = "검색";
 	navi_tab.appendChild(navi_tab_search);
@@ -257,6 +261,7 @@ window.addEventListener('load',function(){
 	search.name = "query";
 	search.onkeyup = function(e){
 		if( e.keyCode == 13 ){
+			head_search_show( false );
 			getPage( "/search/"+this.value+"/user" );
 		} else {
 			sendData_search(this.value);
@@ -312,7 +317,10 @@ window.addEventListener('load',function(){
 	navi_search.id = "navi_search";
 	navi_search.className = "navi_menu";
 	let navi_search_a = $('a');
-	makeHref( navi_search_a, "/search//post" );
+	navi_search.onclick = head_search_show;
+
+	
+
 	let navi_search_img = $('img');
 	navi_search_img.src = "/svg/navi_search.svg";
 	navi_search_a.appendChild(navi_search_img);
