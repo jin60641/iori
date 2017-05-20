@@ -299,11 +299,15 @@
 
 #head #navi_tab .navi_tab_now {
 	color : <%= color_hex %>;
-	border-bottom : 5px solid <%= color_hex %>;
+}
+
+#head #navi_tab .navi_tab_now::after {
+	padding-bottom : 5px !important;
+	transition : initial !important;
 }
 
 #head #navi_tab .navi_tab_now:hover::after {
-	padding-bottom : 0px !important;
+	padding-bottom : 5px !important;
 	transition : initial !important;
 }
 
@@ -344,12 +348,12 @@
 	#head #head_search {
 		position : absolute;
 		width : 100vw;
-		top : 40px;
+		top : 39px;
 		left : 0px;
-		display : none;
 		background-color : white;
 		padding : 8px;
 		max-width : 100vw;
+		display : none;
 	}
 	#head #navi_search {
 		right : 60px;
@@ -357,12 +361,17 @@
 	}
 	#head #head_search_result {
 		display : none !important;
-//		top : 42px;
-//		width : calc( 100vw );
-//		margin : 0px;
+		//top : 76px;
+		//width : 100vw;
+		//max-width : 100vw;
+		//margin : 0px;
+		//border-left : 0px;
+		//border-right : 0px;
 	}
 	#head #head_search_none {
-		display : none;
+		display : none !important;
+		//border-left : 0px;
+		//border-right : 0px;
 	}
 	#head #navi_profile {
 		right : 20px;

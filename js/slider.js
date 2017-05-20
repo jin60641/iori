@@ -55,8 +55,8 @@ inits["slider"] = {
 			return getPage("timeline");
 		}
 		let that = this;
-		let post_slider = $("div");
-		post_slider.id = "post_slider";
+		let slider = $("div");
+		slider.id = "slider";
 		that.addListener(document,'touchmove',function(event){
 			event.preventDefault();
 		});
@@ -81,7 +81,7 @@ inits["slider"] = {
 			slide_imgs.appendChild(slide);
 		};
 	
-		post_slider.appendChild(slide_imgs);
+		slider.appendChild(slide_imgs);
 				/*
 		let slide1 = $("img");
 		slide1.className = "slide";
@@ -89,18 +89,22 @@ inits["slider"] = {
 		slider.appendChild(slide1);
 				*/
 	
-		post_slider.onmouseover = function(){
+		slider.onmouseover = function(){
 			let arrows = $(".slide_arrow");
 			for( let i = 0; i < arrows.length; ++i ){
 				arrows[i].style.display = "block";
 			}
 		}
-		post_slider.onmouseout = function(){
+		slider.onmouseout = function(){
 			let arrows = $(".slide_arrow");
 			for( let i = 0; i < arrows.length; ++i ){
 				arrows[i].style.display = "none";
 			}
 		}
+		let slide_helper = $('div');
+		slide_helper.id = "slide_helper";
+		slider.appendChild(slide_helper);
+
 		let slide_box = $("div");
 		slide_box.id = "slide_box";
 	
@@ -124,11 +128,11 @@ inits["slider"] = {
 		slide_btn.innerText = "지금 시작하기";
 		slide_box.appendChild(slide_btn);
 	
-		post_slider.appendChild(slide_box);
+		slider.appendChild(slide_box);
 		let slide_left = $("div");
 		slide_left.className = "slide_arrow";
 		slide_left.id = "slide_left";
-		post_slider.appendChild(slide_left);
+		slider.appendChild(slide_left);
 	
 		slide_left.onclick = function(){
 			that.sliding(-1);
@@ -139,7 +143,7 @@ inits["slider"] = {
 		let slide_right = $("div");
 		slide_right.id = "slide_right";
 		slide_right.className = "slide_arrow";
-		post_slider.appendChild(slide_right);
+		slider.appendChild(slide_right);
 	
 		slide_right.onclick = function(){
 			clearInterval(that.sliderTimer);
@@ -150,7 +154,7 @@ inits["slider"] = {
 		if( $('#post_wrap') ){
 			$('#wrap_mid').removeChild($('#post_wrap'));
 		}
-		document.body.appendChild(post_slider);
+		document.body.appendChild(slider);
 		that.sliderTimer = setInterval(that.sliding,3000);
 	},
     exit : function(){
@@ -160,6 +164,6 @@ inits["slider"] = {
         }
 		clearInterval(this.sliderTimer);
 		clearInterval(this.removeTimer);
-		document.body.removeChild($('#post_slider'));
+		document.body.removeChild($('#slider'));
     }
 };

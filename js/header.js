@@ -157,12 +157,14 @@ function head_search_show( boolean ){
 		$('#head_search_result').style.display = "none";
 	} else if( boolean == true ){
 		head_search.style.display = "block";
+		head_search.focus();
 	} else {
 		if( head_search.style.display == "block" ){
 			head_search.style.display = "";
 			$('#head_search_result').style.display = "none";
 		} else {
 			head_search.style.display = "block";
+			head_search.focus();
 		}
 	}
 }

@@ -3,9 +3,13 @@
 inits["changepw"] = {
 	exit : function(){
 		$('#wrap_top').removeChild($('#form'));
-	}
+	},
 	init : function(){
 		var that = this;
+		let helper = $('div');
+		helper.id = "helper";
+		$('#wrap_top').appendChild(helper);
+
 		var form = $("form");
 		form.id = "form";
 		form.onkeydown = function(e){
@@ -82,7 +86,7 @@ inits["changepw"] = {
 					}
 				}
 			}
-			show_alert("서버의 응답을 기다리는 중입니다.");
+			that.show_alert("서버의 응답을 기다리는 중입니다.");
 			xhr.open("POST", "/api/auth/changepw", true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			var pathname = location.pathname.split('/');

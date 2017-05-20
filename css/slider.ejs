@@ -7,7 +7,7 @@ body{
 	display : none !important;
 }
 
-#post_slider {
+#slider {
 	overflow : hidden;
 	margin-top : 42px;
 	display: table;
@@ -19,11 +19,19 @@ body{
 	word-spacing : 0px;
 	font-size : 0px;
 }
-#post_slider * {
+
+#slider * {
 	text-align : center;
 }
 
-#post_slider > #slide_imgs {
+#slider > #slide_helper {
+	vertical-align : middle;
+	display : inline-block;
+	width : 0px;
+	height : 100%;
+}
+
+#slider > #slide_imgs {
 	white-space : nowrap;
 	letter-spacing : 0px;
 	word-spacing : 0px;
@@ -38,7 +46,7 @@ body{
 	left : 0px;
 	transition : left .5s;
 }
-#post_slider > #slide_imgs > .slide {
+#slider > #slide_imgs > .slide {
 	transition : left .5s, margin-left .5s;
 	position : relative;
 	width : 100vw;
@@ -50,8 +58,7 @@ body{
 	padding : 0px;
 }
 
-#post_slider > #slide_box {
-	padding-top :
+#slider > #slide_box {
 	text-align : center;
 	vertical-align : middle;
 	white-space : nowrap;
@@ -61,30 +68,30 @@ body{
 	word-spacing : auto;
 	letter-spacing : 0.2em;
 	line-height : 40px;
+	display : inline-block;
 	color : white;
 	cursor : default;
 	width : 100vw;
-	margin-top : calc( 50vh - 150px );
 }
 
-#post_slider > #slide_box > #slide_logo {
+#slider > #slide_box > #slide_logo {
 	display : block;
-	margin : 0 auto 10px auto;
+	margin : 0 auto 0px auto;
 	background-size : 100% 100%;
 	background-image : url('/svg/logo_white.svg');
 	width : 60px;
 	height : 30px;
 }
 
-#post_slider > #slide_box > #slide_line {
+#slider > #slide_box > #slide_line {
 	display : block;
-	margin : 0 auto 30px auto;
+	margin : 10px auto 30px auto;
 	background-color : white;
 	width : 77px;
 	height : 3px;
 }
 
-#post_slider > #slide_box > #slide_btn {
+#slider > #slide_box > #slide_btn {
 	border : 1px solid white;
 	font-size : 18pt;
 	line-height : 66px;
@@ -99,7 +106,7 @@ body{
 	margin : 10px auto 0 auto;
 }
 
-#post_slider > .slide_arrow {
+#slider > .slide_arrow {
 	width : 16px;
 	height : 32px;
 	position : absolute;
@@ -108,28 +115,31 @@ body{
 	cursor : pointer;
 }
 
-#post_slider > #slide_left {
+#slider > #slide_left {
 	background-image : url('/img/leftbtn.png');
 	background-size : 100% 100%;
-	left : 70px;
+	left : 3vw;
 }
 
-#post_slider > #slide_left:hover {
+#slider > #slide_left:hover {
 	background-image : url('/img/leftbtn_hover.png');
 }
 
-#post_slider > #slide_right {
+#slider > #slide_right {
 	background-image : url('/img/rightbtn.png');
 	background-size : 100% 100%;
-	right : 70px;
+	right : 3vw;
 }
 
-#post_slider > #slide_right:hover {
+#slider > #slide_right:hover {
 	background-image : url('/img/rightbtn_hover.png');
 }
 
 @media screen and ( max-width : 669px ){
-	#post_slider > #slide_box > #slide_btn {
+	#slider > #slide_box > #slide_btn {
+		display : none;
+	}
+	#slider > #slide_box > #slide_line {
 		display : none;
 	}
 }

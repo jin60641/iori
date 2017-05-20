@@ -18,30 +18,37 @@ function makeObj( req, res, ejs, obj ){
 	} else {
 		if( req.user ){
 		    obj.session = JSON.stringify(req.user);
-			async.parallel([
-				function(cb){
-					db.Posts.count({ "user.id" : req.user.id, be : true, share : null }, function( err, count ){
-						cb(null,count);
-					});	
-				}, function(cb){
-					db.Follows.count({ "from.id" : req.user.id }, function( err, count ){
-						cb(null,count);
-					});	
-				}, function(cb){
-					db.Follows.count({ "to.id" : req.user.id }, function( err, count ){
-						cb(null,count);
-					});	
-				}
-			], function( err, result ){
-				obj.my_info = JSON.stringify({
-					post : result[0],
-					following : result[1],
-					follower : result[2]
+			if( req.user.signUp ){
+				async.parallel([
+					function(cb){
+						db.Posts.count({ "user.id" : req.user.id, be : true, share : null }, function( err, count ){
+							cb(null,count);
+						});	
+					}, function(cb){
+						db.Follows.count({ "from.id" : req.user.id }, function( err, count ){
+							cb(null,count);
+						});	
+					}, function(cb){
+						db.Follows.count({ "to.id" : req.user.id }, function( err, count ){
+							cb(null,count);
+						});	
+					}
+				], function( err, result ){
+					obj.my_info = JSON.stringify({
+						post : result[0],
+						following : result[1],
+						follower : result[2]
+					});
+					renderPage( req, res, ejs, obj );
 				});
+			} else {
+		    	obj.my_info = null;
+				obj.session.color = JSON.stringify(require('./settings.js').defaultColor);
 				renderPage( req, res, ejs, obj );
-			});
+			}
 		} else {
 		    obj.my_info = null;
+			obj.session = JSON.stringify({ color : require('./settings.js').defaultColor });
 			renderPage( req, res, ejs, obj );
 		}
 	}
