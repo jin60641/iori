@@ -611,7 +611,7 @@ inits["profile"] = {
 			tab_name = target.id.split("_").pop();
 		} else {
 			tab_name = document.URL.split("/").pop().split('#')[0];
-			tab = $('#profile_tab_' + tab_name);
+			tab = $('#profile_tab_' + tab_name.split('_')[0]);
 		}
 		if( tab_name == "post" || tab_name[0] == "@" ){
 			tab = $('#profile_tab_post');
@@ -673,7 +673,6 @@ inits["profile"] = {
 		xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
 			if( xhr.responseText != "[]" ){
 				let users = JSON.parse(xhr.responseText);
-				console.log(users);
 				for( let i = 0; i < users.length; ++i ){
 					wrap.appendChild( makeUserCard( users[i],true ) );
 				}

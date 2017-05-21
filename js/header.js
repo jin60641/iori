@@ -156,6 +156,9 @@ function head_search_show( boolean ){
 		head_search.style.display = "";
 		$('#head_search_result').style.display = "none";
 	} else if( boolean == true ){
+		if( event.stopPropagation ){
+			event.stopPropagation();
+		}	
 		head_search.style.display = "block";
 		head_search.focus();
 	} else {
@@ -163,6 +166,9 @@ function head_search_show( boolean ){
 			head_search.style.display = "";
 			$('#head_search_result').style.display = "none";
 		} else {
+			if( event.stopPropagation ){
+				event.stopPropagation();
+			}	
 			head_search.style.display = "block";
 			head_search.focus();
 		}
@@ -170,12 +176,12 @@ function head_search_show( boolean ){
 }
 
 function head_menu_show( boolean ){
-	if( event.stopPropagation ){
-		event.stopPropagation();
-	}	
 	let head_menu = $("#head_menu");
 	if( boolean != undefined ){
 		if( boolean ){
+			if( event.stopPropagation ){
+				event.stopPropagation();
+			}	
 			search_result_show( false );
 			$("#navi_profile").firstElementChild.style.borderRadius = "2px";
 			head_menu.style.display = "block";
@@ -185,6 +191,9 @@ function head_menu_show( boolean ){
 	} else if( head_menu.style.display == "block" ){
 		head_menu.style.display = "none";
 	} else {
+		if( event.stopPropagation ){
+			event.stopPropagation();
+		}	
 		head_menu.style.display = "block";
 	}
 }
@@ -209,6 +218,7 @@ function close_all(){
 	$("#navi_profile").firstElementChild.style.borderRadius = "";
 	search_result_show(false);
 	head_menu_show(false);
+	head_search_show(false);
 }
 
 function findTabNow(){
@@ -274,7 +284,9 @@ window.addEventListener('load',function(){
 	}
 	search.onfocusout = searchResultNone;
 	search.onclick = function(event){
-		head_menu_show(false);
+		close_all(false);
+		head_search_show( true );
+		search_result_show( true );
 	}
 	search.onsubmit = function(){
 		return false;

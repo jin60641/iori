@@ -191,9 +191,15 @@ inits["admin"] = {
 		remove.innerText="삭제";
 		$('#admin_box').appendChild(remove);
 		that.openAdminTab();
-		that.addListener(window,'mousemove',that.colResizeMove);
-		that.addListener(window,'mouseup',that.colResizeUp);
-		that.addListener(window,'resize', that.adminResize );
+		that.addListener(window,'mousemove',function(e){
+			that.colResizeMove(e);
+		});
+		that.addListener(window,'mouseup',function(e){
+			that.colResizeUp(e);
+		});
+		that.addListener(window,'resize', function(e){
+			that.adminResize(e);
+		});
 	},
 	adminResize : function(){
 		if( $("#wrap_left").clientWidth == 0 ){
@@ -406,6 +412,7 @@ inits["admin"] = {
 		}
 	},
 	makeTr : function(obj,th){
+		let that = this;
 		let tr = $('tr');
 		tr.className = "admin_table_tr";
 		let ths = $('.admin_table_th');
@@ -441,9 +448,13 @@ inits["admin"] = {
 				if( this.obj_keys[i].indexOf('.') >= 1 ){
 					td.style.display = "none";
 				}
-				div.addEventListener('click',this.changeSort,false);
+				div.addEventListener('click', function(e){
+					that.changeSort(e)
+				},false);
 				let resizer = $('div');
-				resizer.addEventListener('mousedown',this.colResizeDown,false);
+				resizer.addEventListener('mousedown', function(e){
+					that.colResizeDown(e);
+				},false);
 				resizer.className = "admin_table_resizer";
 				td.appendChild(resizer);
 			} else {

@@ -34,11 +34,12 @@ inits["imglayer"] = {
 			let imgbox = $('#imgbox');
 			let imgdownload = $('#imgdownload');
 			let img = $("#imglayer_img");
+			let url = document.URL.split('/');
 			if( img != undefined ){
 				let params = { 
 					flag : "gt",
-					type : location.hash.substr(1,1),
-					dialog_id : location.hash.split('?')[1],
+					dialog_id : url.pop(),
+					type : url.pop(),
 					now : img.src.split('/').pop()
 				}
 				let query = "";
@@ -98,10 +99,11 @@ inits["imglayer"] = {
 			let imgdownload = $('#imgdownload');
 			let img = $("#imglayer_img");
 			if( img != undefined ){
+				let url = document.URL.split('/');
 				let params = {
 					flag : "lt", 
-					type : location.hash.substr(1,1),
-					dialog_id : location.hash.split('?')[1],
+					dialog_id : url.pop(),
+					type : url.pop(),
 					now : img.src.split('/').pop()
 				}
 				let query = "";

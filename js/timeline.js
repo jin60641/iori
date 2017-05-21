@@ -1651,9 +1651,6 @@ inits["timeline"] = {
 		let output_post = $('div');
 		let post_file = $('input');
 		$('#wrap_mid').appendChild(postwrap);
-		if( location.pathname.substr(1,1) == "@" ){
-			that.postOption.uid = location.pathname.split('/')[1].substr(1);
-		}
 		if( session && that.postOption.uid == null && that.postOption.search == null && location.pathname.substr(0,6) != "/post/" ){
 			let write = $("div");
 			write.id = "write";
@@ -1731,7 +1728,6 @@ inits["timeline"] = {
 			}};
 			xhr.open("POST", location.pathname, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 		} else if( that.postOption.uid != null || that.postOption.search != null ){
-			
 		} else {
 			that.getPosts(10);
 			socket.on( 'post_new', function(){
@@ -1754,6 +1750,9 @@ inits["timeline"] = {
 	},
 	getPosts : function(limit,cb){ // 게시글 불러오기
 		let that = this;
+		if( location.pathname.substr(1,1) == "@" ){
+			that.postOption.uid = location.pathname.split('/')[1].substr(1);
+		}
 		let postwrap = $('#post_wrap');
 		if( postwrap ){
 			postwrap.style.display = "";
@@ -1830,6 +1829,7 @@ inits["timeline"] = {
 			for( let i = 0; obj_keys.length > i; ++i ){
 				params += "&" + obj_keys[i] + "=" + that.postOption[obj_keys[i]];
 			}
+			console.log(params);
 		}
 		xhr.send(params);
 	},

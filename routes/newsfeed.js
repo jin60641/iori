@@ -146,26 +146,34 @@ function getPosts( req, cb ){
 				}
 			});
 		}, function( callback ){
-			if( uid != undefined && parseInt( uid ) >= 1 ){
-				uid = parseInt(uid);
-				if( req.body['favorite'] == "true" ){
-					db.Favorites.find({ uid : uid }).sort({ id : -1 }).limit( limit).skip( skip ).exec( function( err, result ){
-						if( err ){
-							callback( null );
-							throw err;
+			if( uid != undefined  ){
+				db.Users.findOne({ uid : uid }, function( err, user ){
+					if( err ){
+						throw err;
+					} else if( user ){
+						uid = user.id;
+						if( req.body['favorite'] == "true" ){
+							db.Favorites.find({ uid : uid }).sort({ id : -1 }).limit( limit).skip( skip ).exec( function( err2, result ){
+								if( err2 ){
+									callback( null );
+									throw err2;
+								} else {
+									async.map( result, function( obj, cb ){
+										favorites.push( obj.pid );
+										cb( null );
+									}, function(e,r){
+										callback( null );
+									});	
+								}
+							});
 						} else {
-							async.map( result, function( obj, cb ){
-								favorites.push( obj.pid );
-								cb( null );
-							}, function(e,r){
-								callback( null );
-							});	
+							tos.push( uid );
+							callback( null );
 						}
-					});
-				} else {
-					tos.push( uid );
-					callback( null );
-				}
+					} else {
+						res.end();
+					}
+				});
 			} else {
 				tos.push( req.user.id );
 				db.Follows.find({ "from.id" : req.user.id }, function( err, follows ){
