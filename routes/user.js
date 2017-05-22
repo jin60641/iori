@@ -78,7 +78,7 @@ router.post('/@:uid(*)/:type(follower|following)', function( req, res ){
 		}, function( users, cb ){
 			if( req.user && req.user.id ){
 				async.each( users, function( u, callback ){
-					db.Follows.find({ $or : [{ "to.id" : req.user.id, "from.id" : u.id },{ "from.id" : user.id, "to.id" : u.id }] }, function( err, result ){
+					db.Follows.find({ $or : [{ "to.id" : req.user.id, "from.id" : u.id },{ "from.id" : req.user.id, "to.id" : u.id }] }, function( err, result ){
 						if( err ){
 							throw err;
 						}

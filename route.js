@@ -97,7 +97,7 @@ router.get('/login/:link', function( req, res ){
 
 router.get('/register', function( req, res ){
 	if( req.user && req.user.signUp ){
-		res.redirect('/');
+		makeObj( req, res, 'timeline' );
 	} else {
 		makeObj( req, res, "register" );
 	}

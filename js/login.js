@@ -54,7 +54,11 @@ inits["login"] = {
 	init : function(){
 		if( session.signUp ){
 			if( document.URL.indexOf("login") >= 0 ){
-				getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
+				if( document.URL.split('/login/')[1] ){
+					getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
+				} else {
+					location.hrerf = "/";
+				}
 			} else {
 				getPage( location.pathname );
 			}
@@ -131,7 +135,11 @@ inits["login"] = {
 		form.appendChild(form_alert);
 		
 		if( ( session.name || session.email || session.uid ) ){
-			form_uid.value = session.uid;
+			if( session.uid ){
+				form_uid.value = session.uid;
+			} else if( session.email ){
+				form_uid.value = session.email;
+			}
 		} else {
 			let form_facebook_btn = $("div");
 			form_facebook_btn.id = "form_facebook_btn";

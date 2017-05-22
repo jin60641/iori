@@ -225,6 +225,7 @@ router.get('/api/auth/facebook/callback', function( req, res, next ){
 							return next(error);
 						} else {
 							if( account ){
+								req.user = account;
 								res.cookie("facebook","true",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
 								if( req.session.returnTo && req.session.returnTo != "/"){
 									if( req.session.returnTo[0] == '/' ){

@@ -1651,7 +1651,7 @@ inits["timeline"] = {
 		let output_post = $('div');
 		let post_file = $('input');
 		$('#wrap_mid').appendChild(postwrap);
-		if( session && that.postOption.uid == null && that.postOption.search == null && location.pathname.substr(0,6) != "/post/" ){
+		if( session && location.pathname.substr(0,6) != "/post/" && inits["profile"] == null && inits["search"] == null ){
 			let write = $("div");
 			write.id = "write";
 			output_post.id = "output_post";
@@ -1727,11 +1727,11 @@ inits["timeline"] = {
 				}
 			}};
 			xhr.open("POST", location.pathname, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
-		} else if( that.postOption.uid != null || that.postOption.search != null ){
+		} else if( inits["profile"] != null || inits["search"] != null ){
 		} else {
 			that.getPosts(10);
 			socket.on( 'post_new', function(){
-				that.getPosts(0,1);
+				that.etPosts(0,1);
 			});
 			socket.on( 'post_removed', function( pid ){
 				postwrap.removeChild($("#post_"+pid));	
@@ -1829,7 +1829,6 @@ inits["timeline"] = {
 			for( let i = 0; obj_keys.length > i; ++i ){
 				params += "&" + obj_keys[i] + "=" + that.postOption[obj_keys[i]];
 			}
-			console.log(params);
 		}
 		xhr.send(params);
 	},

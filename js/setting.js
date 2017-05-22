@@ -69,7 +69,7 @@ inits["setting"] = {
 				id : "web",
 				name : "웹알림",
 				type : "checkbox",
-				onclick : this.checkChangeWebNotify
+				onclick : "checkChangeWebNotify"
 			}],
 			kr : "알림"
 		},
@@ -254,7 +254,7 @@ inits["setting"] = {
 			if (!("Notification" in window)) {
 				alert("이 브라우저는 웹 알림을 지원하지 않습니다.");
 				this.checked = false;
-			} else if (Notification.permission != 'granted') {
+			} else if (Notification.permission != 'granted' ) {
 				Notification.requestPermission(function (permission) {
 					if (permission == "denied") {
 						alert("웹 알림을 허용하셔야 합니다.");	
@@ -277,6 +277,7 @@ inits["setting"] = {
 		return tab;
 	},
 	 makeField : function( obj ){
+		let that = this;
 		let field = $('div');
 		field.className = "setting_field";
 	
@@ -322,7 +323,8 @@ inits["setting"] = {
 			text.innerText = obj.text;
 		}
 		if( obj.onclick ){
-			input.onclick = obj.onclick;
+			console.log(obj.onclick);
+			input.onclick = that[obj.onclick];
 		}
 		div.appendChild(text);
 		return field;

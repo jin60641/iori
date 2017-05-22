@@ -321,6 +321,13 @@ window.addEventListener('load',function(){
 	makeRecommendList();
 
 	getPage(location.pathname);
+	window.onpopstate = function(e){
+		if( view != location.pathname ){
+			getPage(location.pathname);
+		} else {
+			history.go(-1);
+		}
+	}
 });
 
 function makeRecommendList(){
@@ -361,16 +368,6 @@ function makeHref(a,link){
 	};
 }
 
-/*
-window.onpopstate = function(e){
-	if( view != location.pathname ){
-		getPage(location.pathname);
-	} else {
-		history.go(-1);
-	}
-}
-*/
-
 function getPage(path){
 	if( $('#page_loading') ){
 		return ;
@@ -395,13 +392,19 @@ function getPage(path){
 	for( let name in inits ){
 		inits[name].exit();
 	}
-	let loading = $('div');
-	loading.id = "page_loading";
-	$('#wrap_mid').appendChild(loading);
+
+	let loading;
+	if( $('#wrap_mid') ){
+		loading = $('div');
+		loading.id = "page_loading";
+		$('#wrap_mid').appendChild(loading);
+	}
 
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		$('#wrap_mid').removeChild(loading);
+		if( $('#wrap_mid') && loading != undefined  ){
+			$('#wrap_mid').removeChild(loading);
+		}
 		let includes = $('.included');
 		for( let i = includes.length - 1; i >= 0 ; --i ){
 			head.removeChild(includes[i]);

@@ -17,8 +17,8 @@ function makeObj( req, res, ejs, obj ){
 		}
 	} else {
 		if( req.user ){
-		    obj.session = JSON.stringify(req.user);
 			if( req.user.signUp ){
+			    obj.session = JSON.stringify(req.user);
 				async.parallel([
 					function(cb){
 						db.Posts.count({ "user.id" : req.user.id, be : true, share : null }, function( err, count ){
@@ -43,7 +43,8 @@ function makeObj( req, res, ejs, obj ){
 				});
 			} else {
 		    	obj.my_info = null;
-				obj.session.color = JSON.stringify(require('./settings.js').defaultColor);
+				req.user.color = require('./settings.js').defaultColor;
+			    obj.session = JSON.stringify(req.user);
 				renderPage( req, res, ejs, obj );
 			}
 		} else {

@@ -67,7 +67,7 @@ inits["imglayer"] = {
 				xhr.open("POST", "/api/chat/getfile", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send(query);
 			} else {
 				for( let j = imgbox.childNodes.length - 1 ; j>=1; --j ){
-					if(imgbox.childNodes[j].style.display == "inline-block" ){
+					if(imgbox.childNodes[j].style.display == "inline-block" && imgbox.childNodes[1].src.indexOf("post/") >= 0 ){
 						let postid = imgbox.childNodes[1].src.split("post/")[1].split("/")[0];
 						imgbox.childNodes[j].style.display = "none";
 						if(imgbox.childNodes[j+1]){
@@ -273,7 +273,7 @@ inits["imglayer"] = {
 		if( url ){
 	//		imgmenu.style.display = "none";
 		} else {
-			if( favorite.innerText == "관심글해제" ){
+			if( favorite != undefined && favorite.innerText == "관심글해제" ){
 				imgmenu_favorite.src = '/img/favorite_remove.png';
 				imgmenu_favorite.onclick = function(){
 					inits["timeline"].postFavorite(postid,0);
@@ -284,7 +284,7 @@ inits["imglayer"] = {
 					inits["timeline"].postFavorite(postid,1);
 				}
 			}
-			if( share.innerText == "공유취소" ){
+			if( share != undefined && share.innerText == "공유취소" ){
 				imgmenu_share.src = '/img/share_remove.png';
 				imgmenu_share.onclick = function(){
 					inits["timeline"].postShare(postid,0);
@@ -308,7 +308,9 @@ inits["imglayer"] = {
 			if( url ){
 				img.src = url + '?' + date;
 				imgdownload.download = "iori_"+new Date().getTime() + ".jpg";
-				img.id = "imglayer_img";
+				if( controller == true ){
+					img.id = "imglayer_img";
+				}
 			} else if( postid != undefined ){
 				img.src="/files/post/" + postid + "/" + i + "?" + date;
 				imgdownload.download = postid+'_'+1+'';

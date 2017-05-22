@@ -343,7 +343,7 @@ inits["profile"] = {
 					$('#profileimg_back').style.backgroundImage = 'url("/svg/profile.svg")';
 				}
 				$('#'+type+'img_form').removeChild($('#'+type+'img_label'));
-				taht.settingCancel(true);
+				that.settingCancel(true);
 			}}
 			xhr.open("POST","/api/user/removeimg", false); 
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -384,6 +384,7 @@ inits["profile"] = {
 		}
 	},
 	settingCancel : function(boolean){
+		let that = this;
 		if( $('#user_setting_cancel') ){
 			$('#profile_container').removeChild($('#user_setting_cancel'));
 		}
@@ -479,7 +480,9 @@ inits["profile"] = {
 		//if( ( boolean == true || boolean == undefined ) && that.user[type] ){
 			photohelper_change.innerText = "변경";
 			let photohelper_remove = $("div");
-			photohelper_remove.onclick = this.removeImage;
+			photohelper_remove.onclick = function(evt){
+				this.removeImage(evt);
+			}
 			photohelper_remove.className = "photohelper_div";
 			photohelper_remove.innerText = "삭제";
 			photohelper_menu.appendChild(photohelper_remove);
@@ -495,23 +498,23 @@ inits["profile"] = {
 		let that = this;
 		let type = evt.target.id.split('img')[0];
 		if( type == "header"){
-			headerLabelScale -= 0.001 * evt.deltaY;
-			if( headerLabelScale < 1 ){
-				headerLabelScale = 1;
-			} else if( headerLabelScale > 2 ){
-				headerLabelScale = 2;
+			that.headerLabelScale -= 0.001 * evt.deltaY;
+			if( that.headerLabelScale < 1 ){
+				that.headerLabelScale = 1;
+			} else if( that.headerLabelScale > 2 ){
+				that.headerLabelScale = 2;
 			}
 			changeLabelSize("header");
 			that.backgroundMouseMove( evt, img, true );
 		} else if( type == "profile" ){
-			profileLabelScale -= 0.001 * evt.deltaY;
-			if( profileLabelScale < 1 ){
-				profileLabelScale = 1;
-			} else if( profileLabelScale > 2 ){
-				profileLabelScale = 2;
+			that.profileLabelScale -= 0.001 * evt.deltaY;
+			if( that.profileLabelScale < 1 ){
+				that.profileLabelScale = 1;
+			} else if( that.profileLabelScale > 2 ){
+				that.profileLabelScale = 2;
 			}
 			that.changeLabelSize("profile");
-			backgroundMouseMove( evt, img, true );
+			that.backgroundMouseMove( evt, img, true );
 		}
 		evt.preventDefault();
 	},
@@ -599,7 +602,7 @@ inits["profile"] = {
 	
 		let label = $('#' + type + 'img_label');
 		label.removeChild(label.firstChild);
-		label.appendChild(makePhotoHelper(type,false));
+		label.appendChild(this.makePhotoHelper(type,false));
 	},
 	openUserTab : function( evt, target ){
 		let that = this;
@@ -663,6 +666,7 @@ inits["profile"] = {
 				inits["timeline"].getPosts(10);
 		}
 		history.pushState(null,null,history_str);
+		that.resizeContainer();
 	},
 	getFollows : function(limit,type,together){
 		$('#wrap_right').style.display = "none";
