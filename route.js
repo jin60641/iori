@@ -75,6 +75,7 @@ router.get('/timeline', function( req, res ){
 
 router.get('/login', function( req, res ){
 	if( req.user && req.user.signUp ){
+		req.session.returnTo = "/";
 		makeObj( req, res, "timeline" );
 	} else {
 		req.session.returnTo = "/";

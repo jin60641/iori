@@ -37,8 +37,6 @@ function socketCore( socket ){
 			delete socket_ids[socket.user.id];
 		}
 	});
-
-
 }
 
 function updateLast( uid ){

@@ -1065,7 +1065,7 @@ inits["timeline"] = {
 			event.preventDefault();
 		}
 		for( let i = 0; i<files.length; ++i){
-			if(realfiles_tmp.length>=20){
+			if(realfiles_tmp.length > 20){
 				alert("사진은 최대 20장까지만 업로드 가능합니다.");
 				return false;
 			}
@@ -1731,7 +1731,7 @@ inits["timeline"] = {
 		} else {
 			that.getPosts(10);
 			socket.on( 'post_new', function(){
-				that.etPosts(0,1);
+				that.getPosts(0,1);
 			});
 			socket.on( 'post_removed', function( pid ){
 				postwrap.removeChild($("#post_"+pid));	
@@ -1763,6 +1763,7 @@ inits["timeline"] = {
 		if( that.post_skip > that.post_cnt ){
 			that.post_skip = that.post_cnt;
 		}
+		
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){
 			if (xhr.readyState == 4 && xhr.status == 200){

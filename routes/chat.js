@@ -126,7 +126,6 @@ function exitChat( req, res, cb ){
 				for( var itmp = 0; itmp < groups.length; ++itmp ){
 					( function( i ){
 						process.nextTick( function(){
-							console.log(i);
 							var group = groups[i];
 							group.update({ $pull : { "users" : { id : user.id } } }, function( err3, result ){
 								if( err3 ){

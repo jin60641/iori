@@ -52,15 +52,17 @@ inits["login"] = {
 		}
 	},
 	init : function(){
-		if( session.signUp ){
+		if( session.signUp == true ){
 			if( document.URL.indexOf("login") >= 0 ){
 				if( document.URL.split('/login/')[1] ){
-					getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
+					location.href = "/" + document.URL.split('/').slice(4).toString().split('-').join('/');
+//					getPage( "/" + document.URL.split('/').slice(4).toString().split('-').join('/') );
 				} else {
-					location.hrerf = "/";
+					location.href = "/";
 				}
 			} else {
-				getPage( location.pathname );
+				location.reload();
+//				getPage( location.pathname );
 			}
 		}
 		let helper = $('div');

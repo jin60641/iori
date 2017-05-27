@@ -10,13 +10,19 @@ function getCookie(cname) {
 	return "";
 }
 
-location.hash = location.hash.replace("#_=_","");
+//location.hash = location.hash.replace("#_=_","");
+/*
+if( document.URL.split('/')[3] == "login" && inits["login"] == undefined ){
+	history.pushState(null,null, "/" + document.URL.split('/').slice(4).toString().split('-').join('/'));
+}
+*/
 /*
 if( location.hash && location.hash == "#_=_" ){
 	location.href = location.origin + location.pathname;
 }
 */
 
+/*
 if( session.signUp == undefined && document.cookie ){
 	if ( getCookie("facebook") == "true" ){
 		if( document.URL.indexOf("login") >= 0 ){
@@ -48,6 +54,7 @@ if( session.signUp == undefined && document.cookie ){
 if( session.level >= 9 ){
 	//관리자
 }
+*/
 
 function getUsers( query, limit, cb ){
 	let xhr = new XMLHttpRequest();
@@ -446,6 +453,7 @@ window.addEventListener('load',function(){
 
 if( session.notice && session.notice.web == true ){
 	socket.on( 'notice_new', function( notice ){
+		console.log(notice);
 		let options = {
 			body : notice.desc,
 			icon : "/files/profile/"+notice.from.uid,

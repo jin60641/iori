@@ -247,7 +247,6 @@ function makeWave( stream, cb ){
 				if( err ){
 					throw err;
 				}
-				console.log(vals.length);
 				cb(vals);
 			});
 		});
