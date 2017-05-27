@@ -222,11 +222,15 @@ inits["timeline"] = {
 	
 				let tmpimg = new Image;
 				tmpimg.src = metas.image;
+				let img_wrap = $('div');
+				img_wrap.className = "img_wrap";
+				
 				let realimg = $('img');
 				realimg.src = metas.image;
-				preview_img.appendChild(realimg);
+				img_wrap.appendChild(realimg);
+				preview_img.appendChild(img_wrap);
 				tmpimg.onload = function(){
-					if( tmpimg.naturalWidth >= preview_img.parentNode.clientWidth ){
+					if( tmpimg.naturalWidth >= 600 ){
 						preview_img.className += " link_preview_img_big";
 						preview_text.className += " link_preview_text_big";
 					} else {

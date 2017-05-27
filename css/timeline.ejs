@@ -509,6 +509,9 @@ textarea {
 .post .post_inside .link_preview .link_preview_img .link_preview_helper {
 	display : none;
 }
+.post .post_inside .link_preview .link_preview_img_big img {
+	width : 100%;
+}
 .post .post_inside .link_preview .link_preview_img_big .link_preview_helper {
 	display : block;
 	width : 100%;
@@ -546,7 +549,14 @@ textarea {
 	height : 150px;
 }
 
+.post .post_inside .link_preview_img_small .img_wrap {
+	height : 100%;
+	width : 800px;
+	margin-left : -325px;
+}
+
 .post .post_inside .link_preview_img_small img {
+	max-width : none;
 	display : block;
 	margin : auto;
 }
@@ -789,6 +799,10 @@ textarea {
 		vertical-align : auto;
 		vertical-align : initial;
 		width : calc(100%);
+	}
+	.post .post_inside .link_preview_img_small .img_wrap {
+		width : 100%;
+		margin-left : 0px;
 	}
 	.post .post_inside .link_preview_img_small img:hover {
 		transform : auto;
