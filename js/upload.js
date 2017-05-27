@@ -416,9 +416,9 @@ inits["upload"] = {
 			xhr.send();
 			that.gameStart();
 			$('#play_btn').onclick = null;
-		} else if( $('#upload_file').files[0] != null ){
+		} else if( realfile != null ){
 			let formdata = new FormData();
-			formdata.append("file",$('#upload_file').files[0]);
+			formdata.append("file",realfile);
 			/*
 			formdata.append("title",title.value);
 			formdata.append("artist",artist.value);
