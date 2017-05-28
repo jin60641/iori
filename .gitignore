@@ -45,3 +45,6 @@ img
 font
 svg
 audio
+subtitle
+video
+ffconcat

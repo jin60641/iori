@@ -1,19 +1,6 @@
 
-body {
-	overflow-y : hidden;
-}
-
-#upload_name {
-	padding-top : 60px;
-	padding-bottom : 10px;
-	border-bottom : 1px solid #f15c3e;
-	color : #f15c3e;
-	font-size : 20px;
-	text-align : center;
-	width : calc( 100vw - 30px );
-	margin : auto;
-	font-weight : bold;
-	display : block;
+#body {
+	display : none;
 }
 
 #helper {
@@ -58,8 +45,9 @@ form input {
 	display : block;
 	border : 0;
 	border-bottom : 1px solid #f15c3e;
-	width : 300px;
+	width : 250px;
 	padding : 1vh 0 4px 0;
+	box-sizing: border-box;
 	font-size : 18px;
 	margin : auto;
 	margin-bottom : 4vh;
@@ -80,20 +68,20 @@ form .upload_btn {
 	color : white;
 	border-radius : 2px;
 	margin : auto;
-}
-
-#upload_youtube {
-	margin-top : 10px;
-	background-color : rgb(216,23,40);
 	margin-bottom : 20px;
 }
+
 
 #wave_wrap {
 	position : relative;
 	padding : 0px;
 	overflow : hidden;
 	width: 100%;
-	margin-top : 40px;
+}
+
+#duration_input {
+	display : block;
+	margin : 5px auto 5px auto;
 }
 
 canvas {
@@ -109,8 +97,9 @@ canvas {
 }
 
 #play_btn {
-	height : 6vh;
-	width : 10vh;
+    height : 60px;
+    width : 80px;
+
 	display : block;
 	margin : auto;
 	margin-top : 15px;
@@ -121,8 +110,9 @@ canvas {
 }
 
 #play_btn img {
-	height : 80%;
-	margin : 5%;
+	width : 35px;
+	height : 35px;
+	margin-top : 12px;
 
 }
 

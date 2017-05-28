@@ -1,6 +1,8 @@
 'use strict';
 
+
 inits["upload"] = {
+	duration : 20,
 	listenstart : null,
 	mousestart : null,
 	waveformRenderId : null,
@@ -17,10 +19,10 @@ inits["upload"] = {
 		let play_btn = $('#play_btn');
 		if( spot != null && that.mousestart != null && that.audio != null && that.waveformArray.length >= 0 && play_btn.onclick != null ){
 			that.listenstart += spot - that.mousestart;
-			if( that.listenstart < -( that.waveformArray.length * 6 - window.innerWidth  * (2/4) )+18 ){
-				that.listenstart = -( that.waveformArray.length * 6 - window.innerWidth * (2/4) )+18;
-			} else if( that.listenstart > window.innerWidth / 2 - 18){
-				that.listenstart = window.innerWidth / 2 - 18;
+			if( that.listenstart < -( that.waveformArray.length * 6 - window.innerWidth * (2/4) ) + that.duration * 6 + 18){
+				that.listenstart = -( that.waveformArray.length * 6 - window.innerWidth * (2/4) ) + that.duration * 6 + 18;
+			} else if( that.listenstart > window.innerWidth / 2   ){
+				that.listenstart = window.innerWidth / 2 ;
 			}
 			that.mousestart = spot;
 		}
@@ -45,7 +47,7 @@ inits["upload"] = {
 			//	  waveformCtx.fillStyle = "#D0D9DD";
 			//  }
 			*/
-				if( i*6 >= -this.listenstart + waveform.width / 2 && i*6 <= -this.listenstart + waveform.width / 2 + 17.5 ){
+				if( i*6 >= -this.listenstart + waveform.width / 2 && i*6 <= -this.listenstart + waveform.width / 2 + this.duration*6 ){
 					if( i / this.waveformArray.length < audioCurrentTime / audioDuration ){
 						waveformCtx.fillStyle = "#ff5c26";
 					} else {
@@ -105,57 +107,7 @@ inits["upload"] = {
 				ID3Size += result.charCodeAt( i ) * Math.pow( 256 , Math.abs( i - 9 ) );
 			}
 			result = result.substr( 0, ID3Size );
-			let tit2Index = result.indexOf("TIT2");
-			let tpe1Index = result.indexOf("TPE1");
 			let apicIndex = result.indexOf("APIC");
-			/*
-			let lyricIndex = result.indexOf("USLT");
-			if( lyricIndex >= 0 ){
-				let lyricSize = 0;
-				for( let i = 0; i <= 3; ++i ){
-					lyricSize += result.charCodeAt( i + lyricIndex + 4 ) * Math.pow( 256 , Math.abs( i - 3 ) );
-				}
-				let lyric_str = result.substr( lyricIndex, lyricSize + 10 );
-	
-				let lyrics = "";
-				let isUTF16 = 0;
-				if( lyric_str.charCodeAt( 10 ) == 1 ){
-					isUTF16 = 1;
-				}
-				for( let i = 14; i < lyricSize + 10; i += 1 + isUTF16 ){
-					let charCode = lyric_str.charCodeAt(i) + lyric_str.charCodeAt(i+1)*256
-					if( charCode == 12288 ){
-						lyrics += "\n";
-					} else if( charCode == 13 ){
-						lyrics += "\r";
-					} else if( charCode == 10 ){
-						lyrics += "\n";
-					} else {
-						lyrics += String.fromCharCode(lyric_str.charCodeAt(i) + lyric_str.charCodeAt(i + 1) * 256 * isUTF16);
-					}
-				}
-				let lyric = $("div");
-				lyric.innerHTML = lyrics.replace(/\r\n/g,"\n").replace(/\n|\r/g,"<br>");
-			}
-			*/
-			/*
-			if( tit2Index >= 0 ){
-				let tit2Size = 0;
-				for( let i = 0; i<= 3; ++i ){
-					tit2Size += result.charCodeAt( i + tit2Index + 4 ) * Math.pow( 256, Math.abs( i - 3 ) );
-				}
-				let tit2_str = result.substr( tit2Index, tit2Size + 10);
-				let tit2 = "";
-				let isUTF16 = 0;
-				if( tit2_str.charCodeAt( 10 ) == 1 ){
-					isUTF16 = 1;
-				}
-				for( let i = 13; i < tit2Size + 10; i += 1 + isUTF16 ){
-					tit2 += String.fromCharCode(tit2_str.charCodeAt(i) + tit2_str.charCodeAt(i + 1) * 256 * isUTF16 );
-				}
-				title.value = tit2;
-			}
-			*/
 			if( apicIndex >= 0 ){
 				let apicSize = 0;
 				for( let i = 0; i<= 3; ++i ){
@@ -176,24 +128,6 @@ inits["upload"] = {
 				let img = $('#upload_img');
 				img.src = "/img/apicnone.png";
 			}
-			/*
-			if( tpe1Index >= 0 ){
-				let tpe1Size = 0;
-				for( let i = 0; i<= 3; ++i ){
-					tpe1Size += result.charCodeAt( i + tpe1Index + 4 ) * Math.pow( 256, Math.abs( i - 3 ) );
-				}
-				let tpe1_str = result.substr( tpe1Index, tpe1Size + 10);
-				let tpe1 = "";
-				let isUTF16 = 0;
-				if( tpe1_str.charCodeAt( 10 ) == 1 ){
-					isUTF16 = 1;
-				}
-				for( let i = 13; i < tpe1Size + 10; i += 1 + isUTF16 ){
-					tpe1 += String.fromCharCode(tpe1_str.charCodeAt(i) + tpe1_str.charCodeAt(i + 1) * 256 * isUTF16 );
-				}
-				artist.value = tpe1;
-			}
-			*/
 			let send = $('#upload_send');
 			send.style.backgroundColor = "";
 			send.style.cursor = "";
@@ -220,6 +154,17 @@ inits["upload"] = {
 			file = event.dataTransfer.files[0];
 		}
 		this.realfile = file;
+		ID3.loadTags(that.realfile.name,function(){
+			var tags = ID3.getAllTags(that.realfile.name);
+			if( tags["TIT2"] && tags["TIT2"].length >= 1 ){
+				$('#input_title').value = tags["TIT2"];
+			} else {
+				$('#input_title').value = tags["title"];
+			}
+			$('#input_artist').value = tags["artist"];
+		},{
+			dataReader: ID3.FileAPIReader(file)
+		});
 		let reader = new FileReader();
 		reader.onload = function(e){
 			console.log("open Music reader result");
@@ -231,12 +176,15 @@ inits["upload"] = {
 	},
 	init : function(){
 		let that = this;
-		$('#body').style.display = "none";
-		let name = $("div");
-		name.innerText = "업로드";
-		name.id = "upload_name";
-		document.body.appendChild(name);
 	
+		var head = document.getElementsByTagName('head')[0];
+
+		var script = $('script');
+		script.className = "included";
+		script.src = '/js/id3.js';
+		head.appendChild(script);
+
+		
 		let wave_wrap = $("div");
 		wave_wrap.id = "wave_wrap";
 		wave_wrap.style.display = "none";
@@ -279,20 +227,16 @@ inits["upload"] = {
 		img.id = "upload_img";
 		img.src = "/img/upload.png";
 		label.appendChild(img);
-		/*
-		title = $("input")
+		let title = $("input")
+		title.id = "input_title";
 		title.placeholder = "제목";
 		title.type = "text";
 		form.appendChild(title);
-		artist = $("input")
+		let artist = $("input")
+		artist.id = "input_artist";
 		artist.placeholder = "가수";
 		artist.type = "text";
 		form.appendChild(artist);
-		genre = $("input")
-		genre.placeholder = "장르";
-		genre.type = "text";
-		form.appendChild(genre);
-		*/
 		let send = $("div")
 		send.innerText = "전송하기";
 		send.id = "upload_send";
@@ -302,34 +246,36 @@ inits["upload"] = {
 		send.onclick = function(){
 			if( this.style.backgroundColor == "gray" ){
 				alert("파일을 선택해주세요");
-	//		} else if( title.value.length >= 1 && artist.value.length >= 1 && genre.value.length >= 1 ){
-			} else {
+			} else if( title.value.length >= 1 && artist.value.length >= 1 ){
 				that.uploadMusic();
+			} else {
+				alert("제목과 가수정보를 입력해주세요");
 			}
 		}
 		form.appendChild(send);
 	
-		let ytsend = $("div")
-		ytsend.id = "upload_youtube";
-		ytsend.innerText = "YouTube";
-		ytsend.className = "upload_btn";
-		ytsend.onclick = function(){
-			let url = prompt("YouTube 링크를 입력해주세요");
-			if( url != null && url.length >= 1 ){
-				that.uploadMusic(url);
-			}
-		}
-		form.appendChild(ytsend);
 		body.appendChild(form);
 	
+		let duration_input = $("input");
+		duration_input.id = "duration_input";
+		duration_input.type = "range";
+		duration_input.min = 3;
+		duration_input.max = 60;
+		duration_input.value = that.duration;
+		duration_input.onmousemove = function(){
+			that.duration = this.value;
+		}
+		wave_wrap.appendChild(duration_input);
+
 		let waveform = $("canvas");
 		waveform.id = "waveform";
 		wave_wrap.appendChild(waveform);
 	
 		let play_btn = $("div");
-		play_btn.innerHTML = "<img src='/img/play.jpg'>"
+		play_btn.innerHTML = "<img src='/img/share.png'>"
 		play_btn.id = "play_btn";
 		wave_wrap.appendChild(play_btn);
+
 	
 		window.onresize = function(){
 			let waveform = $('#waveform');
@@ -383,47 +329,11 @@ inits["upload"] = {
 		this.uploading = true;
 		this.waveformArray = [];
 		this.audio.pause();
-		if( url ){
-			let vid;
-			let vindex;
-			vindex = url.indexOf("youtu.be/");
-			if( vindex >= 0 ){
-				vid = url.substr( vindex + 9 );
-			}
-			vindex = url.indexOf("youtube.com/watch?v=");
-			if( vindex >= 0 ){
-				vid = url.substr( vindex + 20 );
-			}
-			if( vid == null || vid == "" ){
-				alert("잘못된 링크입니다");
-				return;
-			}
-			vid = vid.split('&')[0];
-			let xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
-				if( xhr.responseText && xhr.responseText.length ){
-					try {
-						let obj = JSON.parse( xhr.responseText );
-						that.getMusic(vid);
-						that.loadMusicArray(obj.vals,vid);
-					} catch(e){
-						console.log(e);
-						alert(xhr.responseText);
-					}
-				}
-			}};
-			xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-			xhr.send();
-			that.gameStart();
-			$('#play_btn').onclick = null;
-		} else if( realfile != null ){
+		if( this.realfile != null ){
 			let formdata = new FormData();
-			formdata.append("file",realfile);
-			/*
-			formdata.append("title",title.value);
-			formdata.append("artist",artist.value);
-			formdata.append("genre",genre.value);
-			*/
+			formdata.append("file",this.realfile);
+			formdata.append("title",$('#input_title').value);
+			formdata.append("artist",$('#input_artist').value);
 			let xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 				if( xhr.responseText && xhr.responseText.length ){
@@ -431,6 +341,7 @@ inits["upload"] = {
 						let obj = JSON.parse( xhr.responseText );
 						that.loadMusicArray(obj.vals);
 					} catch(e){
+						console.log(e);
 						alert(xhr.responseText);
 					}
 				}
@@ -441,17 +352,12 @@ inits["upload"] = {
 			$('#play_btn').onclick = null;
 		}
 	},
-	getMusic : function( vid ){
+	getMusic : function(){
 		if( this.audio ){
 			this.audio.pause();
 		}
 	//  play_btn.onclick = null;
 		let audio = new Audio();
-		if( vid ){
-			audio.src = "/api/audio/getaudio/" + vid;
-		} else {
-			//audio.src = URL.createObjectURL($('#upload_file').files[0]);
-		}
 		audio.controls = false;
 		audio.autoplay = false;
 		audio.loop = false;
@@ -475,7 +381,7 @@ inits["upload"] = {
 			}, 10);
 		}
 	},
-	loadMusicArray : function( data, vid ){
+	loadMusicArray : function( data ){
 		let that = this;
 		this.uploading = false;
 		this.waveformArray = data;
@@ -492,18 +398,30 @@ inits["upload"] = {
 				that.waveformRender();
 			}, 1000 / this.FPS );
 		}
-		socket.emit( 'game_loaded' );
 		let play_btn = $('#play_btn');
 		play_btn.style.cursor = "pointer";
 		play_btn.onclick = function(){
-			if( vid ){
-				that.audio.src = "/api/audio/getaudio/youtube/" + vid + "/" + (( -that.listenstart + waveform.width / 2 ) / 6) + "?" + new Date().getTime();
-			} else {
-				that.audio.src = "/api/audio/getaudio/1/" + (( -that.listenstart + waveform.width / 2 ) / 6) + "?" + new Date().getTime();
-			}
+//			that.audio.src = "/api/audio/get/" + (( -that.listenstart + waveform.width / 2 ) / 6) + "/" + that.duration + "?" + new Date().getTime();
 			//audio.currentTime = ( -this.listenstart + waveform.width / 2 ) / 6;
-			that.audio.play();
+//			that.audio.play();
+/*
+			let download = $("a");
+//			download.download = title.innerText + "." + obj.type;
+			download.href = '/api/video/get/' +  Math.floor((( -that.listenstart + waveform.width / 2 ) / 6)) + "/" + that.duration + "/test.mp4?" + new Date().getTime() ;
+			download.style.display = "none";
+			document.body.appendChild(download);
+			download.click();
+			document.body.removeChild(download);
+*/
+			var start = Math.floor((( -that.listenstart + waveform.width / 2 ) / 6));
+			var end = parseInt(start) + parseInt(that.duration);
+			getPage( "/share/" + start + '/' + end );
 		};
 		this.sin_index = 0;
+	},
+	exit : function(){
+		document.body.removeChild($('#upload_wrap'));
+		document.body.removeChild($('#wave_wrap'));
+		window.onresize = undefined;
 	}
 }

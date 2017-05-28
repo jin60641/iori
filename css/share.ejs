@@ -1,0 +1,111 @@
+body {
+}
+
+#share_wrap{
+	width : 1120px;
+	margin : auto;
+	display : block;
+	padding-top : 40px;
+}
+
+#subtitle_box{
+	display : inline-block;
+	height : 620px;
+	box-sizing : border-box;
+	border : 1px solid black;
+	width : 440px;
+	overflow-y : scroll;
+	overflow-x : hidden;
+}
+#subtitle_box > div:hover {
+	cursor : pointer;
+	background-color : black;
+	color : white;
+}
+
+#wrap {
+	display : inline-block;
+	margin-left : 40px;
+	width : 640px;
+}
+
+#wrap #seek_bar {
+	
+	margin-top : 40px;
+	display : block;
+	box-sizing : border-box;
+	border : 1px solid black;
+}
+
+#wrap #canvas {
+	cursor : pointer;
+//	background-image : url('/img/canvas_back.png');
+	background-color : black;
+	box-sizing : border-box;
+	border : 1px solid black;
+	display : block;
+}
+
+#img_preview {
+	overflow-x : auto;
+	overflow-y : hidden;
+	white-space : nowrap;
+	display : block;
+	margin-top : 40px;
+	width : 100%;
+	padding-left : 8px;
+	box-sizing : border-box;
+	height: 200px;
+	border : 1px solid black;
+}
+
+.imgbox{
+    padding : 3px;
+    margin-top : 10px;
+    border : 2px solid black;
+    width : 170px;
+    height : 170px;
+    margin-left : 4px;
+    margin-right : 5px;
+    position : relative;
+    display : inline-block;
+}
+
+.imgbox:hover .imgbox_delete{
+	display : block;
+}
+
+.imgbox_delete {
+    cursor : pointer;
+    background : url('/svg/deletebtn.svg') no-repeat;
+    background-color : white;
+    background-size : 18px;
+    top : 3px;
+    right : 3px;
+    width : 18px;
+    height : 18px;
+    position : absolute;
+    display : none;
+}
+
+#btn_wrap {
+	text-align : right;
+}
+
+#save_btn {
+    height : 60px;
+    width : 80px;
+	display : inline-block;
+    margin-top : 15px;
+    margin-bottom : 20px;
+    border-radius : 0.7vh;
+    background-color : #f15c3e;
+    text-align : center;
+}
+
+#save_btn img {
+    width : 35px;
+    height : 35px;
+    margin-top : 12px;
+	cursor : pointer;
+}

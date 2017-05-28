@@ -62,6 +62,10 @@ const views = {
 	upload : {
 		js : ["upload"],
 		css : ["upload"]
+	},
+	share : {
+		js : ["share"],
+		css : ["share"]
 	}
 }
 

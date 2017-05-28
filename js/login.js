@@ -151,9 +151,9 @@ inits["login"] = {
 				now.setTime(now.getTime() + (7*24*60*60*1000));
 				let returnTo;
 				if( document.URL.indexOf("login") >= 0 ){
-					returnTo = document.URL.split('/').slice(4).toString();
+					returnTo = document.URL.split('/').pop();
 				} else {
-					returnTo = document.URL.split('/').slice(3).toString();
+					returnTo = document.URL.split('/').slice(3).join('-');
 				}
 				let auto = $("#form_auto_login");
 				if( auto.checked == true ){

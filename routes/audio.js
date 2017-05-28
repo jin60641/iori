@@ -19,17 +19,51 @@ var ytdl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var AudioContext = require('web-audio-api').AudioContext;
 
+var alsong = require('alsong');
+
+
+// srt표준 timestamp를 만들기 위해 사용하는 함수 hh:mm:ss,mmm 이런식이다
+function makeTimeStamp( msec ){
+	var sec = Math.floor(msec/1000);
+	var h = Math.floor(sec/3600);
+	var m = Math.floor(sec%3600/60);
+	var s = sec%60;
+	var ms = msec%1000;
+	if( h < 10 ){
+		h = '0' + h;
+	}
+	if( m < 10 ){
+		m = '0' + m;
+	}
+	if( s < 10 ){
+		s = '0' + s;
+	}
+	if( ms < 10 ){
+		ms = '00' + ms;
+	} else if( ms < 100 ){
+		ms = '0' + ms;
+	}
+	return h + ':' + m + ':' + s + ',' + ms;
+}
+
 router.get( '/upload', checkSession, function( req, res ){
 	makeObj(req,res,"upload");
 });
 
-router.get( '/api/audio/getaudio/youtube/:vid/:start', checkSession, function( req, res ){
+router.post( '/api/subtitle/get', checkSession, function( req, res ){
+	var srt_path = __dirname + '/../subtitle/' + req.user.id + '.srt';
+	var srt_string = fs.readFileSync( srt_path, 'utf8' );
+	res.send(srt_string);
+});
+
+router.get( '/api/audio/getaudio/youtube/:vid/:start/:duration', checkSession, function( req, res ){
 	var vid = req.params['vid'];
 	var read_path = __dirname + "/../audio/" + vid + ".mp3";
 	var write_path = __dirname + "/../audio/" + vid + "-" + req.user.id + ".mp3";
 	var start = Math.floor(parseInt((req.params['start'])));
+	var duration = parseInt(req.params['duration']);
 	if( fs.existsSync( read_path ) ){
-		ffmpeg(fs.createReadStream(read_path)).setStartTime(start).duration(3).on('end', function(){
+		ffmpeg(fs.createReadStream(read_path)).setStartTime(start).duration(duration).on('end', function(){
 			fs.createReadStream( write_path ).pipe(res);
 		}).save(write_path);
 	} else {
@@ -112,11 +146,11 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 			if( info && info.duration ){
 				duration = info.duration.split(':');
 			}
-	        if( err ){
-	            console.log(err);
-	        } else{
-	            console.log("not error");
-	        }
+			if( err ){
+				console.log(err);
+			} else{
+				console.log("not error");
+			}
 			if( info == undefined || info.duration == undefined ){
 				res.send("잘못된 링크입니다.");
 			} else if( duration.length >= 3 || ( duration.length == 2 && duration[0] > 10 ) ){
@@ -181,27 +215,85 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 	}
 });
 
+router.get( '/share/:start/:end', checkSession, function( req, res ){
+	var read_path = __dirname + "/../audio/" + req.user.id + ".mp3";
+	var write_path = __dirname + "/../audio/" + req.user.id + "_short.mp3";
+	var start = Math.floor(parseInt((req.params['start'])));
+	var end = Math.floor(parseInt(req.params['end']));
+	var duration = end - start;
+	if( isNaN( start ) || isNaN( duration ) ){
+		res.end();
+	} else {
+		ffmpeg()
+		.input( read_path )
+		.seek(start)
+		.on('start',function(m){
+			console.log(m);
+		})
+		.on('error',function(error){
+			console.log(error);
+		})
+		.on('end', function(){
+			makeObj(req,res,"share");
+		})
+		.outputOptions(['-acodec copy','-vcodec copy', '-t '+duration])
+		.save(write_path);
+	}
+});
+
+
+router.get( '/api/video/get',  function( req, res ){
+	var write_path = __dirname + '/../video/' + req.user.id + '.mp4';
+	fs.createReadStream( write_path ).pipe(res);
+});
+
+
 router.post( '/api/audio/add', checkSession, function( req, res ){
+	var body = {};
 	req.pipe( req.busboy );
 	console.log("upload start");
 	req.busboy.on( 'file', function( fieldname, file, filename ){
 		var path = __dirname + "/../audio/" + req.user.id + ".mp3";
 		var fstream = fs.createWriteStream( path );
-		var command = ffmpeg(file).format('adts');
-		var stream = command.pipe(fstream);
+		var stream = file.pipe(fstream);
 		stream.on('finish',function(){
-			console.log("upload finish");
+			console.log("upload finish / make wave");
 			makeWave( fs.createReadStream( path ), function( vals ){
-//			makeWave( command, function( vals ){
-//			makeWave( file, function( vals ){
 				res.send({ vals : vals });
 			});
 		});
 	});
 	req.busboy.on( 'field', function( fieldname, val ){
+		body[fieldname] = val;
 	});
 	req.busboy.on( 'finish', function(){
+		console.log( body.artist, body.title );
+		alsong( body.artist, body.title ).then( function( v ){
+			var wstream = fs.createWriteStream( __dirname + '/../subtitle/' + req.user.id + '.srt');
+			var lyric = v[0].lyric;
+			var times = Object.keys(lyric);
+			console.log(times);
+			var cnt = 0;
+			async.each( times, function( time, cb ){
+				console.log(lyric[time]);
+				if( cnt+1 < times.length ){
+					wstream.write(++cnt + '\n' + makeTimeStamp(parseInt(time)) + ' --> ' + makeTimeStamp(parseInt(times[cnt])-500) + '\n' + lyric[time].join('\n') + '\n\n' );
+				} else {
+					wstream.write(++cnt + '\n' + makeTimeStamp(parseInt(time)) + ' --> ' + makeTimeStamp(parseInt(time)+5000) + '\n' + lyric[time].join('\n') + '\n' );
+				}
+				cb( null );
+			}, function( err ){
+				if( err ){
+					throw err;
+				}
+				wstream.end();
+				wstream.on('finish',function(){
+					console.log('가사파싱완료');
+				});
+			});
+		});
 	});
+
 });
 
 function makeWave( stream, cb ){
@@ -252,5 +344,109 @@ function makeWave( stream, cb ){
 		});
 	});
 }
+
+function makeVideo(req,res,body){
+	var srt_path = __dirname + '/../subtitle/' + req.user.id + '.srt';	 // 자막경로
+	var audio_path = __dirname + '/../audio/' + req.user.id + '.mp3';	  // 음원경로
+	var write_path = __dirname + '/../video/' + req.user.id + '.mp4';	// 영상경로
+	var concat_path = __dirname + '/../ffconcat/' + req.user.id + '.txt';  // ffconcat경로 ( 각기 다른 duration을 가진 여러개의 img를 ffmpeg로 input 하기위해 필요 )
+
+	var cnt = 0;
+	var tmp_duration = body.duration;
+	var wstream = fs.createWriteStream( concat_path );
+	// img가 출력되기 시작하는 시간이 imgTimeArray에 담겨있기때문에 다음 이미지에서 현재이미지의 차가 duration이 됨
+	async.each( body.imgArray, function( img, cb ){
+		console.log(cnt,body.imgTimeArray);
+		console.log(body.imgTimeArray[cnt+1],body.imgTimeArray[cnt]);
+		if( cnt+1 < body.imgArray.length ){
+			tmp_duration -= parseInt(body.imgTimeArray[cnt+1]) - parseInt(body.imgTimeArray[cnt]);
+			if( cnt == 0 ){
+				wstream.write( 'file ' + body.imgArray[cnt] + '\n' + 'duration ' + ( parseInt(body.imgTimeArray[cnt+1]) - parseInt(body.imgTimeArray[cnt]) + body.start )+ '\n' );
+			} else {
+				wstream.write( 'file ' + body.imgArray[cnt] + '\n' + 'duration ' + ( parseInt(body.imgTimeArray[cnt+1]) - parseInt(body.imgTimeArray[cnt]) )+ '\n' );
+			}
+			cnt++;
+		} else if( cnt == 0 ){
+			wstream.write( 'file ' + body.imgArray[cnt] + '\n' + 'duration ' + (body.start+body.duration) + '\n' );
+		} else {
+			wstream.write( 'file ' + body.imgArray[cnt] + '\n' + 'duration ' + (body.duration) + '\n' );
+		}
+		cb(null);
+	}, function( err ){
+		//ffmpeg에서 마지막이미지가 제대로 처리안될때가 있어서 최대한 길게 한번 더넣어줌
+		if( body.imgArray.length >= 1 ){
+			wstream.write( 'file ' + body.imgArray[body.imgArray.length-1] + '\n' + 'duration ' + (body.duration) + '\n' );
+		} else {
+			// 아무 이미지도 안골랐을 때
+			wstream.write( 'file ' + __dirname + '/../img/default.png' + '\n' + 'duration ' + (body.duration+body.start) + '\n' );
+			wstream.write( 'file ' + __dirname + '/../img/default.png' + '\n' + 'duration ' + (body.duration) + '\n' );
+		}
+		// file stream 닫기
+		wstream.end();
+		wstream.on('finish',function(){
+			ffmpeg().input(audio_path).seek(body.start).on('start',function(command){
+				console.log(command);
+				console.log("곧 작업이 시작됩니다.");
+			}).on('progress',function(data){
+				if( data.currentKbps ){
+					if( data.timemark ){
+						var time = data.timemark.split(':');
+						var current = parseInt(time[0])*3600+parseInt(time[1])*60+parseInt(time[2]);
+						console.log(Math.floor(current/body.duration*100)+"%");
+					}
+				}
+			}).on('end',function(){
+				console.log("100%");
+				console.log("인코딩 완료!");
+				fs.createReadStream( write_path ).pipe(res);
+			}).on('error',function(error){
+				console.log(error);
+			})
+			.input(concat_path)
+			.inputOptions(['-f concat','-safe 0'])
+			.outputOptions(['-vf fps=25,scale=640:480,subtitles=filename='+srt_path+':force_style="FontName=NanumGothic"', '-vcodec libx264', '-acodec copy', '-crf 5', '-t '+body.duration,'-pix_fmt yuv420p'])
+			.save(write_path);
+		});
+	});
+}
+
+router.post( '/api/video/get', checkSession, function( req, res ){
+	console.log("upload start");
+	req.pipe( req.busboy );
+	var body = {};
+	body.imgArray = [];
+	var fcnt = 0;
+	var result = 0;
+	var finished = false;
+	req.busboy.on( 'field', function( fieldname, val ){ // parameter 처리 ( start, duration, img별 duration )
+		console.log(fieldname + " : " + val );
+		if( fieldname == "imagetimearray" ){
+			body.imgTimeArray = val.split(',');
+		} else {
+			body[fieldname] = Math.floor(parseInt(val));
+		}
+	});
+	req.busboy.on( 'file', function( fieldname, file, filename ){  // file upload
+		var img_path = __dirname + '/../files/video/' + req.user.id + '_' + ++fcnt + '.jpg';
+		++result;
+		var wstream = fs.createWriteStream( img_path );
+		wstream.on('close', function(){
+			--result;
+			if(result == 0 && finished == true ){
+				makeVideo( req, res,body);
+			}
+		});
+		file.pipe(wstream);
+		body.imgArray.push(img_path);
+	});
+	req.busboy.on( 'finish', function(){
+		finished = true;
+		if( body.imgTimeArray[0] == '' ){
+			body.imgTimeArray = [];
+			makeVideo( req, res, body);
+		}
+	});
+});
+
 
 module.exports = router;
