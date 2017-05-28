@@ -360,6 +360,7 @@ function makeRecommendList(){
 function makeHref(a,link){
 	a.href = link;
 	a.onclick = function(event){
+		event.cancelBubble = true;
 		if( event.ctrlKey || event.shiftKey ){
 		} else {
 			event.preventDefault();

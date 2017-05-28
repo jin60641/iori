@@ -59,6 +59,7 @@ inits["timeline"] = {
 			let reply_menu = $("div");
 			reply_menu_btn.appendChild(reply_menu);
 			reply_menu_btn.onclick = function(event){
+				event.cancelBubble = true;
 				event.stopPropagation();
 				event.preventDefault();
 				this.firstElementChild.style.display="block" 
@@ -160,8 +161,14 @@ inits["timeline"] = {
 				let preview = $("a");
 				preview.href = link;
 				preview.target = "_blank";
+				preview.href = link;
+				preview.onclick = function(event){
+					window.open(preview.href, '_blank');
+				}
+
 				preview.id = "link_preview_" + pid;
 				preview.className = "link_preview";
+
 				let preview_img = $("div");
 				preview_img.className = "link_preview_img";
 	
@@ -257,8 +264,16 @@ inits["timeline"] = {
 		}
 		Post.date = new Date(Post.date);
 		let post_wrap = $('#post_wrap');
-		let div = $("div");
+		let div = $("a");
+		div.href = "/post/" + Post.id;
 		div.id = 'post_' + Post.id;
+		div.onclick = function(e){
+			if( $('#body').clientWidth <= 669 && that.hidemenu() == false){
+				getPage(this.href);
+			} else {
+				e.preventDefault();
+			}
+		}
 		div.className = 'post';
 		if( Post.share != undefined ){
 			let share = $('span');
@@ -325,7 +340,8 @@ inits["timeline"] = {
 				textmore_btn.className = "textmore_btn";
 				textmore_btn.innerHTML = "더보기";
 				textmore_btn.id = "textmore_btn_" + Post.id;
-				textmore_btn.addEventListener("click",function(){
+				textmore_btn.addEventListener("click",function(event){
+					event.cancelBubble = true;
 					this.previousElementSibling.style.maxHeight = "initial";
 					this.parentNode.removeChild(this);
 				});
@@ -346,7 +362,8 @@ inits["timeline"] = {
 		if( Post.file ){
 			let post_span = $("span");
 			post_span.className = "post_span";
-			post_span.onclick = function(){
+			post_span.onclick = function(event){
+				event.cancelBubble = true;
 				$('#postimg_'+Post.id).click();
 			}
 			post_span.innerText = Post.file ;
@@ -355,7 +372,8 @@ inits["timeline"] = {
 			let date_span = $("span");
 			date_span.className = "date";
 			date_span.id = "date_" + Post.date.getTime();
-			date_span.onclick = function(){
+			date_span.onclick = function(event){
+				event.cancelBubble = true;
 				$('#postimg_'+Post.id).click();
 			}
 			date_span.innerText = this.getDateString(Post.date);
@@ -374,7 +392,8 @@ inits["timeline"] = {
 			img.src = "/files/post/" + Post.id + "/1?" + Post.date;
 			img.id = "postimg_" + Post.id;
 			img.className = "postimg_img";
-			img.onclick = function(){
+			img.onclick = function(event){
+				event.cancelBubble = true;
 				inits["imglayer"].viewimg(Post.id,Post.file,Post.date);
 			}
 			preview.appendChild(img);
@@ -383,7 +402,8 @@ inits["timeline"] = {
 		} else {
 			let date_span = $("span");
 			date_span.className = "date";
-			date_span.onclick = function(){
+			date_span.onclick = function(event){
+				event.cancelBubble = true;
 				$('#postimg_'+Post.id).click();
 			}
 			date_span.innerText = this.getDateString(Post.date);
@@ -404,8 +424,8 @@ inits["timeline"] = {
 		if( session != "" && session.signUp == true ){
 			let btn = $("div");
 			btn.className = 'postmenubtn';
-			btn.addEventListener('click', function(){ that.showmenu(this) });
-			btn.addEventListener('touchstart', function(){ that.showmenu(this) });
+			btn.addEventListener('click', function(e){ e.preventDefault(); that.showmenu(this) });
+			btn.addEventListener('touchstart', function(e){ e.preventDefault(); that.showmenu(this) });
 			div.appendChild(btn);
 			let menu = $("div")
 			menu.id = 'menu_' + Post.id;
@@ -415,9 +435,11 @@ inits["timeline"] = {
 			}
 			menu.className = 'post_menu';
 			menu.ontouchstart = function(e){
+				e.cancelBubble = true;
 				e.stopPropagation();
 			}
 			menu.onclick = function(e){
+				e.cancelBubble = true;
 				e.stopPropagation();
 			}
 			if( session.id == Post.user.id ){
@@ -483,6 +505,9 @@ inits["timeline"] = {
 		div.appendChild(replywrap);
 		if( Replys.length == 0 && session.signUp != true ){
 			replywrap.style.display = "none";
+		} else if( location.pathname.substr(0,6) == "/post/" ){
+			console.log(replywrap);
+			replywrap.style.display = "block";
 		}
 		for( let i = Replys.length - 1; i >=0; i-- ){
 			if(typeof(Replys[i]) == "string"){
@@ -621,16 +646,24 @@ inits["timeline"] = {
 		let that = this;
 		let post_menu = $(".post_menu");
 		let reply_menu = $(".reply_menu");
+		let flag = false;
 		for(let i = reply_menu.length-1;i>=0;i--){
+			if( reply_menu[i].style.display == "block" ){
+				flag = true;
+			}
 			reply_menu[i].style.display="none";
 		}
 		for(let i = post_menu.length-1;i>=0;i--){
+			if( post_menu[i].style.display == "block" ){
+				flag = true;
+			}
 			post_menu[i].style.display="none";
 		}
 		if( that.selectedPost ){
 			that.selectedPost.style.borderColor = "#e5e6e9 #dfe0e4 #d0d1d5";
 			that.selectedPost.style.boxShadow = "initial";
 		}
+		return flag;
 	},
 	dontseeReply : function(pid,reply_id){
 		let xhr = new XMLHttpRequest();
@@ -1656,6 +1689,12 @@ inits["timeline"] = {
 		let post_file = $('input');
 		$('#wrap_mid').appendChild(postwrap);
 		if( session && location.pathname.substr(0,6) != "/post/" && inits["profile"] == null && inits["search"] == null ){
+			let float_write = $('div');
+			float_write.id = "float_write";
+			float_write.onclick = function(){
+				getPage( "/write" );
+			}
+			document.body.appendChild(float_write);
 			let write = $("div");
 			write.id = "write";
 			output_post.id = "output_post";
@@ -1665,6 +1704,7 @@ inits["timeline"] = {
 			post_write_button.onclick = function(){
 				that.postWrite();
 			}
+	
 			post_write_button.innerText = "게시";
 			write.appendChild(post_write_button);
 			let post_file_label = $('label');
@@ -1847,6 +1887,9 @@ inits["timeline"] = {
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
 		$('#wrap_mid').removeChild($('#post_wrap'));
+		if( $('#float_write') ){
+			document.body.removeChild($('#float_write'));
+		}
 		const socket_listeners = [ "post_new", "post_removed", "reply_new", "reply_removed" ]
 		for( let i = 0; i < socket_listeners.length; ++i ){
 			socket.removeAllListeners(socket_listeners[i]);
