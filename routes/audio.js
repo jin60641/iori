@@ -21,6 +21,7 @@ var AudioContext = require('web-audio-api').AudioContext;
 
 var alsong = require('alsong');
 
+var mediaserver = require('mediaserver');
 
 // srt표준 timestamp를 만들기 위해 사용하는 함수 hh:mm:ss,mmm 이런식이다
 function makeTimeStamp( msec ){
@@ -247,6 +248,10 @@ router.get( '/api/video/get',  function( req, res ){
 	fs.createReadStream( write_path ).pipe(res);
 });
 
+router.get( '/api/audio/get', checkSession, function( req, res ){
+	var url = __dirname + '/../audio/' + req.user.id + "_short.mp3";
+	mediaserver.pipe(req,res,url);
+});
 
 router.post( '/api/audio/add', checkSession, function( req, res ){
 	var body = {};

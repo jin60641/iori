@@ -423,5 +423,7 @@ inits["upload"] = {
 		document.body.removeChild($('#upload_wrap'));
 		document.body.removeChild($('#wave_wrap'));
 		window.onresize = undefined;
+		clearInterval(this.waveformRenderId);
+		clearInterval(this.audioPlayId );
 	}
 }

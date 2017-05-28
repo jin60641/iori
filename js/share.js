@@ -33,9 +33,9 @@ inits["share"] = {
 		let subIndex = 0;
 		let strArr = that.subtitles.split('\n');
 		for (var i = 0; i < strArr.length; ++i ) {
-			if (strArr[i].indexOf("--&gt") != -1) {
+			if (strArr[i].indexOf("-->") != -1) {
 				subIndex = i + 1;
-				var time = hmsTos(strArr[i].substring(0,12));
+				var time = that.hmsTos(strArr[i].substring(0,12));
 				if( time < that.start ){
 					that.startSubtitleIndex++;
 					continue;
@@ -43,25 +43,28 @@ inits["share"] = {
 					continue;
 				}
 				that.subtitleTimeArray[index] = Math.floor((time-that.start)*1000)/1000;
-				while( subIndex < strArr.length && (strArr[subIndex].indexOf("--&gt") == -1) ) {
+				while( subIndex < strArr.length && (strArr[subIndex].indexOf("-->") == -1) ) {
 					subIndex++;
 				}
 				that.subtitleArray[index] = "";
 				if (subIndex == strArr.length) {
 					for (var j = i + 1; j < subIndex; ++j) {
-						that.subtitleArray[index] += that.decode(strArr[j]) + "\n";
+//						that.subtitleArray[index] += that.decode(strArr[j]) + "\n";
+						that.subtitleArray[index] += strArr[j] + "\n";
 					}
 				} else {
 					for (var j = i + 1; j < subIndex - 2; ++j) {
-						that.subtitleArray[index] += that.decode(strArr[j]) + "\n";
+//						that.subtitleArray[index] += that.decode(strArr[j]) + "\n";
+						that.subtitleArray[index] += strArr[j] + "\n";
 					}
 				}
 				var div = $('div');
 				div.onclick = function(){
-					that.audio.currentTime = hmsTos(this.innerText.substring(0,12))+0.01;
+					that.audio.currentTime = that.hmsTos(this.innerText.substring(0,12))+0.01;
 				}
 				div.innerHTML += that.sTohms(that.subtitleTimeArray[index]) + "</br>" + that.subtitleArray[index].replace(/\n/g,"</br>") + "</br>";
 				$('#subtitle_box').appendChild(div);
+
 				index = index + 1;
 				i = subIndex-1;
 			}
@@ -186,7 +189,7 @@ inits["share"] = {
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
 			if( xhr.responseText && xhr.responseText.length ){
 				that.subtitles = xhr.responseText;
-				that.start();
+				that.startPage();
 			} else {
 				alert("가사가 존재하지 않습니다. 제목곽 가수를 정확히 입력하여 다시 업로드해주세요.");
 				getPage('/upload');
@@ -194,13 +197,14 @@ inits["share"] = {
 		}};
 		xhr.open("POST","/api/subtitle/get", true); xhr.send();
 	},
-	start : function(){
+	startPage : function(){
 		let that=this;
 		that.duration = that.end - that.start,
 		that.addListener(window,'click',function(e){
 			that.lastClickImg = null;
 		});
-		this.audio.src = "/audio/" + session.id + "_short.mp3?" + new Date().getTime();
+		this.audio.src = "/api/audio/get?" + new Date().getTime();
+//		this.audio.src = "/audio/" + session.id + "_short.mp3?" + new Date().getTime();
 		var body = $('div');
 		body.id = "share_wrap";
 		document.body.appendChild(body);
@@ -451,6 +455,7 @@ inits["share"] = {
 			let h = this.listeners[i];
 			h.element.removeEventListener( h.event, h.handle, false );
 		}
+		clearInterval(this.RenderId);
 		document.body.removeChild($('#share_wrap'));
 	}
 }
