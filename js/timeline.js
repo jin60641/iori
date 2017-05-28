@@ -446,7 +446,10 @@ inits["timeline"] = {
 				let postremove = $('div');
 				postremove.className = "postremove";
 				postremove.id = "postremove_" + Post.id;
-				postremove.onclick = function(){
+				postremove.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.removePost( Post.id );
 				};
 				postremove.innerText = "게시글삭제";
@@ -455,7 +458,10 @@ inits["timeline"] = {
 				let postchange = $('div');
 				postchange.className = "postchange";
 				postchange.id = "postchange_" + Post.id;
-				postchange.onclick = function(){
+				postchange.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.changePost( Post.id );
 				};
 				postchange.innerText = "게시글수정";
@@ -463,7 +469,10 @@ inits["timeline"] = {
 			} else {
 				let postdontsee = $('div');
 				postdontsee.id = "dontsee_" + Post.id;
-				postdontsee.onclick = function(){
+				postdontsee.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.dontseePost( Post.id );
 				}
 				postdontsee.innerText = "보고싶지 않습니다.";
@@ -473,12 +482,18 @@ inits["timeline"] = {
 			postfavorite.id = "favorite_" + Post.id;
 			menu.appendChild(postfavorite);
 			if( Post.isFavorite ){
-				postfavorite.onclick = function(){
+				postfavorite.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.postFavorite( Post.id, 0 );
 				}
 				postfavorite.innerText = "관심글해제";
 			} else {
-				postfavorite.onclick = function(){
+				postfavorite.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.postFavorite( Post.id, 1 );
 				}
 				postfavorite.innerText = "관심글등록";
@@ -487,12 +502,18 @@ inits["timeline"] = {
 			postshare.id = "share_" + Post.id;
 			menu.appendChild(postshare);
 			if( Post.isShare ){
-				postshare.onclick = function(){
+				postshare.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.postShare( Post.id, 0 );
 				}
 				postshare.innerText = "공유취소";
 			} else {
-				postshare.onclick = function(){
+				postshare.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.postShare( Post.id, 1 );
 				}
 				postshare.innerText = "공유하기";
@@ -690,13 +711,19 @@ inits["timeline"] = {
 				let span = $('span');
 				span.className = "dontsee_span";
 				span.innerText = "취소";
-				span.onclick = function(){
+				span.onclick = function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					that.dontsee_cancel( pid );
 				}
 				menu.appendChild(span);
 				let btn = $('span');
 				btn.className = "dontsee_btn";
-				btn.addEventListener('click', function(){	
+				btn.addEventListener('click', function(e){	
+					e.preventDefault();
+					e.stopPropagation();
+					e.cancelBubble = true;
 					this.parentNode.parentNode.removeChild(this.parentNode);
 				});
 				menu.appendChild(btn);
@@ -1620,6 +1647,7 @@ inits["timeline"] = {
 			realfiles_tmp = [];
 		}
 		if( realfiles_tmp[0] || tmp.length>= 1 ){
+			$('#write').style.display = "";
 			for( let i=0; i<realfiles_tmp.length; ++i){
 	//		for( let i=realfiles_tmp.length-1; i>=0; --i){
 				formdata.append("file",realfiles_tmp[i]);
@@ -1692,7 +1720,10 @@ inits["timeline"] = {
 			let float_write = $('div');
 			float_write.id = "float_write";
 			float_write.onclick = function(){
-				getPage( "/write" );
+				$('#write').style.display = "block";
+				goTop();
+				$('#post_write').focus();
+//				getPage( "/write" );
 			}
 			document.body.appendChild(float_write);
 			let write = $("div");
