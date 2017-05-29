@@ -277,10 +277,8 @@ router.post( '/api/audio/add', checkSession, function( req, res ){
 			var wstream = fs.createWriteStream( __dirname + '/../subtitle/' + req.user.id + '.srt');
 			var lyric = v[0].lyric;
 			var times = Object.keys(lyric);
-			console.log(times);
 			var cnt = 0;
 			async.each( times, function( time, cb ){
-				console.log(lyric[time]);
 				if( cnt+1 < times.length ){
 					wstream.write(++cnt + '\n' + makeTimeStamp(parseInt(time)) + ' --> ' + makeTimeStamp(parseInt(times[cnt])-500) + '\n' + lyric[time].join('\n') + '\n\n' );
 				} else {
@@ -303,15 +301,14 @@ router.post( '/api/audio/add', checkSession, function( req, res ){
 
 function makeWave( stream, cb ){
 	var buffers = [];
+	var flag = true;
 	stream.on('data', function(buffer) {
  		buffers.push(buffer);
 	});
 	stream.on('end', function() {
 		var b = Buffer.concat(buffers);
 		var context = new AudioContext;
-		console.log("decode");
 		context.decodeAudioData( b, function( buffer ){
-			console.log("end decode");
 			var channel = buffer.getChannelData(0);
 			var channel2 = buffer.getChannelData(1);
 			var sections = Math.floor( buffer.duration );
@@ -343,9 +340,15 @@ function makeWave( stream, cb ){
 			}, function( err ){
 				if( err ){
 					throw err;
+				} else {
+					cb(vals);
 				}
-				cb(vals);
 			});
+		}, function(e){
+			if( e != undefined && flag ){
+				cb([]);
+				flag = false;
+			}
 		});
 	});
 }

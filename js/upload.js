@@ -8,7 +8,7 @@ inits["upload"] = {
 	waveformRenderId : null,
 	audioPlayId : null,
 	audio : new Audio,
-	waveformArray : [],
+	waveformArray : null,
 	FPS : 45,
 	sin_index : 0,
 	max : 0,
@@ -31,7 +31,7 @@ inits["upload"] = {
 		let waveform = $('#waveform');
 		let waveformCtx = waveform.getContext('2d');
 		waveformCtx.clearRect(0, 0, waveform.width, waveform.height);
-		if( this.waveformArray != undefined && this.waveformArray.length >= 1 && this.listenstart != null ){
+		if( this.waveformArray != null && this.listenstart != null ){
 			let audioCurrentTime = this.audio.currentTime + ( -this.listenstart + waveform.width / 2 ) / 6;
 			let audioDuration = this.waveformArray.length;
 			for( let i = 0; i < this.waveformArray.length; ++i ){
@@ -327,7 +327,7 @@ inits["upload"] = {
 			return false;
 		}
 		this.uploading = true;
-		this.waveformArray = [];
+		this.waveformArray = null;
 		this.audio.pause();
 		if( this.realfile != null ){
 			let formdata = new FormData();
@@ -385,9 +385,15 @@ inits["upload"] = {
 		let that = this;
 		this.uploading = false;
 		this.waveformArray = data;
+		if( data.length == 0){
+			alert("적절하지 않은 파일형식입니다.");
+		}
 		let waveform = $('#waveform');
 		this.listenstart = (-(this.waveformArray.length * (2.5))) + (window.innerWidth/2);
 		this.max = Math.max.apply(null, this.waveformArray );
+		if( this.max = -Infinity ){
+			this.max = 1;
+		}
 		for( let i = 0; i < this.waveformArray.length; ++i ){
 			this.waveformArray[i] = this.waveformArray[i]/this.max*waveform.height*(7/10);
 		}
