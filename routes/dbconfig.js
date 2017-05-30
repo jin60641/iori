@@ -167,6 +167,18 @@ var LinkSchema = new mongoose.Schema({
 	image : { type : String }
 });
 
+var AudioSchema = new mongoose.Schema({
+	id : { type : Number },
+	title : { type : String },
+	artist : { type : String },
+	uid : { type : Number },
+	script : [{
+		start : { type : Number },
+		end : { type : Number },
+		text : { type : String }
+	}]
+});
+
 module.exports = {
 	Users : mongoose.model('users',UserSchema),
 	Follows : mongoose.model('follows',FollowSchema),
@@ -177,5 +189,6 @@ module.exports = {
 	Groups : mongoose.model('groups',GroupSchema),
 	Notices : mongoose.model('notices',NoticeSchema),
 	Links : mongoose.model('links',LinkSchema),
-	Chats : mongoose.model('chats',ChatSchema)
+	Chats : mongoose.model('chats',ChatSchema),
+	Audios : mongoose.model('audios',AudioSchema)
 }

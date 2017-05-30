@@ -51,10 +51,40 @@ router.get( '/upload', checkSession, function( req, res ){
 	makeObj(req,res,"upload");
 });
 
-router.post( '/api/subtitle/get', checkSession, function( req, res ){
-	var srt_path = __dirname + '/../subtitle/' + req.user.id + '.srt';
-	var srt_string = fs.readFileSync( srt_path, 'utf8' );
-	res.send(srt_string);
+router.post( '/api/subtitle/get/:aid/:start/:end', checkSession, function( req, res ){
+	var start = Math.floor(parseInt((req.params['start'])));
+	var end = Math.floor(parseInt(req.params['end']));
+
+	var write_path = __dirname + '/../subtitle/' + req.user.id + '.srt';
+
+	var wstream = fs.createWriteStream(write_path);
+	var aid = parseInt(req.params['aid']);
+	if( isNaN(aid) || isNaN(start) || isNaN(end) ){
+		res.end();
+	} else {
+		var cnt = 0;
+		db.Audios.findOne({ id : aid }, function( err, result ){
+			if( err ){
+				throw err;
+			}
+			async.each( result.script , function( script, cb ){
+				if( script.start > start*1000 && script.end < end*1000 ){
+					wstream.write(++cnt + '\n' + makeTimeStamp(parseInt(script.start-start*1000)) + ' --> ' + makeTimeStamp(parseInt(script.end-start*1000)) + '\n' + script.text + '\n\n' );
+				}
+				cb();
+			}, function( err2 ){
+				if( err2 ){
+					throw err2;
+				}
+				wstream.end();
+				wstream.on('finish',function(){
+					console.log('가사커팅완료');
+					var srt_string = fs.readFileSync( write_path, 'utf8' );
+					res.send(srt_string);
+				});
+			});
+		});
+	}
 });
 
 router.get( '/api/audio/getaudio/youtube/:vid/:start/:duration', checkSession, function( req, res ){
@@ -216,29 +246,39 @@ router.post( '/api/audio/add/:vid', function( req, res ){
 	}
 });
 
-router.get( '/share/:start/:end', checkSession, function( req, res ){
-	var read_path = __dirname + "/../audio/" + req.user.id + ".mp3";
-	var write_path = __dirname + "/../audio/" + req.user.id + "_short.mp3";
+router.get( '/share/:aid/:start/:end', checkSession, function( req, res ){
 	var start = Math.floor(parseInt((req.params['start'])));
 	var end = Math.floor(parseInt(req.params['end']));
+	var aid = parseInt(req.params['aid']);
 	var duration = end - start;
-	if( isNaN( start ) || isNaN( duration ) ){
+	if( isNaN( aid ) || isNaN( start ) || isNaN( duration ) || start < 0 || duration < 0 ){
 		res.end();
 	} else {
-		ffmpeg()
-		.input( read_path )
-		.seek(start)
-		.on('start',function(m){
-			console.log(m);
-		})
-		.on('error',function(error){
-			console.log(error);
-		})
-		.on('end', function(){
-			makeObj(req,res,"share");
-		})
-		.outputOptions(['-acodec copy','-vcodec copy', '-t '+duration])
-		.save(write_path);
+		var read_path = __dirname + "/../audio/" + aid + ".mp3";
+		var write_path = __dirname + "/../audio/" + aid + "_short.mp3";
+		console.log(aid);
+		db.Audios.findOne({ id : aid },function(err,result){
+			if( err ){
+				throw err;
+			} else if( result ){
+				ffmpeg()
+				.input( read_path )
+				.seek(start)
+				.on('start',function(m){
+					console.log(m);
+				})
+				.on('error',function(error){
+					console.log(error);
+				})
+				.on('end', function(){
+					makeObj(req,res,"share");
+				})
+				.outputOptions(['-acodec copy','-vcodec copy', '-t '+duration])
+				.save(write_path);
+			} else {
+				res.end();
+			}
+		});
 	}
 });
 
@@ -248,55 +288,81 @@ router.get( '/api/video/get',  function( req, res ){
 	fs.createReadStream( write_path ).pipe(res);
 });
 
-router.get( '/api/audio/get', checkSession, function( req, res ){
-	var url = __dirname + '/../audio/' + req.user.id + "_short.mp3";
-	mediaserver.pipe(req,res,url);
+router.get( '/api/audio/get/:aid', checkSession, function( req, res ){
+	var aid = parseInt(req.params['aid']);
+	if( isNaN(aid) ){
+		res.end();
+	} else {
+		var url = __dirname + '/../audio/' + req.user.id + "_short.mp3";
+		mediaserver.pipe(req,res,url);
+	}
 });
 
 router.post( '/api/audio/add', checkSession, function( req, res ){
-	var body = {};
-	req.pipe( req.busboy );
+	var body = {
+		uid : req.user.id,
+		script : []
+	};
 	console.log("upload start");
-	req.busboy.on( 'file', function( fieldname, file, filename ){
-		var path = __dirname + "/../audio/" + req.user.id + ".mp3";
-		var fstream = fs.createWriteStream( path );
-		var stream = file.pipe(fstream);
-		stream.on('finish',function(){
-			console.log("upload finish / make wave");
-			makeWave( fs.createReadStream( path ), function( vals ){
-				res.send({ vals : vals });
+	db.Audios.findOne().sort({id:-1}).exec( function( err, audio ){
+		if( err ){
+			throw err;
+		}
+		if( audio ){
+			body.id = audio.id + 1;
+		} else {
+			body.id = 1;
+		}
+		req.pipe( req.busboy );
+		req.busboy.on( 'file', function( fieldname, file, filename ){
+			var path = __dirname + "/../audio/" + req.user.id + ".mp3";
+			var fstream = fs.createWriteStream( path );
+			var stream = file.pipe(fstream);
+			stream.on('finish',function(){
+				makeWave( fs.createReadStream( path ), function( vals ){
+					res.send({ vals : vals, aid : body.id });
+				});
 			});
 		});
-	});
-	req.busboy.on( 'field', function( fieldname, val ){
-		body[fieldname] = val;
-	});
-	req.busboy.on( 'finish', function(){
-		console.log( body.artist, body.title );
-		alsong( body.artist, body.title ).then( function( v ){
-			var wstream = fs.createWriteStream( __dirname + '/../subtitle/' + req.user.id + '.srt');
-			var lyric = v[0].lyric;
-			var times = Object.keys(lyric);
-			var cnt = 0;
-			async.each( times, function( time, cb ){
-				if( cnt+1 < times.length ){
-					wstream.write(++cnt + '\n' + makeTimeStamp(parseInt(time)) + ' --> ' + makeTimeStamp(parseInt(times[cnt])-500) + '\n' + lyric[time].join('\n') + '\n\n' );
-				} else {
-					wstream.write(++cnt + '\n' + makeTimeStamp(parseInt(time)) + ' --> ' + makeTimeStamp(parseInt(time)+5000) + '\n' + lyric[time].join('\n') + '\n' );
-				}
-				cb( null );
-			}, function( err ){
-				if( err ){
-					throw err;
-				}
-				wstream.end();
-				wstream.on('finish',function(){
-					console.log('가사파싱완료');
+		req.busboy.on( 'field', function( fieldname, val ){
+			body[fieldname] = val;
+		});
+		req.busboy.on( 'finish', function(){
+			alsong( body.artist, body.title ).then( function( v ){
+				var lyric = v[0].lyric;
+				var times = Object.keys(lyric);
+				var cnt = 0;
+				async.each( times, function( time, cb ){
+					if( ++cnt < times.length ){
+						body.script.push({
+							start : parseInt(time),
+							end : parseInt(times[cnt])-100,
+							text : lyric[time].join('\n')
+						});
+					} else {
+						body.script.push({
+							start : parseInt(time),
+							end : parseInt(time) + 5000,
+							text : lyric[time].join('\n')
+						});
+					}
+					cb( null );
+				}, function( err2 ){
+					if( err2 ){
+						throw err2;
+					}
+					console.log(body);
+					var current = new db.Audios(body);
+					current.save( function( err3 ){
+						if( err3 ){
+							throw err3;
+						}
+						console.log("데이터 저장 완료 ");
+					});
 				});
 			});
 		});
 	});
-
 });
 
 function makeWave( stream, cb ){
@@ -356,6 +422,7 @@ function makeWave( stream, cb ){
 function makeVideo(req,res,body){
 	var srt_path = __dirname + '/../subtitle/' + req.user.id + '.srt';	 // 자막경로
 	var audio_path = __dirname + '/../audio/' + req.user.id + '.mp3';	  // 음원경로
+	var tmp_path = __dirname + '/../video/' + req.user.id + '_tmp.mp4';	// 영상경로
 	var write_path = __dirname + '/../video/' + req.user.id + '.mp4';	// 영상경로
 	var concat_path = __dirname + '/../ffconcat/' + req.user.id + '.txt';  // ffconcat경로 ( 각기 다른 duration을 가진 여러개의 img를 ffmpeg로 input 하기위해 필요 )
 
@@ -406,14 +473,26 @@ function makeVideo(req,res,body){
 			}).on('end',function(){
 				console.log("100%");
 				console.log("인코딩 완료!");
-				fs.createReadStream( write_path ).pipe(res);
+				ffmpeg().input(tmp_path)
+				.on('end',function(){
+					console.log("커팅 완료! 전송을 시작합니다!");
+					fs.createReadStream( write_path ).pipe(res);
+				})
+				.outputOptions(['-t '+body.duration, '-scodec copy'])
+				.save(write_path)
 			}).on('error',function(error){
 				console.log(error);
 			})
 			.input(concat_path)
 			.inputOptions(['-f concat','-safe 0'])
-			.outputOptions(['-vf fps=25,scale=640:480,subtitles=filename='+srt_path+':force_style="FontName=NanumGothic"', '-vcodec libx264', '-acodec copy', '-crf 5', '-t '+body.duration,'-pix_fmt yuv420p'])
-			.save(write_path);
+			.input(srt_path)
+			.outputOptions([
+			// by vf
+			//'-vf fps=25,scale=640:480,subtitles=filename='+srt_path+':force_style="FontName=NanumGothic"', 
+			// by filter_complex
+			'-map 0:a', '-map 1:v', '-map 2:s', '-map [outv]', '-filter_complex [1:v][2:s]overlay[outv]',
+			'-pix_fmt yuv420p', '-vcodec libx264', '-acodec copy', '-c:s mov_text', '-crf 5', '-t '+body.duration])
+			.save(tmp_path);
 		});
 	});
 }

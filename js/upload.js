@@ -339,6 +339,7 @@ inits["upload"] = {
 				if( xhr.responseText && xhr.responseText.length ){
 					try {
 						let obj = JSON.parse( xhr.responseText );
+						that.aid = obj.aid;
 						that.loadMusicArray(obj.vals);
 					} catch(e){
 						console.log(e);
@@ -391,7 +392,7 @@ inits["upload"] = {
 		let waveform = $('#waveform');
 		this.listenstart = (-(this.waveformArray.length * (2.5))) + (window.innerWidth/2);
 		this.max = Math.max.apply(null, this.waveformArray );
-		if( this.max = -Infinity ){
+		if( this.max == -Infinity ){
 			this.max = 1;
 		}
 		for( let i = 0; i < this.waveformArray.length; ++i ){
@@ -421,7 +422,7 @@ inits["upload"] = {
 */
 			var start = Math.floor((( -that.listenstart + waveform.width / 2 ) / 6));
 			var end = parseInt(start) + parseInt(that.duration);
-			getPage( "/share/" + start + '/' + end );
+			getPage( "/share/" + that.aid + '/' + start + '/' + end );
 		};
 		this.sin_index = 0;
 	},

@@ -2,8 +2,9 @@
 
 inits["share"] = {
 	listeners : [],
-	start : parseInt(document.URL.split('/')[4]),
-	end : parseInt(document.URL.split('/')[5]),
+	aid : parseInt(document.URL.split('/')[4]),
+	start : parseInt(document.URL.split('/')[5]),
+	end : parseInt(document.URL.split('/')[6]),
 	lastClickImg : undefined,
 	fileArray : [],
 	imageArray : [],
@@ -35,7 +36,7 @@ inits["share"] = {
 		for (var i = 0; i < strArr.length; ++i ) {
 			if (strArr[i].indexOf("-->") != -1) {
 				subIndex = i + 1;
-				var time = that.hmsTos(strArr[i].substring(0,12));
+				var time = that.hmsTos(strArr[i].substring(0,12))+that.start;
 				if( time < that.start ){
 					that.startSubtitleIndex++;
 					continue;
@@ -120,7 +121,12 @@ inits["share"] = {
 		//that.sortArr();
 		let canvas = $('#canvas');
 		let ctx = canvas.getContext('2d');
+		ctx.font = '24px Calibr1i'
 		ctx.fillStyle = "#000000";
+		ctx.shadowColor = "black";
+		ctx.shadowOffsetX = 0; 
+		ctx.shadowOffsetY = 0; 
+		ctx.shadowBlur = 2;
 		ctx.fillRect(0,0,640,640);
 		ctx.fillStyle = "#ffffff";
 		ctx.textAlign = "center";
@@ -138,7 +144,6 @@ inits["share"] = {
 	
 		canvas = $('#seek_bar');
 		ctx = canvas.getContext('2d');
-		ctx.font = '24px Calibr1i'
 		var seconds = 0;
 		var nextseconds = 0;
 		ctx.clearRect(0,0,640,100);
@@ -195,7 +200,7 @@ inits["share"] = {
 				getPage('/upload');
 			}
 		}};
-		xhr.open("POST","/api/subtitle/get", true); xhr.send();
+		xhr.open("POST","/api/subtitle/get/" + that.aid + "/" + that.start + "/" + that.end, true); xhr.send();
 	},
 	startPage : function(){
 		let that=this;
@@ -363,6 +368,7 @@ inits["share"] = {
 		obj.border="1px dashed #bbb";
 	},
 	openfile : function(event){
+		let that = this;
 		if( event.dataTransfer ){
 			event.dataTransfer.dropEffect = 'copy';
 		}
@@ -413,7 +419,7 @@ inits["share"] = {
 				let dataURL = e.target.result;
 				output.appendChild(imgbox);
 				imgbox.style.background="url('"+dataURL+"') center center no-repeat"
-				srcArray.push(dataURL);
+				that.srcArray.push(dataURL);
 				imgbox.style.backgroundSize="cover";
 				imgbox.style.backgroundClip="content-box";
 				imgbox.addEventListener('drop', function(e){

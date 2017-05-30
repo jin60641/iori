@@ -208,13 +208,19 @@ inits["timeline"] = {
 						this.parentNode.replaceChild(iframe,this);
 					}
 					if( $('#menu_'+pid ) ){
-						let getaudio = $('div');
-						getaudio.id = "getaudio_" + pid;
-						getaudio.onclick = function(){
-							that.getAudio(pid);
+						if( $("#getaudio_" + pid ) ){
+						} else {
+							let getaudio = $('div');
+							getaudio.id = "getaudio_" + pid;
+							getaudio.onclick = function(e){
+								e.preventDefault();
+								e.stopPropagation();
+								e.cancelBubble = true;
+								that.getAudio(pid);
+							}
+							getaudio.innerText = "음원 추출";
+							$('#menu_'+pid).appendChild(getaudio)
 						}
-						getaudio.innerText = "음원 추출";
-						$('#menu_'+pid).appendChild(getaudio)
 					}
 				} else {
 					let preview_description = $("div");
