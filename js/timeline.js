@@ -271,13 +271,18 @@ inits["timeline"] = {
 		Post.date = new Date(Post.date);
 		let post_wrap = $('#post_wrap');
 		let div = $("a");
-		div.href = "/post/" + Post.id;
 		div.id = 'post_' + Post.id;
-		div.onclick = function(e){
-			if( $('#body').clientWidth <= 669 && that.hidemenu() == false){
-				getPage(this.href);
-			} else {
-				e.preventDefault();
+		if( location.pathname.substr(0,6) == "/post/" ){
+			div.style.cursor = "default";
+		} else {
+			div.href = "/post/" + Post.id;
+			div.onclick = function(e){
+				if( $('#body').clientWidth <= 669 && that.hidemenu() == false){
+					e.preventDefault();
+					getPage(this.href);
+				} else {
+					e.preventDefault();
+				}
 			}
 		}
 		div.className = 'post';
@@ -314,7 +319,7 @@ inits["timeline"] = {
 			let textspan = $("span");
 			textspan.className = "textspan";
 			let texts = Post.text.split("\r\n");
-			let textmore = $("yyspan");
+			let textmore = $("span");
 			for( let k = 0; k < texts.length; ++k ){
 				let textindex = 0;
 				while(1){
@@ -347,7 +352,9 @@ inits["timeline"] = {
 				textmore_btn.innerHTML = "더보기";
 				textmore_btn.id = "textmore_btn_" + Post.id;
 				textmore_btn.addEventListener("click",function(event){
+					event.preventDefault();
 					event.cancelBubble = true;
+					event.stopPropagation();
 					this.previousElementSibling.style.maxHeight = "initial";
 					this.parentNode.removeChild(this);
 				});
@@ -533,7 +540,6 @@ inits["timeline"] = {
 		if( Replys.length == 0 && session.signUp != true ){
 			replywrap.style.display = "none";
 		} else if( location.pathname.substr(0,6) == "/post/" ){
-			console.log(replywrap);
 			replywrap.style.display = "block";
 		}
 		for( let i = Replys.length - 1; i >=0; i-- ){
@@ -837,8 +843,8 @@ inits["timeline"] = {
 			preview.style.display = "none";
 		}
 		let textarea = $("textarea");
-		if( inside.firstChild && inside.firstChild.lastElementChild ){
-			inside.firstChild.lastElementChild.click();
+		if( $("#textmore_btn_"+pid) ){
+			 $("#textmore_btn_"+pid).click();
 		}
 		if( inside.firstChild ){
 			textarea.value = inside.firstChild.innerText;
@@ -955,7 +961,7 @@ inits["timeline"] = {
 				let textspan = $("span");
 				textspan.className = "textspan";
 				let texts = text.split("\r\n");
-				let textmore = $("yyspan");
+				let textmore = $("span");
 				for( let k = 0; k < texts.length; ++k ){
 					let textindex = 0;
 					while(1){

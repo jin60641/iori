@@ -366,6 +366,9 @@ window.addEventListener('load',function(){
 	head.appendChild(navi_profile);
 
 	let head_menu = $("div");
+	head_menu.addEventListener('click', function( evt ){
+		head_menu_show( false );
+	});
 	head_menu.addEventListener('touch', function( evt ){
 		evt.stopPropagation();
 	});
