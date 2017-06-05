@@ -55,7 +55,7 @@ inits["activity"] = {
 				text.innerHTML += "님의 게시글에 댓글을 남겼습니다";
 				break;
 			case "favorite":
-				text.innerHTML += "님이 게시글을 관심글로 표시했습니다.";
+				text.innerHTML += "님의 게시글을 관심글로 표시했습니다.";
 				break;
 			case "share":
 				text.innerHTML += "님의 게시글을 공유했습니다.";

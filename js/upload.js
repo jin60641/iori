@@ -260,7 +260,6 @@ inits["upload"] = {
 		duration_input.id = "duration_input";
 		duration_input.type = "range";
 		duration_input.min = 3;
-		duration_input.max = 60;
 		duration_input.value = that.duration;
 		duration_input.onmousemove = function(){
 			that.duration = this.value;
@@ -386,6 +385,7 @@ inits["upload"] = {
 		let that = this;
 		this.uploading = false;
 		this.waveformArray = data;
+		duration_input.max = data.length;
 		if( data.length == 0){
 			alert("적절하지 않은 파일형식입니다.");
 		}

@@ -54,6 +54,19 @@ passport.serializeUser(function(user, done) {
 });
 passport.deserializeUser(function(obj, done) {done(null, obj);});
 
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use( new GoogleStrategy({
+	clientID: require('./settings.js').googleClientID,
+	clientSecret: require('./settings.js').googleClientSecret,
+	callbackURL: 'https://iori.kr/api/auth/google/callback',
+	profileFields: ['id', 'emails', 'displayName']
+	}, function( accessToken, refreshToken, profile, done ){
+		return done(null, profile);
+	})
+);
+
+
 var FacebookStrategy = require('passport-facebook').Strategy;
 passport.use(new FacebookStrategy({
 	clientID: require('./settings.js').facebookClientID,
@@ -205,6 +218,58 @@ router.get('/api/auth/token', passport.authenticate('facebook-token', { scope : 
 	res.send(req.user?req.user:401);
 });
 */
+
+
+router.get('/api/auth/google', passport.authenticate('google', { scope: ['email'] }));
+router.get('/api/auth/google/callback', function( req, res, next ){
+	passport.authenticate('google' , function( err, user, info ){
+		if( err ){
+			return next(err);
+		} else if( !user ){
+			return res.redirect('/');
+		} else if ( req.user != undefined && req.user.signUp == true ){
+			return res.redirect('/');
+		} else {
+			user._json = {}
+			user._json["email"] = user.emails[0].value,
+			user._json["displayName"] = user.displayName
+			db.Users.findOne({ email : user._json.email, signUp : true, be : true }, function( err, account ){
+				if( err ){
+					throw err;
+				} else {
+					req.logIn( user, function( error ){
+						if( error ){
+							return next(error);
+						} else {
+							if( account ){
+								req.user = account;
+								res.cookie("google","true",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
+								if( req.session.returnTo && req.session.returnTo != "/"){
+									if( req.session.returnTo[0] == '/' ){
+										return res.redirect(req.session.returnTo);
+									} else {
+										return res.redirect('/' + req.session.returnTo.replace(/\-/g,"/") );
+									}
+								} else {
+									return res.redirect('/');
+								}
+							} else {
+								req.user = user._json;
+								req.user.signUp = false;
+								return res.redirect('/register');
+							}
+						}
+					});
+				}
+			});
+		}
+	})( req, res, next );
+});
+
+router.get('/api/auth/google/:link', function( req, res ){
+	req.session.returnTo = req.params['link'];
+	res.redirect('/api/auth/google');
+});
 
 router.get('/api/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 router.get('/api/auth/facebook/callback', function( req, res, next ){

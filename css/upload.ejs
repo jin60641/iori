@@ -44,7 +44,7 @@ form input {
 	background-color : transparent;
 	display : block;
 	border : 0;
-	border-bottom : 1px solid #f15c3e;
+	border-bottom : 1px solid <%= color_hex %>;
 	width : 250px;
 	padding : 1vh 0 4px 0;
 	box-sizing: border-box;
@@ -61,7 +61,7 @@ form input:focus {
 
 form .upload_btn { 
 	cursor : pointer;
-	background-color : #f15c3e;
+	background-color : <%= color_hex %>;
 	width : 250px;
 	padding-top : 20px;
 	padding-bottom : 20px;
@@ -90,12 +90,6 @@ canvas {
 	box-shadow : 0 1px 7px rgba(0,0,0,0.2);
 }
 
-#timegraph {
-	background: #e9eaed linear-gradient(to right, #f15c3e 0%, #ff3d00 50%, #b2b2b2 50%, #b2b2b2 100%); background-size: 200% 100%;
-	width : 100%;
-	height : 20px;
-}
-
 #play_btn {
     height : 60px;
     width : 80px;
@@ -105,7 +99,7 @@ canvas {
 	margin-top : 15px;
 	margin-bottom : 20px;
 	border-radius : 0.7vh;
-	background-color : #f15c3e;
+	background-color : <%= color_hex %>;
 	text-align : center;
 }
 

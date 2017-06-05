@@ -161,7 +161,6 @@ inits["timeline"] = {
 				let preview = $("a");
 				preview.href = link;
 				preview.target = "_blank";
-				preview.href = link;
 				preview.onclick = function(event){
 					window.open(preview.href, '_blank');
 				}
@@ -331,6 +330,10 @@ inits["timeline"] = {
 						if( !preview_cnt++ ){
 							if( Post.file == 0 ){
 								that.makePreview(str,texts[k],Post.id,inside);
+							}
+							textspan.onclick = function(event){
+								event.cancelBubble = true;
+								event.stopPropagation();
 							}
 						}
 						texts[k] = texts[k].replace( link[0].toString(), replace_str );
@@ -1733,8 +1736,9 @@ inits["timeline"] = {
 			float_write.id = "float_write";
 			float_write.onclick = function(){
 				$('#write').style.display = "block";
-				goTop();
-				$('#post_write').focus();
+				goTop(null,null,null,null,function(){
+					$('#post_write').focus();
+				});
 //				getPage( "/write" );
 			}
 			document.body.appendChild(float_write);

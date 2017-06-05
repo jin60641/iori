@@ -74,7 +74,7 @@ body {
 	border-left-color : rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>, 0.2);
 	border-right-color : rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>, 0.2);
 	border-top : 0;
-	color : rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>, 0.6 );
+	color : <%= color_hex %>;
 	box-shadow : 0px 1px 3px 0px rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>, 0.27);
 	position : absolute;
 	z-index : 1000;
@@ -94,8 +94,21 @@ body {
 	line-height : 21px;
 	padding : 11px 19px 10px 60px;
 	box-sizing : border-box;
-	color : rgba(<%= color_r %>,<%= color_g %>,<%= color_b %>, 1);
 	font-weight : 700;
+}
+
+#chat_new_user {
+	background-image : url('/svg/chat_user.svg');
+	background-repeat : no-repeat;
+	background-size : 30px 25px;
+	background-position : 10px 8px;
+}
+
+#chat_new_group {
+	background-image : url('/svg/chat_group.svg');
+	background-repeat : no-repeat;
+	background-size : 40px 40px;
+	background-position : 10px 0px;
 }
 
 #chat_wrap #chat_header #chat_menu_box div:hover {
@@ -678,7 +691,18 @@ input.chat_search:focus {
 
 @media screen and ( max-width : 500px ){
 	#chat_wrap #chat_header #chat_menu_text {
-		display : none;
+		color : transparent;
+		padding-left : 0px;
+	}
+	#chat_wrap #chat_header #chat_menu_box {
+		white-space : nowrap;
+		color : transparent !important;
+	}
+	#chat_new_user {
+		background-position-x : 28px;
+	}
+	#chat_new_group {
+		background-position-x : 23px;
 	}
 }
 

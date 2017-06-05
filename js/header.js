@@ -21,10 +21,14 @@ if( location.hash && location.hash == "#_=_" ){
 	location.href = location.origin + location.pathname;
 }
 */
-
-/*
 if( session.signUp == undefined && document.cookie ){
-	if ( getCookie("facebook") == "true" ){
+	if ( getCookie("google") == "true" ){
+		if( document.URL.indexOf("login") >= 0 ){
+			location.href = "/api/auth/google/" + document.URL.split('/').slice(4).join('-');
+		} else {
+			location.href = "/api/auth/google/" + document.URL.split('/').slice(3).join('-');
+		}
+	} else if ( getCookie("facebook") == "true" ){
 		if( document.URL.indexOf("login") >= 0 ){
 			location.href = "/api/auth/facebook/" + document.URL.split('/').slice(4).join('-');
 		} else {
@@ -54,7 +58,6 @@ if( session.signUp == undefined && document.cookie ){
 if( session.level >= 9 ){
 	//관리자
 }
-*/
 
 function getUsers( query, limit, cb ){
 	let xhr = new XMLHttpRequest();
@@ -119,7 +122,7 @@ function getNotices(cnt){
 
 // 맨위로
 
-function goTop( orix, oriy, desx, desy ){
+function goTop( orix, oriy, desx, desy,cb ){
 	let Timer;
 	let winHeight = document.body.scrollTop;
 	if( Timer ){
@@ -151,9 +154,14 @@ function goTop( orix, oriy, desx, desy ){
 		clearTimeout(Timer);
 		window.scroll(orix,oriy);
 	} else if ( posX != orix || posY != oriy ){
-		Timer = setTimeout("goTop("+orix+","+oriy+","+desx+","+desy+")",15);
+		Timer = setTimeout( function(){
+			goTop(orix,oriy,desx,desy,cb);
+		},15);
 	} else {
 		clearTimeout(Timer);
+		if( cb ){
+			cb();
+		}
 	}
 }
 

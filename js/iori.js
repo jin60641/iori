@@ -91,14 +91,7 @@ function searchResultNone(){
 
 function sessionLogOut(){
 	let date = "Thu, 01 Jan 1970 00:00:01 GMT"
-	/*
-	document.cookie = "facebook=;expires=" + date + ";domain=iori.kr;path=/";
-	document.cookie = "uid=;expires=" + date + ";domain=iori.kr;path=/";
-	document.cookie = "email=;expires=" + date + ";domain=iori.kr;path=/";
-	document.cookie = "password=;expires=" + date + ";domain=iori.kr;path=/";
-	*/
-	document.cookie = "facebook=,uid=,email=,password=;expires=" + date + ";domain=iori.kr;path=/";
-
+	document.cookie = "google=,facebook=,uid=,email=,password=;expires=" + date + ";domain=iori.kr;path=/";
 	location.href = "/api/auth/logout";
 }
 

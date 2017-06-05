@@ -143,9 +143,9 @@ function makeNotice( to, from, type, obj ){
 					current.desc = "파일";
 				}
 				if( obj.type == "g" ){
-					current.link = "/chat#g?" + obj.to.id;
+					current.link = "/chat/g/" + obj.to.id;
 				} else if( obj.type == "u" ){
-					current.link = "/chat#u?" + obj.from.uid;
+					current.link = "/chat/u/" + obj.from.uid;
 				}
 				break;
 			case "follow":
