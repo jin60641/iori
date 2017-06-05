@@ -27,7 +27,7 @@ inits["login"] = {
 						if( auto.checked == true ){
 							let now = new Date();
 							now.setTime(now.getTime() + (7*24*60*60*1000));
-							document.cookie = "facebook=false, uid="+uid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
+							document.cookie = "google=false, facebook=false, uid="+uid+", password="+password+";expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
 						}
 						if( document.URL.indexOf("login") >= 0 ){
 							location.href =  "/" + document.URL.split('/').slice(4).toString().split('-').join('/');
@@ -163,6 +163,27 @@ inits["login"] = {
 			};
 			form_facebook_btn.innerHTML = "<img src='/img/login/ic_sns.png' />페이스북으로 로그인";
 			form.appendChild(form_facebook_btn);
+
+			let form_google_btn = $("div");
+			form_google_btn.id = "form_google_btn";
+			form_google_btn.className = "form_btn";
+			form_google_btn.onclick = function(){
+				let now = new Date();
+				now.setTime(now.getTime() + (7*24*60*60*1000));
+				let returnTo;
+				if( document.URL.indexOf("login") >= 0 ){
+					returnTo = document.URL.split('/').pop();
+				} else {
+					returnTo = document.URL.split('/').slice(3).join('-');
+				}
+				let auto = $("#form_auto_login");
+				if( auto.checked == true ){
+	//				document.cookie = "google=true;expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
+				}
+				location.href = "/api/auth/google/" + returnTo;
+			};
+			form_google_btn.innerHTML = "<img src='/img/login/ic_sns.png' />구글 플러스로 로그인";
+			form.appendChild(form_google_btn);
 		}
 	
 	

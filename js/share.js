@@ -36,7 +36,7 @@ inits["share"] = {
 		for (var i = 0; i < strArr.length; ++i ) {
 			if (strArr[i].indexOf("-->") != -1) {
 				subIndex = i + 1;
-				var time = that.hmsTos(strArr[i].substring(0,12))+that.start;
+				var time = that.hmsTos(strArr[i].substring(0,12));
 				if( time < that.start ){
 					that.startSubtitleIndex++;
 					continue;
@@ -208,7 +208,7 @@ inits["share"] = {
 		that.addListener(window,'click',function(e){
 			that.lastClickImg = null;
 		});
-		this.audio.src = "/api/audio/get?" + new Date().getTime();
+		this.audio.src = "/api/audio/get/" + that.aid + "?" + new Date().getTime();
 //		this.audio.src = "/audio/" + session.id + "_short.mp3?" + new Date().getTime();
 		var body = $('div');
 		body.id = "share_wrap";
@@ -279,6 +279,7 @@ inits["share"] = {
 
 		var btn_wrap = $('div');
 		btn_wrap.id = "btn_wrap";
+
 		var save_btn = $('div');
 		save_btn.id = "save_btn";
 		save_btn.onclick = function(){
@@ -288,8 +289,15 @@ inits["share"] = {
 		save_img.src = "/img/download.png";
 		save_btn.appendChild(save_img);
 		btn_wrap.appendChild(save_btn);
-		body.appendChild(btn_wrap);
 
+		var youtube_btn = $('div');
+		youtube_btn.id = "youtube_btn";
+		youtube_btn.onclick = function(){
+			that.uploadVideo();
+		}
+		btn_wrap.appendChild(youtube_btn);
+	
+		body.appendChild(btn_wrap);
 		that.loadSubtitle();
 	},
 	sTohms : function( second ){
@@ -338,17 +346,18 @@ inits["share"] = {
 		}
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+			console.log(xhr.responseText);
 			if( xhr.responseText && xhr.responseText.length ){
 				let download = $("a");
 				download.download = "test" + "." + "mp4";
-				download.href = '/api/video/get';
+				download.href = '/api/video/get/' + that.aid;
 				download.style.display = "none";
 				document.body.appendChild(download);
 				download.click();
 				document.body.removeChild(download);
 			}
 		}};
-		xhr.open("POST","/api/video/get", true); xhr.send(formdata);
+		xhr.open("POST","/api/video/get/" + that.aid, true); xhr.send(formdata);
 	},
 	DragOut : function(evt){
 		evt.stopPropagation();
