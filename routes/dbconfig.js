@@ -13,7 +13,6 @@ var ReportSschema = new mongoose.Schema({
 	id : { type : Number },
 	comment : { type : String },
 	type : { type : String },
-	comment : { type : String },
 	oid : { type : Number },
 	date : { type : Date, default : Date.now },
 	be : { type : Boolean }
@@ -29,6 +28,34 @@ var DontseeSchema = new mongoose.Schema({
 	uid : { type : Number },
 	type : { type : String },
 	obj_id : { type : Number },
+	date : { type : Date, default : Date.now }
+});
+
+var MuteSchema = new mongoose.Schema({
+	from : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+	to : { 
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+	date : { type : Date, default : Date.now }
+});
+
+var BlockSchema = new mongoose.Schema({
+	from : {
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
+	to : { 
+		id : { type : Number },
+		uid : { type : String },
+		name : { type : String }
+	},
 	date : { type : Date, default : Date.now }
 });
 
@@ -190,5 +217,7 @@ module.exports = {
 	Notices : mongoose.model('notices',NoticeSchema),
 	Links : mongoose.model('links',LinkSchema),
 	Chats : mongoose.model('chats',ChatSchema),
-	Audios : mongoose.model('audios',AudioSchema)
+	Audios : mongoose.model('audios',AudioSchema),
+	Blocks : mongoose.model('blocks',BlockSchema),
+	Mutes : mongoose.model('mutes',MuteSchema)
 }

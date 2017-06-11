@@ -36,7 +36,9 @@ router.use( function( req, res, next ){
 router.use(session(sessionMiddleware));
 router.use(passport.initialize()).use(passport.session());
 passport.serializeUser(function(user, done) {
-	if( user && user._json ){
+	if( user.provider == "twitter" ){
+		done(null, user); 
+	} else if( user && user._json ){
 		db.Users.findOne({ email : user._json.email }).lean().exec( function( err, result ){
 			if( err ){
 				throw err;
@@ -54,8 +56,20 @@ passport.serializeUser(function(user, done) {
 });
 passport.deserializeUser(function(obj, done) {done(null, obj);});
 
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var TwitterStrategy = require('passport-twitter').Strategy;
+passport.use( new TwitterStrategy({
+    consumerKey: require('./settings.js').twitterConsumerKey,
+    consumerSecret: require('./settings.js').twitterConsumerSecret,
+	callbackURL: 'https://iori.kr/api/auth/twitter/callback',
+	includeEmail: true,
+	}, function( token, secret, profile, done ){
+		profile.token = token;
+		profile.secret = secret;
+		return done(null, profile);
+	})
+);
 
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport.use( new GoogleStrategy({
 	clientID: require('./settings.js').googleClientID,
 	clientSecret: require('./settings.js').googleClientSecret,
@@ -219,6 +233,30 @@ router.get('/api/auth/token', passport.authenticate('facebook-token', { scope : 
 });
 */
 
+router.get('/api/auth/twitter', passport.authenticate('twitter'));
+router.get('/api/auth/twitter/callback', function( req, res, next ){
+	passport.authenticate('twitter' , function( err, user, info ){
+		if( err ){
+			return next(err);
+		} else {
+			user.signUp = false;
+			req.logIn( user, function( error ){
+				if( error ){
+					return next(error);
+				} else {
+					return res.redirect('/test');
+				}
+			});
+		}
+	})( req, res, next );
+});
+
+router.get('/api/auth/twitter/:link', function( req, res ){
+	req.session.returnTo = req.params['link'];
+	res.redirect('/api/auth/twitter');
+});
+
+
 
 router.get('/api/auth/google', passport.authenticate('google', { scope: ['email'] }));
 router.get('/api/auth/google/callback', function( req, res, next ){
@@ -320,10 +358,15 @@ router.get('/api/auth/facebook/:link', function( req, res ){
 });
 
 function logOut( req, res, message ){
-	res.clearCookie("email")
-	res.clearCookie("password")
-	res.clearCookie("uid")
-	res.clearCookie("facebook")
+	res.clearCookie("email");
+	res.clearCookie("password");
+	res.clearCookie("uid");
+	res.clearCookie("facebook");
+	res.clearCookie("twitter");
+	res.clearCookie("google");
+	res.cookie("facebook","false",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
+	res.cookie("twitter","false",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
+	res.cookie("google","false",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
 	req.logout();
 	req.session.destroy( function( err ){
 		if( req.user ){

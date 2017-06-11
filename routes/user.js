@@ -126,7 +126,13 @@ router.post('/@:uid(*)/favorite', function( req, res ){
 	});
 });
 
+router.post('/api/user/block/:uid', function( req, res ){
+	
+});
 
+router.post('/api/user/mute/:uid', function( req, res ){
+	
+});
 
 router.get('/@:uid(*)/:tab', function( req, res ){
 	if( req.params['tab'] == 'follower_together' ){

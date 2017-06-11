@@ -22,7 +22,7 @@ router.use(require('./routes/user.js').router);
 router.use(require('./routes/chat.js').router);
 router.use(require('./routes/admin.js'));
 router.use(require('./routes/search.js'));
-router.use(require('./routes/game.js'));
+router.use(require('./routes/video.js'));
 
 String.prototype.trim = function() {
 	return this.replace(/(^\s*)|(\s*$)/gi, "");

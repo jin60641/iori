@@ -184,6 +184,27 @@ inits["login"] = {
 			};
 			form_google_btn.innerHTML = "<img src='/img/login/ic_sns.png' />구글 플러스로 로그인";
 			form.appendChild(form_google_btn);
+
+			let form_twitter_btn = $("div");
+			form_twitter_btn.id = "form_twitter_btn";
+			form_twitter_btn.className = "form_btn";
+			form_twitter_btn.onclick = function(){
+				let now = new Date();
+				now.setTime(now.getTime() + (7*24*60*60*1000));
+				let returnTo;
+				if( document.URL.indexOf("login") >= 0 ){
+					returnTo = document.URL.split('/').pop();
+				} else {
+					returnTo = document.URL.split('/').slice(3).join('-');
+				}
+				let auto = $("#form_auto_login");
+				if( auto.checked == true ){
+	//				document.cookie = "twitter=true;expires=" + now.toUTCString() + ";domain=iori.kr;path=/";
+				}
+				location.href = "/api/auth/twitter/" + returnTo;
+			};
+			form_twitter_btn.innerHTML = "<img src='/img/login/ic_sns.png' />트위터로 로그인";
+			form.appendChild(form_twitter_btn);
 		}
 	
 	

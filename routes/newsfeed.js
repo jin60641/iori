@@ -20,6 +20,35 @@ String.prototype.xssFilter = function() {
 	return this.replace( /</g , "&lt" ).replace( />/g , "&gt" );
 }
 
+router.get( '/dontsee/:type', checkSession, function( req, res ){
+	db.Dontsees.find({ uid : req.user.id, type : req.params.type }, function( err, dontsees ){
+		if( err ){
+			throw err;
+		}
+		var oids = [];
+		async.each( dontsees, function( dontsee, cb ){
+			oids.push(dontsee.obj_id);
+			cb(null);
+		}, function( err2 ){
+			if( err2 ){
+				throw err2;
+			}
+			var name;
+			if( req.params.type == "post" ){
+				name = "Posts";
+			} else if ( req.params.type == "reply" ){
+				name = "Replys";
+			}
+			db[name].find({ id : { $in : oids } }, function( err3, result ){
+				if( err3 ){
+					throw err3;
+				}
+				res.send(result);
+			});
+		});
+	});
+});
+
 router.post( '/api/newsfeed/dontsee', checkSession, function( req, res ){
 	var type = req.body['type'];
 	var obj_id = parseInt(req.body['obj_id']);
