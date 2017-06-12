@@ -23,7 +23,11 @@ function checkToken(req,res,next){
 	}
 }
 
-router.get('/test', checkToken, function(req, res){
+router.get('/video', checkToken, function( req, res ){
+	makeObj( req, res, "video" );
+});
+
+router.post('/api/twitter/get/img', checkToken, function( req, res ){
 	var T = new Twit({
 		consumer_key : consumerKey,
 		consumer_secret : consumerSecret,
@@ -41,8 +45,23 @@ router.get('/test', checkToken, function(req, res){
 	});
 	*/
 	T.get('search/tweets', { q: '-filter:retweets filter:images from:' + req.user.username, count: 10 }, function(err, data, response) {
-		res.send(data);
+		if( err ){
+			throw err;
+		}
+		console.log(data);
+		var links = [];
+		async.each( data.statuses, function( status, cb ){
+			links.push(status.entities.media[0].media_url_https);
+			cb(null);
+		}, function( err ){
+		console.log(links);
+			res.send(links);
+		});
 	})
+});
+
+router.post('/api/twitter/get/video', checkToken, function( req, res ){
+	
 });
 
 module.exports = router;

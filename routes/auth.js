@@ -36,14 +36,15 @@ router.use( function( req, res, next ){
 router.use(session(sessionMiddleware));
 router.use(passport.initialize()).use(passport.session());
 passport.serializeUser(function(user, done) {
-	if( user.provider == "twitter" ){
-		done(null, user); 
-	} else if( user && user._json ){
+	if( user && user._json ){
 		db.Users.findOne({ email : user._json.email }).lean().exec( function( err, result ){
 			if( err ){
 				throw err;
 			} else if( result && result.signUp && result.be ){
 				delete result.password;
+				result.token = user.token;
+				result.secret = user.secret;
+				result.username = user.username;
 				user = result;
 				done(null, user);
 			} else {
@@ -61,7 +62,7 @@ passport.use( new TwitterStrategy({
     consumerKey: require('./settings.js').twitterConsumerKey,
     consumerSecret: require('./settings.js').twitterConsumerSecret,
 	callbackURL: 'https://iori.kr/api/auth/twitter/callback',
-	includeEmail: true,
+	includeEmail : true
 	}, function( token, secret, profile, done ){
 		profile.token = token;
 		profile.secret = secret;
@@ -70,6 +71,8 @@ passport.use( new TwitterStrategy({
 );
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 passport.use( new GoogleStrategy({
 	clientID: require('./settings.js').googleClientID,
 	clientSecret: require('./settings.js').googleClientSecret,
@@ -238,13 +241,41 @@ router.get('/api/auth/twitter/callback', function( req, res, next ){
 	passport.authenticate('twitter' , function( err, user, info ){
 		if( err ){
 			return next(err);
+		} else if( !user ){
+			return res.redirect('/');
+		} else if ( req.user != undefined && req.user.signUp == true ){
+			return res.redirect('/');
 		} else {
-			user.signUp = false;
-			req.logIn( user, function( error ){
-				if( error ){
-					return next(error);
+			user._json = {}
+			user._json["email"] = user.emails[0].value,
+			user._json["displayName"] = user.displayName
+			db.Users.findOne({ email : user._json.email, signUp : true, be : true }, function( err, account ){
+				if( err ){
+					throw err;
 				} else {
-					return res.redirect('/test');
+					req.logIn( user, function( error ){
+						if( error ){
+							return next(error);
+						} else {
+							if( account ){
+								req.user = account;
+								res.cookie("twitter","true",{ maxAge : 900000, expire : new Date(Date.now() + 900000), domain : "iori.kr", path : "/" });
+								if( req.session.returnTo && req.session.returnTo != "/"){
+									if( req.session.returnTo[0] == '/' ){
+										return res.redirect(req.session.returnTo);
+									} else {
+										return res.redirect('/' + req.session.returnTo.replace(/\-/g,"/") );
+									}
+								} else {
+									return res.redirect('/');
+								}
+							} else {
+								req.user = user._json;
+								req.user.signUp = false;
+								return res.redirect('/register');
+							}
+						}
+					});
 				}
 			});
 		}
@@ -255,7 +286,6 @@ router.get('/api/auth/twitter/:link', function( req, res ){
 	req.session.returnTo = req.params['link'];
 	res.redirect('/api/auth/twitter');
 });
-
 
 
 router.get('/api/auth/google', passport.authenticate('google', { scope: ['email'] }));
