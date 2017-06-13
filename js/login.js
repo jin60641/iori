@@ -183,7 +183,7 @@ inits["login"] = {
 				location.href = "/api/auth/google/" + returnTo;
 			};
 			form_google_btn.innerHTML = "<img src='/img/login/ic_sns.png' />구글 플러스로 로그인";
-			form.appendChild(form_google_btn);
+//			form.appendChild(form_google_btn);
 
 			let form_twitter_btn = $("div");
 			form_twitter_btn.id = "form_twitter_btn";
@@ -203,7 +203,7 @@ inits["login"] = {
 				}
 				location.href = "/api/auth/twitter/" + returnTo;
 			};
-			form_twitter_btn.innerHTML = "<img src='/img/login/ic_sns.png' />트위터로 로그인";
+			form_twitter_btn.innerHTML = "<img src='/img/login/ic_twitter.png' />트위터로 로그인";
 			form.appendChild(form_twitter_btn);
 		}
 	

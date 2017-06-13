@@ -83,6 +83,9 @@ inits["register"] = {
 				form_name.value = session.name;
 	//			form_name.readOnly = true;
 			}
+			if( session.displayName ){
+				form_name.value = session.displayName;
+			}
 			if( session.email ){
 				form_email.value = session.email;
 	//			form_email.readOnly = true;

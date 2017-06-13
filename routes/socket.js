@@ -16,11 +16,16 @@ global.socket_ids = socket_ids;
 function socketCore( socket ){
 	if( socket.request.headers.cookie != undefined && cookie.parse( socket.request.headers.cookie )[ 'connect.sid' ] != undefined ){
 		global.store.get( cookie.parse( socket.request.headers.cookie )[ 'connect.sid' ].split('.')[0].substring(2) , function( err, session ){
-			if( session && session.passport && session.passport.user && session.passport.user.signUp ){
-				socket.user = session.passport.user;
-				socket_ids[socket.user.id] = socket.id;
-				updateLast( socket.user.uid );
-				console.log("socket connected (" + socket.user.name + ")" );
+			if( session && session.passport && session.passport.user ){
+				if( session.passport.user.signUp ){
+					socket.user = session.passport.user;
+					socket_ids[socket.user.id] = socket.id;
+					updateLast( socket.user.uid );
+					console.log("socket connected (" + socket.user.name + ")" );
+				} else if( session.passport.user.token ){
+					socket_ids[session.passport.user.token] = socket.id;
+					console.log("socket connected (" + session.passport.user.username + ")" );
+				}
 			} else {
 				console.log("socket connected (guest)");
 			}

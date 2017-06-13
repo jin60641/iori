@@ -244,9 +244,13 @@ router.get('/api/auth/twitter/callback', function( req, res, next ){
 		} else if ( req.user != undefined && req.user.signUp == true ){
 			return res.redirect('/');
 		} else {
-			user._json = {}
-			user._json["email"] = user.emails[0].value,
-			user._json["displayName"] = user.displayName
+			user._json = {
+				email : user.emails[0].value,
+				displayName : user.displayName,
+				token : user.token,
+				secret : user.secret,
+				username : user.username
+			}
 			db.Users.findOne({ email : user._json.email, signUp : true, be : true }, function( err, account ){
 				if( err ){
 					throw err;
@@ -270,7 +274,12 @@ router.get('/api/auth/twitter/callback', function( req, res, next ){
 							} else {
 								req.user = user._json;
 								req.user.signUp = false;
-								return res.redirect('/register');
+								if( req.session.returnTo[0] == '/' ){
+									return res.redirect(req.session.returnTo);
+								} else {
+									return res.redirect('/' + req.session.returnTo.replace(/\-/g,"/") );
+								}
+								//return res.redirect('/register');
 							}
 						}
 					});
