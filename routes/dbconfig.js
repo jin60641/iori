@@ -206,6 +206,11 @@ var AudioSchema = new mongoose.Schema({
 	}]
 });
 
+var VideoSchema = new mongoose.Schema({
+	link : { type : String },
+	username : { type : String }
+});
+
 module.exports = {
 	Users : mongoose.model('users',UserSchema),
 	Follows : mongoose.model('follows',FollowSchema),

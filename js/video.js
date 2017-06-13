@@ -1,5 +1,4 @@
 inits["video"] = {
-	links : null,
 	init : function(){
 		let that = this;
 		let xhr = new XMLHttpRequest();
@@ -11,7 +10,7 @@ inits["video"] = {
 				location.href = "/";
 			}
 		}};
-		xhr.open("POST", "api/twitter/get/img", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+		xhr.open("POST", "api/twitter/get/video", true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
 	},
 	start : function(){
 		var wrap = $('div');

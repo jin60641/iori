@@ -71,8 +71,6 @@ passport.use( new TwitterStrategy({
 );
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-
 passport.use( new GoogleStrategy({
 	clientID: require('./settings.js').googleClientID,
 	clientSecret: require('./settings.js').googleClientSecret,

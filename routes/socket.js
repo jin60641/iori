@@ -23,12 +23,10 @@ function socketCore( socket ){
 				console.log("socket connected (" + socket.user.name + ")" );
 			} else {
 				console.log("socket connected (guest)");
-//				socket.disconnect();
 			}
 		});
 	} else {
 		console.log("socket connected (guest)");
-//		socket.disconnect();
 	}
 
 	socket.on( 'disconnect', function(){
