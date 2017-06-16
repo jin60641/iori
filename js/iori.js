@@ -404,15 +404,15 @@ function getPage(path){
 
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		let includes = $('.included');
-		for( let i = includes.length - 1; i >= 0 ; --i ){
-			head.removeChild(includes[i]);
+		let includes_js = $('.included_js');
+		for( let i = includes_js.length - 1; i >= 0 ; --i ){
+			head.removeChild(includes_js[i]);
 		}
 		inits = [];
 		var obj = JSON.parse(xhr.responseText);
 		for( let i in obj.js ){
 			var script = $('script');
-			script.className = "included";
+			script.className = "included_js";
 			script.src = '/js/' + obj.js[i] + '.js';
 			script.onload = function(){
 				if( Object.keys(inits).length == obj.js.length ){
@@ -426,13 +426,22 @@ function getPage(path){
 			}
 			head.appendChild(script);
 		}
+		let includes_css = $('.included_css');
+		for( let i = includes_css.length - 1; i >= 0 ; --i ){
+			if( obj.css.indexOf(includes_css[i]) ){
+				head.removeChild(includes_css[i]);
+			}
+		}
+		includes_css = $('.included_css');
 		for( let i in obj.css ){
-			let link = $('link');
-			link.className = "included";
-			link.rel = "stylesheet";
-			link.type = "text/css";
-			link.href = '/css/' + obj.css[i] + '.css';
-			head.appendChild(link);
+			if( includes_css.indexOf(obj.css[i]) == -1 ){
+				let link = $('link');
+				link.className = "included_css";
+				link.rel = "stylesheet";
+				link.type = "text/css";
+				link.href = '/css/' + obj.css[i] + '.css';
+				head.appendChild(link);
+			}
 		}
 	}}
 	xhr.open("GET",path.split('#')[0]+"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
