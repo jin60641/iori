@@ -206,12 +206,6 @@ var AudioSchema = new mongoose.Schema({
 	}]
 });
 
-var VideoSchema = new mongoose.Schema({
-	link : { type : String },
-	file : { type : String },
-	user : { type : String }
-});
-
 module.exports = {
 	Users : mongoose.model('users',UserSchema),
 	Follows : mongoose.model('follows',FollowSchema),
@@ -225,6 +219,5 @@ module.exports = {
 	Chats : mongoose.model('chats',ChatSchema),
 	Audios : mongoose.model('audios',AudioSchema),
 	Blocks : mongoose.model('blocks',BlockSchema),
-	Mutes : mongoose.model('mutes',MuteSchema),
-	Videos : mongoose.model('videos',VideoSchema)
+	Mutes : mongoose.model('mutes',MuteSchema)
 }

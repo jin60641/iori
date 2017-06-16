@@ -48,3 +48,4 @@ audio
 subtitle
 video
 ffconcat
+.gitignore

@@ -21,7 +21,6 @@ router.use(require('./routes/user.js').router);
 router.use(require('./routes/chat.js').router);
 router.use(require('./routes/admin.js'));
 router.use(require('./routes/search.js'));
-router.use(require('./routes/video.js'));
 router.use(require('./routes/audio.js'));
 
 String.prototype.trim = function() {
@@ -44,7 +43,7 @@ function fillCss( req, res, path, color ){
 
 function fillSvg( req, res, path, hex ){
 	var file = fs.readFileSync( path, 'utf8' );
-	file = file.replace("#000000",hex);
+	file = file.replace(/<%= color_hex %>/gi,hex);
 	var type = "image/svg+xml";
 	res.writeHead(200, { 'Content-Type' : type });
 	res.end( file );

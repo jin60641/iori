@@ -410,6 +410,8 @@ inits["timeline"] = {
 			img.className = "postimg_img";
 			img.onclick = function(event){
 				event.cancelBubble = true;
+				event.stopPropagation();
+				event.preventDefault();
 				inits["imglayer"].viewimg(Post.id,Post.file,Post.date);
 			}
 			preview.appendChild(img);

@@ -7,7 +7,6 @@ var db = require('./dbconfig.js');
 var session = require('express-session')
 var sessionstore = require('sessionstore');
 global.store = sessionstore.createSessionStore();
-
 var sessionMiddleware = {
 	store: global.store,
 	secret: require('./settings.js').sessionSecret,
@@ -234,7 +233,8 @@ router.get('/api/auth/token', passport.authenticate('facebook-token', { scope : 
 });
 */
 
-router.get('/api/auth/twitter', passport.authenticate('twitter'));
+router.get('/api/auth/twitter', passport.authenticate('twitter') );
+
 router.get('/api/auth/twitter/callback', function( req, res, next ){
 	passport.authenticate('twitter' , function( err, user, info ){
 		if( err ){

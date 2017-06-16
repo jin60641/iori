@@ -1,15 +1,5 @@
 'use strict';
 
-function getCookie(cname) {
-	let cookie_array = document.cookie.split(', ');
-	for(let i = 0; i < cookie_array.length; ++i ){
-		if( cname == cookie_array[i].split('=')[0] ){
-			return cookie_array[i].split('=')[1];
-		}
-	}
-	return "";
-}
-
 //location.hash = location.hash.replace("#_=_","");
 /*
 if( document.URL.split('/')[3] == "login" && inits["login"] == undefined ){
@@ -21,6 +11,7 @@ if( location.hash && location.hash == "#_=_" ){
 	location.href = location.origin + location.pathname;
 }
 */
+
 if( session.signUp == undefined && document.cookie ){
 	if ( getCookie("google") == "true" ){
 		if( document.URL.indexOf("login") >= 0 ){
@@ -108,6 +99,7 @@ function sendData_search( query ){
 
 
 // 알림로딩
+/*
 function getNotices(cnt){
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200){
@@ -119,7 +111,7 @@ function getNotices(cnt){
 	}}
 	xhr.open("POST", "/api/newsfeed/getnotice", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('cnt='+cnt);
 }
-
+*/
 // 맨위로
 
 function goTop( orix, oriy, desx, desy,cb ){

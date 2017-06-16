@@ -3,6 +3,16 @@
 let inits = [];
 let view;
 
+function getCookie(cname) {
+    let cookie_array = document.cookie.split(', ');
+    for(let i = 0; i < cookie_array.length; ++i ){
+        if( cname == cookie_array[i].split('=')[0] ){
+            return cookie_array[i].split('=')[1];
+        }
+    }
+    return "";
+}
+
 function $(query){
 	switch( query[0] ){
 		case '#' :
@@ -363,7 +373,7 @@ function makeHref(a,link){
 }
 
 function getPage(path){
-	if( $('#page_loading') ){
+	if( $('.head_loading').length ){
 		return ;
 	}
 	closeProfileHover();
@@ -388,17 +398,12 @@ function getPage(path){
 	}
 
 	let loading;
-	if( $('#wrap_mid') ){
-		loading = $('div');
-		loading.id = "page_loading";
-		$('#wrap_mid').appendChild(loading);
+	if( $('#head_logo') ){
+		$('#head_logo').className = "head_loading";
 	}
 
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		if( $('#wrap_mid') && loading != undefined  ){
-			$('#wrap_mid').removeChild(loading);
-		}
 		let includes = $('.included');
 		for( let i = includes.length - 1; i >= 0 ; --i ){
 			head.removeChild(includes[i]);
@@ -413,6 +418,9 @@ function getPage(path){
 				if( Object.keys(inits).length == obj.js.length ){
 					for( let j in inits ){
 						inits[j].init();
+						if( $('#head_logo') != undefined  ){
+							$('#head_logo').className = "";
+						}
 					}
 				}
 			}
