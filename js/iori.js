@@ -4,13 +4,13 @@ let inits = [];
 let view;
 
 function getCookie(cname) {
-    let cookie_array = document.cookie.split(', ');
-    for(let i = 0; i < cookie_array.length; ++i ){
-        if( cname == cookie_array[i].split('=')[0] ){
-            return cookie_array[i].split('=')[1];
-        }
-    }
-    return "";
+	let cookie_array = document.cookie.split(', ');
+	for(let i = 0; i < cookie_array.length; ++i ){
+		if( cname == cookie_array[i].split('=')[0] ){
+			return cookie_array[i].split('=')[1];
+		}
+	}
+	return "";
 }
 
 function $(query){
@@ -334,7 +334,7 @@ window.addEventListener('load',function(){
 });
 
 function makeRecommendList(){
-	if( session != null && session.signUp == true  ){
+	if( session != null && session.signUp == true ){
 		let div = $('div');
 		div.id = "recommend_list";
 		let title = $('span');
@@ -404,11 +404,13 @@ function getPage(path){
 
 	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (event){ if (xhr.readyState == 4 && xhr.status == 200){
-		let includes_js = $('.included_js');
-		for( let i = includes_js.length - 1; i >= 0 ; --i ){
-			head.removeChild(includes_js[i]);
+		let included_js = $('.included_js');
+		for( let i = included_js.length - 1; i >= 0 ; --i ){
+			head.removeChild(included_js[i]);
 		}
 		inits = [];
+		var js_loaded = false;
+		var css_loaded = false;
 		var obj = JSON.parse(xhr.responseText);
 		for( let i in obj.js ){
 			var script = $('script');
@@ -416,33 +418,52 @@ function getPage(path){
 			script.src = '/js/' + obj.js[i] + '.js';
 			script.onload = function(){
 				if( Object.keys(inits).length == obj.js.length ){
-					for( let j in inits ){
-						inits[j].init();
-						if( $('#head_logo') != undefined  ){
-							$('#head_logo').className = "";
-						}
+					js_loaded = true;
+					if( js_loaded && css_loaded ){
+						initPage();
 					}
 				}
 			}
 			head.appendChild(script);
 		}
-		let includes_css = $('.included_css');
-		for( let i = includes_css.length - 1; i >= 0 ; --i ){
-			if( obj.css.indexOf(includes_css[i]) ){
-				head.removeChild(includes_css[i]);
+		let included_css = $('.included_css');
+		for( let i = included_css.length-1; i >= 0; --i ){
+			let index = obj.css.indexOf(included_css[i].href.split('/').pop().split('.')[0]);
+			if( index == -1 ){
+				head.removeChild(included_css[i]);
+			} else {
+				let tmp = obj.css.splice(index);
+				tmp.splice(1);
+				obj.css.concat(tmp);
 			}
 		}
-		includes_css = $('.included_css');
+		var cssnum = document.styleSheets.length+obj.css.length;
 		for( let i in obj.css ){
-			if( includes_css.indexOf(obj.css[i]) == -1 ){
-				let link = $('link');
-				link.className = "included_css";
-				link.rel = "stylesheet";
-				link.type = "text/css";
-				link.href = '/css/' + obj.css[i] + '.css';
-				head.appendChild(link);
-			}
+			let link = $('link');
+			link.className = "included_css";
+			link.rel = "stylesheet";
+			link.type = "text/css";
+			link.href = '/css/' + obj.css[i] + '.css';
+			head.appendChild(link);
 		}
+		var ti = setInterval(function() {
+			if (document.styleSheets.length == cssnum) {
+				clearInterval(ti);
+				css_loaded = true;
+				if( js_loaded && css_loaded ){
+					initPage();
+				}
+			}
+		}, 10);
 	}}
 	xhr.open("GET",path.split('#')[0]+"?loaded=true", false); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send();
+}
+
+function initPage(){
+	for( let i in inits ){
+		inits[i].init();
+		if( $('#head_logo') != undefined ){
+			$('#head_logo').className = "";
+		}
+	}
 }
