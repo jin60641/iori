@@ -432,9 +432,7 @@ function getPage(path){
 			if( index == -1 ){
 				head.removeChild(included_css[i]);
 			} else {
-				let tmp = obj.css.splice(index);
-				tmp.splice(1);
-				obj.css.concat(tmp);
+				obj.css.splice(index,1);
 			}
 		}
 		var cssnum = document.styleSheets.length+obj.css.length;
