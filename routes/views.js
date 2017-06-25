@@ -70,6 +70,10 @@ const views = {
 	video : {
 		js : ["video"],
 		css : ["video"]
+	},
+	test : {
+		js : ["test"],
+		css : ["test"],
 	}
 }
 
