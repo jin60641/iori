@@ -126,14 +126,14 @@ router.get( '/api/audio/getaudio/:uid/:start', checkSession, function( req, res 
 	if( isNaN( start ) ){
 		res.end();
 	} else {
-	if( fs.existsSync( read_path ) ){
-		ffmpeg(fs.createReadStream(read_path)).setStartTime(start).duration(3).on('end', function(){
-			fs.createReadStream( write_path ).pipe(res);
-		}).save(write_path);
-	} else {
-		console.log("파일이 존재하지 않습니다.");
-		res.end();
-	}
+		if( fs.existsSync( read_path ) ){
+			ffmpeg(fs.createReadStream(read_path)).setStartTime(start).duration(3).on('end', function(){
+				fs.createReadStream( write_path ).pipe(res);
+			}).save(write_path);
+		} else {
+			console.log("파일이 존재하지 않습니다.");
+			res.end();
+		}
 	}
 });
 

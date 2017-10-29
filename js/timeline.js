@@ -207,6 +207,19 @@ inits["timeline"] = {
 						this.parentNode.replaceChild(iframe,this);
 					}
 					if( $('#menu_'+pid ) ){
+						if( $("#getvideo_" + pid ) ){
+						} else {
+							let getvideo = $('div');
+							getvideo.id = "getvideo_" + pid;
+							getvideo.onclick = function(e){
+								e.preventDefault();
+								e.stopPropagation();
+								e.cancelBubble = true;
+								that.getVideo(pid);
+							}
+							getvideo.innerText = "영상 추출";
+							$('#menu_'+pid).appendChild(getvideo);
+						}
 						if( $("#getaudio_" + pid ) ){
 						} else {
 							let getaudio = $('div');
@@ -218,7 +231,7 @@ inits["timeline"] = {
 								that.getAudio(pid);
 							}
 							getaudio.innerText = "음원 추출";
-							$('#menu_'+pid).appendChild(getaudio)
+							$('#menu_'+pid).appendChild(getaudio);
 						}
 					}
 				} else {
@@ -646,6 +659,39 @@ inits["timeline"] = {
 			return false;
 		}
 	},
+	getVideo : function( pid ){
+		this.hidemenu();
+		let gif = confirm("gif로 변환받으시겠습니까?(영상에 따라 시간이 추가로 소요될 수 있습니다)");
+		let link = $('#link_preview_' + pid).href;
+		let vid;
+		let vindex;
+		vindex = link.indexOf("youtu.be/");
+		if( vindex >= 0 ){
+			vid = link.substr( vindex + 9 );
+		}
+		vindex = link.indexOf("youtube.com/watch?v=");
+		if( vindex >= 0 ){	
+			vid = link.substr( vindex + 20 );
+		}
+		let xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function (event){ if(xhr.readyState == 4 && xhr.status == 200) {
+			let obj;
+			try {
+				obj = JSON.parse(xhr.responseText);
+				let download = $("a");
+				let title = $('#link_preview_title_' + pid);
+				download.download = title.innerText + "." + obj.type;
+				download.href = '/api/video/getvideo/' + vid + '/' + obj.type;
+				download.style.display = "none";
+				document.body.appendChild(download);
+				download.click();
+				document.body.removeChild(download);
+			} catch(e){
+				alert(xhr.responseText);
+			}
+		}};
+		xhr.open("POST", "/api/video/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send("gif="+gif);
+	},
 	getAudio : function( pid ){
 		this.hidemenu();
 		let mp3 = confirm("mp3로 변환받으시겠습니까?(영상에 따라 시간이 추가로 소요될 수 있습니다)");
@@ -678,7 +724,6 @@ inits["timeline"] = {
 			}
 		}};
 		xhr.open("POST", "/api/audio/add/" + vid, true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); xhr.send('mp3='+mp3);
-	
 	},
 	hidemenu : function(){
 		let that = this;

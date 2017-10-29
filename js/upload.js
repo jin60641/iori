@@ -154,24 +154,33 @@ inits["upload"] = {
 			file = event.dataTransfer.files[0];
 		}
 		this.realfile = file;
-		ID3.loadTags(that.realfile.name,function(){
-			var tags = ID3.getAllTags(that.realfile.name);
-			if( tags["TIT2"] && tags["TIT2"].length >= 1 ){
-				$('#input_title').value = tags["TIT2"];
-			} else {
-				$('#input_title').value = tags["title"];
+		
+		if( FileReader.readAsBinaryString != null ){
+			ID3.loadTags(that.realfile.name,function(){
+				var tags = ID3.getAllTags(that.realfile.name);
+				if( tags["TIT2"] && tags["TIT2"].length >= 1 ){
+					$('#input_title').value = tags["TIT2"];
+				} else {
+					$('#input_title').value = tags["title"];
+				}
+				$('#input_artist').value = tags["artist"];
+			},{
+				dataReader: ID3.FileAPIReader(file)
+			});
+			let reader = new FileReader();
+			reader.onload = function(e){
+				console.log("open Music reader result");
+				console.log(reader.result);
+				that.getMusicInfo(new Blob([reader.result]));
 			}
-			$('#input_artist').value = tags["artist"];
-		},{
-			dataReader: ID3.FileAPIReader(file)
-		});
-		let reader = new FileReader();
-		reader.onload = function(e){
-			console.log("open Music reader result");
-			console.log(reader.result);
-			that.getMusicInfo(new Blob([reader.result]));
+			reader.readAsArrayBuffer( file );
+		} else {
+			let img = $('#upload_img');
+			img.src = "/img/apicnone.png";
+			let send = $('#upload_send');
+			send.style.backgroundColor = "";
+			send.style.cursor = "";
 		}
-		reader.readAsArrayBuffer( file );
 		$("#label").src="";
 	},
 	init : function(){
@@ -189,7 +198,6 @@ inits["upload"] = {
 		wave_wrap.id = "wave_wrap";
 		wave_wrap.style.display = "none";
 		document.body.appendChild( wave_wrap );
-	
 	
 		let body = $("div");
 		body.id = "upload_wrap";
